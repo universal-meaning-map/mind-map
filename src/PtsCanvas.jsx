@@ -1,7 +1,7 @@
 import React from 'react';
 
 // For ES5 builds, import from 'pts/dist/es5'. For ES6 or custom builds, import from 'pts'.
-import {CanvasSpace} from 'pts/dist/es5'; 
+import { CanvasSpace } from 'pts/dist/es5';
 
 
 export default class PtsCanvas extends React.Component {
@@ -32,35 +32,41 @@ export default class PtsCanvas extends React.Component {
 
   // Required: Override this to use Pts' player `animate` callback
   // See guide: https://ptsjs.org/guide/space-0500
-  animate( time, ftime) {
-    this.form.point( this.space.pointer, 10 );
+  animate(time, ftime) {
+    this.form.point(this.space.pointer, 10);
   }
 
-  
+
   // Optional: Override this to use Pts' player `start` callback
-  start( space, bound ) {}
+  start(space, bound) { }
 
 
   // Optional: Override this to use Pts' player `resize` callback
-  resize( size, evt ) {}
+  resize(size, evt) { }
 
 
   // Optional: Override this to use Pts' player `action` callback
-  action ( type, px, py, evt ) {}
+  action(type, px, py, evt) { }
 
 
   init() {
-    this.space = new CanvasSpace( this.canvRef ).setup({bgcolor: this.props.background, resize: true, retina: true});
+    this.space = new CanvasSpace(this.canvRef).setup({
+      bgcolor: this.props.background,
+      resize: true,
+      retina: true
+    });
+
     this.form = this.space.getForm();
 
-    this.space.add( this );
+    this.space.add(this);
     this.space.bindMouse().bindTouch();
   }
 
   render() {
     return (
-      <div className={ this.props.name || "" }>
-        <canvas ref={ c => (this.canvRef=c) }></canvas>
+      <div className={this.props.name || ""}>
+        <canvas height={300 }
+          ref={c => (this.canvRef = c)}></canvas>
       </div>
     );
   }

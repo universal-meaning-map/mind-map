@@ -46,11 +46,9 @@ export default class App extends Component {
                 <div><AnimationExample
                     name="pts_chart"
                     background="#f36"
-                    pause={false}/>
+                    pause={true}/>
                 </div>
                 
-
-
                 <div><ChartExample
                     name="pts_chart"
                     background="#0c9"

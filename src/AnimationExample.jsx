@@ -1,4 +1,4 @@
-import { Pt, Group, Line, Create, Circle } from 'pts/dist/es5';
+import { Pt, Group, Line, Create, Circle, Polygon, Rectangle } from 'pts/dist/es5';
 import PtsCanvas from "./PtsCanvas";
 
 export class AnimationExample extends PtsCanvas {
@@ -37,7 +37,7 @@ export class AnimationExample extends PtsCanvas {
 
         this.nodesCircles = this.nodesData.map((n)=>{
             let c = Object.assign({},n)
-            c.position = Pt.make(2,400,true)
+            //c.position = Pt.make(2,400,true)
             return c
         })
     }
@@ -68,14 +68,26 @@ export class AnimationExample extends PtsCanvas {
         this._create();
     }
 
+    
+
 
     // Override PtsCanvas' animate function
     animate(time, ftime) {
 
+        let nodeSize = 100
         this.nodesCircles.forEach(n => {
             this.form.fill(n.color).point(n.position, 100, 'circle');
-            
+            let p = Polygon.fromCenter(this.space.pointer,100 , 10)
+
+            this.form.fill("#f00").polygon(p)
         });
+
+        let n = this.nodesCircles[0]
+        let p = this.space.center
+        this.form.font(20 ).alignText( "center" );
+        this.form.fill("#f368").point(p, nodeSize, 'circle')
+        let tb = Rectangle.fromCenter(p, nodeSize)
+        this.form.fill("#000").textBox(tb, n.nodeName, "middle", "...")
 
         /*if (!this.noiseGrid) return;
 

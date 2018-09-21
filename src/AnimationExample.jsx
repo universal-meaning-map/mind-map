@@ -40,6 +40,19 @@ export class AnimationExample extends PtsCanvas {
         this._create();
     }
 
+    drawText(n)
+    {
+        let boxSize = 50
+        //circle background
+        this.form.fill("#fff")
+        this.form.point(n.pt, boxSize*0.5, 'circle')
+        //font style
+        this.form.font(12 ).alignText( "center" );
+        this.form.fill("#000")
+        //text box
+        let tb = Rectangle.fromCenter(n.pt, boxSize)
+        this.form.textBox(tb, n['/'], "middle", "…" )
+    }
     // Override PtsCanvas' animate function
     animate(time, ftime) {
 
@@ -63,8 +76,9 @@ export class AnimationExample extends PtsCanvas {
                 }
             }
             
-            this.form.fillOnly("#f")
+            this.form.fillOnly("#f36")
             this.form.point(n.pt, 10, 'circle')
+            this.drawText(n)
         }
 
         /*

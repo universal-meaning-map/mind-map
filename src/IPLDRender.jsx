@@ -10,7 +10,7 @@ export class IPLDRender extends PtsCanvas {
         this.nodeSize = 50
     }
 
-    _create() {
+    create() {
         //We already have the data digested to be rendered
         //we mapped the data to a key-value of CID and nodes
         //We merge repeated nodes        
@@ -21,7 +21,6 @@ export class IPLDRender extends PtsCanvas {
     }
 
     checkPause() {
-        console.log("Helloooo")
         if (this.props.pause) {
             this.space.pause();
 
@@ -30,19 +29,15 @@ export class IPLDRender extends PtsCanvas {
         }
     }
 
-    // Override PtsCanvas' start function
     start(space, bound) {
-        this._create();
+        this.create();
     }
 
-
-    // Override PtsCanvas' resize function
     resize() {
-        this._create();
+        this.create();
     }
 
-    setNodePt(n)
-    {
+    setNodePt(n) {
         if (!n.pt) {
             n.pt = new Pt([Util.randomInt(this.space.width), Util.randomInt(this.space.height)])
         }
@@ -61,27 +56,24 @@ export class IPLDRender extends PtsCanvas {
     drawText(n) {
         //font style
         this.form.font(12).alignText("center");
-        this.form.fill("#000")
+        this.form.fill("#333")
         //text box
         let tb = Rectangle.fromCenter(n.pt, this.nodeSize)
         this.form.textBox(tb, n['/'], "middle", "…")
     }
 
-    drawBubble(n)
-    {
+    drawBubble(n) {
         this.form.fillOnly("#eee")
         this.form.point(n.pt, this.nodeSize * 0.5, 'circle')
     }
-
 
     animate(time, ftime) {
 
         for (let cid in nodes) {
             if (!nodes.hasOwnProperty(cid))
                 continue
-            let n = nodes[cid]
 
-            
+            let n = nodes[cid]
 
             this.setNodePt(n)
             this.drawRelationships(nodes, n)

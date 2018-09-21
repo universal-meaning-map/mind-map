@@ -7,6 +7,7 @@ export class IPLDRender extends PtsCanvas {
 
     constructor() {
         super();
+        this.nodeSize = 50
     }
 
     _create() {
@@ -40,20 +41,39 @@ export class IPLDRender extends PtsCanvas {
         this._create();
     }
 
-    drawText(n)
+    setNodePt(n)
     {
-        let boxSize = 50
-        //circle background
-        this.form.fill("#fff")
-        this.form.point(n.pt, boxSize*0.5, 'circle')
+        if (!n.pt) {
+            n.pt = new Pt([Util.randomInt(this.space.width), Util.randomInt(this.space.height)])
+        }
+    }
+
+    drawRelationships(nodes, n) {
+        if (n.relationships) {
+            for (let r of n.relationships) {
+                let line = new Group(n.pt, nodes[r.destinationNode].pt)
+                this.form.strokeOnly("#999", 1)
+                this.form.line(line)
+            }
+        }
+    }
+
+    drawText(n) {
         //font style
-        this.form.font(12 ).alignText( "center" );
+        this.form.font(12).alignText("center");
         this.form.fill("#000")
         //text box
-        let tb = Rectangle.fromCenter(n.pt, boxSize)
-        this.form.textBox(tb, n['/'], "middle", "…" )
+        let tb = Rectangle.fromCenter(n.pt, this.nodeSize)
+        this.form.textBox(tb, n['/'], "middle", "…")
     }
-    // Override PtsCanvas' animate function
+
+    drawBubble(n)
+    {
+        this.form.fillOnly("#eee")
+        this.form.point(n.pt, this.nodeSize * 0.5, 'circle')
+    }
+
+
     animate(time, ftime) {
 
         for (let cid in nodes) {
@@ -61,23 +81,11 @@ export class IPLDRender extends PtsCanvas {
                 continue
             let n = nodes[cid]
 
-            if(!n.pt)
-            {
-                n.pt = new Pt([Util.randomInt(this.space.width), Util.randomInt(this.space.height)])
-            }
-
-            if (n.relationships)
-            {
-                for(let r of n.relationships)
-                {
-                    let line = new Group( n.pt, nodes[r.destinationNode].pt)
-                    this.form.strokeOnly("#999",1)
-                    this.form.line(line)
-                }
-            }
             
-            this.form.fillOnly("#f36")
-            this.form.point(n.pt, 10, 'circle')
+
+            this.setNodePt(n)
+            this.drawRelationships(nodes, n)
+            this.drawBubble(n)
             this.drawText(n)
         }
 

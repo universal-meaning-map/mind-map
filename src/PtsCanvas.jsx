@@ -13,7 +13,7 @@ export default class PtsCanvas extends React.Component {
   }
 
   componentDidMount() {
-    this.init();
+    this.create();
     this._loop();
   }
 
@@ -49,7 +49,7 @@ export default class PtsCanvas extends React.Component {
   action(type, px, py, evt) { }
 
 
-  init() {
+  create() {
     this.space = new CanvasSpace(this.canvRef).setup({
       bgcolor: this.props.background,
       resize: true,
@@ -65,7 +65,7 @@ export default class PtsCanvas extends React.Component {
   render() {
     return (
       <div className={this.props.name || ""}>
-        <canvas height={800 }
+        <canvas height={800}
           ref={c => (this.canvRef = c)}></canvas>
       </div>
     );

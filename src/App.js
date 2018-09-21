@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { ChartExample } from './PtsExamples';
 import {AnimationExample} from './AnimationExample'
 export default class App extends Component {
     constructor(props) {
@@ -10,20 +9,6 @@ export default class App extends Component {
             pauseAnimation: false
         }
 
-        this.mockData(0.2);
-
-    }
-
-    mockData(variance) {
-        let gaussian = (x) => {
-            let mean = 0;
-            return (1 / Math.sqrt(2 * Math.PI * variance)) * Math.exp(-(x - mean) * (x - mean) / (2 * variance));
-        };
-
-        this.chartData = [];
-        for (let i = -5; i < 5; i += 0.1) {
-            this.chartData.push(gaussian(i));
-        }
     }
 
     handleChange(event) {
@@ -48,22 +33,7 @@ export default class App extends Component {
                     background="#fff"
                     pause={true}/>
                 </div>
-                
-                <div><ChartExample
-                    name="pts_chart"
-                    background="#0c9"
-                    loop={false} data={this.chartData}
-                    variance={this.state.variance} /></div>
-                <div>
-                    <h3>ChartExample Component</h3>
-                    <p><label>Variance: <input
-                        type="range"
-                        value={this.state.variance}
-                        min={0.05}
-                        max={5}
-                        step={0.05}
-                        onChange={this.handleChange.bind(this)} /></label> ({this.state.variance})</p>
-                </div>
+
             </div>
         );
     }

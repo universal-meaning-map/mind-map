@@ -3,7 +3,7 @@ import PtsCanvas from "./PtsCanvas";
 
 import nodes from "./mockData"
 
-export class AnimationExample extends PtsCanvas {
+export class IPLDRender extends PtsCanvas {
 
     constructor() {
         super();

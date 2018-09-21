@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {AnimationExample} from './AnimationExample'
+import {IPLDRender} from './IPLDRender'
 export default class App extends Component {
     constructor(props) {
         super(props);
@@ -28,7 +28,7 @@ export default class App extends Component {
 
             <div className="App">
 
-                <div><AnimationExample
+                <div><IPLDRender
                     name="pts_chart"
                     background="#fff"
                     pause={true}/>

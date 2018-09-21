@@ -1,45 +1,18 @@
-import { Pt, Group, Line, Create, Circle, Polygon, Rectangle } from 'pts/dist/es5';
+import { Pt, Group, Line, Create, Circle, Polygon, Rectangle, Util } from 'pts/dist/es5';
 import PtsCanvas from "./PtsCanvas";
+
+import nodes from "./mockData"
 
 export class AnimationExample extends PtsCanvas {
 
     constructor() {
         super();
-        this.noiseGrid = [];
-        this.nodesData = [
-            {
-                nodeName: 'Node1',
-                relationships: ['Node2', 'Node3'],
-                color:'#f00'
-            },
-            {
-                nodeName: 'Node2',
-                relationships: [],
-                color:'#0f0'
-            },
-            {
-                nodeName: 'Node3',
-                relationships: [],
-                color:'#00f'
-            }
-        ]
-        this.nodesCircles =[]
     }
 
     _create() {
-
-        //this.form.fillOnly("#f36").circle(node)
-        // Create a line and a grid, and convert them to `Noise` points
-        /*let gd = Create.gridPts(this.space.innerBound, 30, 10);
-        this.noiseGrid = Create.noisePts(gd, 0.05, 0.1, 20, 20);
-        this.checkPause()
-        */
-
-        this.nodesCircles = this.nodesData.map((n)=>{
-            let c = Object.assign({},n)
-            //c.position = Pt.make(2,400,true)
-            return c
-        })
+        //We already have the data digested to be rendered
+        //we mapped the data to a key-value of CID and nodes
+        //We merge repeated nodes        
     }
 
     componentDidUpdate() {
@@ -56,7 +29,6 @@ export class AnimationExample extends PtsCanvas {
         }
     }
 
-
     // Override PtsCanvas' start function
     start(space, bound) {
         this._create();
@@ -68,12 +40,34 @@ export class AnimationExample extends PtsCanvas {
         this._create();
     }
 
-    
-
-
     // Override PtsCanvas' animate function
     animate(time, ftime) {
 
+        for (let cid in nodes) {
+            if (!nodes.hasOwnProperty(cid))
+                continue
+            let n = nodes[cid]
+
+            if(!n.pt)
+            {
+                n.pt = new Pt([Util.randomInt(this.space.width), Util.randomInt(this.space.height)])
+            }
+
+            if (n.relationships)
+            {
+                for(let r of n.relationships)
+                {
+                    let line = new Group( n.pt, nodes[r.destinationNode].pt)
+                    this.form.strokeOnly("#999",1)
+                    this.form.line(line)
+                }
+            }
+            
+            this.form.fillOnly("#f")
+            this.form.point(n.pt, 10, 'circle')
+        }
+
+        /*
         let nodeSize = 100
         this.nodesCircles.forEach(n => {
             this.form.fill(n.color).point(n.position, 100, 'circle');
@@ -88,6 +82,9 @@ export class AnimationExample extends PtsCanvas {
         this.form.fill("#f368").point(p, nodeSize, 'circle')
         let tb = Rectangle.fromCenter(p, nodeSize)
         this.form.fill("#000").textBox(tb, n.nodeName, "middle", "...")
+
+        */
+
 
         /*if (!this.noiseGrid) return;
 

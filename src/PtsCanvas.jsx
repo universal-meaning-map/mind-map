@@ -65,7 +65,7 @@ export default class PtsCanvas extends React.Component {
   render() {
     return (
       <div className={this.props.name || ""}>
-        <canvas height={500 }
+        <canvas height={800 }
           ref={c => (this.canvRef = c)}></canvas>
       </div>
     );

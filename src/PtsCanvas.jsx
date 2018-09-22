@@ -13,7 +13,7 @@ export default class PtsCanvas extends React.Component {
   }
 
   componentDidMount() {
-    this.create();
+    this._create();
     this._loop();
   }
 
@@ -49,7 +49,7 @@ export default class PtsCanvas extends React.Component {
   action(type, px, py, evt) { }
 
 
-  create() {
+  _create() {
     this.space = new CanvasSpace(this.canvRef).setup({
       bgcolor: this.props.background,
       resize: true,

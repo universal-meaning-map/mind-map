@@ -1,4 +1,4 @@
-import { Pt, Group, Line, Create, Circle, Polygon, Rectangle, Util } from 'pts/dist/es5';
+import { Pt, Group, Line, Create, Circle, Polygon, Rectangle, Util, World, Particle } from 'pts/dist/es5';
 import PtsCanvas from "./PtsCanvas";
 
 import nodes from "./mockData"
@@ -8,12 +8,11 @@ export class IPLDRender extends PtsCanvas {
     constructor() {
         super();
         this.nodeSize = 50
+        this.world = null
     }
 
     create() {
-        //We already have the data digested to be rendered
-        //we mapped the data to a key-value of CID and nodes
-        //We merge repeated nodes        
+        this.world = new World(this.space.innerBound, 0.9, new Pt(0, 10));
     }
 
     componentDidUpdate() {
@@ -34,12 +33,14 @@ export class IPLDRender extends PtsCanvas {
     }
 
     resize() {
-        this.create();
+        //this.create();
     }
 
     setNodePt(n) {
         if (!n.pt) {
-            n.pt = new Pt([Util.randomInt(this.space.width), Util.randomInt(this.space.height)])
+            let initPt = new Pt([Util.randomInt(this.space.width), Util.randomInt(this.space.height)])
+            n.pt = new Particle(initPt).size(10);
+            this.world.add(n.pt)
         }
     }
 
@@ -79,6 +80,7 @@ export class IPLDRender extends PtsCanvas {
             this.drawRelationships(nodes, n)
             this.drawBubble(n)
             this.drawText(n)
+            this.world.update(ftime)
         }
 
         /*

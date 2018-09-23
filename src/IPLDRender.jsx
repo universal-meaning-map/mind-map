@@ -8,11 +8,25 @@ export class IPLDRender extends PtsCanvas {
     constructor() {
         super();
         this.nodeSize = 50
+        this.nodeArm = 10
         this.world = null
+        this.pts=null
     }
 
     create() {
-        this.world = new World(this.space.innerBound, 0.9, new Pt(0, 10));
+        this.world = new World(this.space.innerBound, 0.2, new Pt(0, 0));
+        let i = 0
+        let group = []
+        for (let cid in nodes) {
+            if (!nodes.hasOwnProperty(cid))
+                continue
+
+            let n = nodes[cid]
+            this.setNodePt(n, i)
+            group.push(n.pt)
+            i++
+        }
+        this.pts = new Group(group)
     }
 
     componentDidUpdate() {
@@ -36,11 +50,28 @@ export class IPLDRender extends PtsCanvas {
         //this.create();
     }
 
-    setNodePt(n) {
+    setNodePt(n,i) {
         if (!n.pt) {
-            let initPt = new Pt([Util.randomInt(this.space.width), Util.randomInt(this.space.height)])
-            n.pt = new Particle(initPt).size(10);
-            this.world.add(n.pt)
+            let random = new Pt([Util.randomInt(100), Util.randomInt(100)])
+            let initPt = this.space.center.$add(random)
+            n.pt = new Particle(initPt).size(this.nodeSize + this.nodeArm);
+            this.world.add(n.pt)            
+        }
+    }
+
+    addForces(nodes, n) {
+        if (n.relationships) {
+            for (let r of n.relationships) {
+                let destPt = nodes[r.destinationNode].pt
+                //the attraction force will be proporcional to its distance
+                let distance = n.pt.$subtract(destPt)
+                let forceAmount = 2
+                //negative so it attracts
+                let force = distance.$multiply(-1*forceAmount)
+                n.pt.addForce(force)
+                //oposite force is added to the destination pt
+                destPt.addForce(force.multiply(-1))
+            }
         }
     }
 
@@ -68,6 +99,14 @@ export class IPLDRender extends PtsCanvas {
         this.form.point(n.pt, this.nodeSize * 0.5, 'circle')
     }
 
+    center()
+    {
+        let center = this.pts.centroid()
+        console.log(center)
+        let offset = center.subtract(this.space.center)
+        this.pts.moveTo([100,100])
+    }
+
     animate(time, ftime) {
 
         for (let cid in nodes) {
@@ -76,12 +115,14 @@ export class IPLDRender extends PtsCanvas {
 
             let n = nodes[cid]
 
-            this.setNodePt(n)
+            this.addForces(nodes, n)
             this.drawRelationships(nodes, n)
             this.drawBubble(n)
             this.drawText(n)
             this.world.update(ftime)
         }
+
+        //this.center()
 
         /*
         let nodeSize = 100

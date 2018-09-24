@@ -12,14 +12,14 @@ Network Display
 - [ ] - Drag and drop layout
 
 Input
-- [ ] - Add node to visualization
-  - [ ] - Select node
-  - [ ] - Add CID/type
-  - [ ] - Update render object
-  - [ ] - Map render object to IPLD
-- [ ] - Edit node
-  - [ ] - Remove node
-  - [ ] - Add relationship
+- [ ] - Select node by clicking
+- [ ] - Navigate nodes with keyboard
+- [ ] - Visualize content
+- [ ] - Add new CID
+- [ ] - Render to render-object
+- [ ] - Render-object to IPLD
+- [ ] - Remove node
+- [ ] - Add relationship
 
 Integration
 - [ ] - Load real IPLD objects

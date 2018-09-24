@@ -93,7 +93,10 @@ export class IPLDRender extends PtsCanvas {
     }
 
     getArrow(originPt, destPt, offset = 1, length = 10, sharpness = 0.3) {
-        let pointer = destPt.$subtract(originPt).unit().multiply(length)
+        let pointer = destPt.$subtract(originPt)
+        if(pointer.magnitude())
+            pointer.unit()
+        pointer.multiply(length)
         let sideVertex1 = new Pt(pointer.y, -pointer.x).multiply(sharpness)
         let sideVertex2 = new Pt(-pointer.y, pointer.x).multiply(sharpness)
         let arrow = new Group(pointer, sideVertex1, sideVertex2)

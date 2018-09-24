@@ -29,7 +29,12 @@
         
     },
     "CID3":{
-        "/":"CID3"
+        "/":"CID3",
+        "relationships": [
+            {
+                "destinationNode": "CID1"
+            }
+        ]
     },
     "CID4":{
         "/":"CID4"
@@ -37,5 +42,25 @@
     ,
     "CID5":{
         "/":"CID5"
+    },
+    "CID6":{
+        "/":"CID6",
+        "relationships": [
+            {
+                "destinationNode": "CID7"
+            }
+        ]
+    },
+    "CID7":{
+        "/":"CID7",
+        "relationships": [
+            {
+                "destinationNode": "CID8"
+            }
+        ]
+    },
+    "CID8":{
+        "/":"CID8"
     }
+    
 }

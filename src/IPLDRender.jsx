@@ -11,6 +11,7 @@ export class IPLDRender extends PtsCanvas {
         this.nodeArm = 50
         this.world = null
         this.pts = null
+        this.selectedCID = null
     }
 
     create() {
@@ -24,9 +25,12 @@ export class IPLDRender extends PtsCanvas {
             let n = nodes[cid]
             this.setNodePt(n, i)
             group.push(n.pt)
+            if(i==0)
+                this.selectedCID =n.cid
             i++
         }
         this.pts = new Group(group)
+
     }
 
     componentDidUpdate() {
@@ -111,11 +115,16 @@ export class IPLDRender extends PtsCanvas {
         this.form.fill("#333")
         //text box
         let tb = Rectangle.fromCenter(n.pt, this.nodeRadius * 2)
-        this.form.textBox(tb, n['/'], "middle", "…")
+        this.form.textBox(tb, n.cid, "middle", "…")
     }
 
     drawBubble(n) {
         this.form.fillOnly("#eee")
+        this.form.point(n.pt, this.nodeRadius, 'circle')
+    }
+
+    drawHighlightBubble(n) {
+        this.form.strokeOnly("#f36")
         this.form.point(n.pt, this.nodeRadius, 'circle')
     }
 
@@ -136,6 +145,8 @@ export class IPLDRender extends PtsCanvas {
             this.addForces(nodes, n)
             this.drawRelationships(nodes, n)
             this.drawBubble(n)
+            if(n.cid == this.selectedCID)
+                this.drawHighlightBubble(n)
             this.drawText(n)
             this.world.update(ftime)
         }

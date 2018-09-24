@@ -100,8 +100,10 @@ export class IPLDRender extends PtsCanvas {
         let pointer = destPt.$subtract(originPt)
         let offsetPt = destPt
         if(pointer.magnitude())
+        {
             pointer.unit()
             offsetPt = pointer.$unit().multiply(offset).add(destPt)
+        }
         pointer.multiply(length)
         let sideVertex1 = new Pt(pointer.y, -pointer.x).multiply(sharpness)
         let sideVertex2 = new Pt(-pointer.y, pointer.x).multiply(sharpness)

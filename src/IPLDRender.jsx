@@ -1,4 +1,4 @@
-import { Pt, Group, Line, Create, Circle, Polygon, Rectangle, Util, World, Particle } from 'pts/dist/es5';
+import { Pt, Group, Line, Create, Circle, Polygon, Rectangle, Util, World, Particle,Triangle, Geom, Const } from 'pts/dist/es5';
 import PtsCanvas from "./PtsCanvas";
 
 import nodes from "./mockData"
@@ -14,7 +14,7 @@ export class IPLDRender extends PtsCanvas {
     }
 
     create() {
-        this.world = new World(this.space.innerBound, 0.2, new Pt(0, 0));
+        this.world = new World(this.space.innerBound, 0.99, new Pt(0, 0));
         let i = 0
         let group = []
         for (let cid in nodes) {
@@ -76,14 +76,46 @@ export class IPLDRender extends PtsCanvas {
     }
 
     drawRelationships(nodes, n) {
+        let lineColor = "#999"
+        let pointerSize = 10
         if (n.relationships) {
             for (let r of n.relationships) {
-                let line = new Group(n.pt, nodes[r.destinationNode].pt)
-                this.form.strokeOnly("#999", 1)
+                let destPt = nodes[r.destinationNode].pt
+                let line = new Group(n.pt,destPt )
+                this.form.strokeOnly(lineColor, 1)
                 this.form.line(line)
+
+                //arrow
+                //Pt unit of same directions as relaationship line
+                /*let sharpness = 0.3//
+                let pointer = destPt.$subtract(n.pt).unit().multiply(50)
+                let sideVertex1 = new Pt(pointer.y, -pointer.x).multiply(sharpness)
+                let sideVertex2 = new Pt(-pointer.y, pointer.x).multiply(sharpness)
+                let arrow = new Group(pointer, sideVertex1, sideVertex2)
+                arrow.moveTo(destPt)
+                */
+                let arrow = this.getArrow(n.pt, destPt)
+                
+                this.form.fillOnly('#f36', 1)
+                this.form.polygon(arrow)
+                //let pointer = new Triangle.fromCircle([n.pt, destPt] )
+                //this.form.fillOnly(lineColor)
+                //this.form.polygon(pointer)
             }
         }
     }
+
+    getArrow(originPt, destPt, offset = 0, length = 50, sharpness = 0.3)
+    {
+        
+        let pointer = destPt.$subtract(originPt).unit().multiply(length)
+        let sideVertex1 = new Pt(pointer.y, -pointer.x).multiply(sharpness)
+        let sideVertex2 = new Pt(-pointer.y, pointer.x).multiply(sharpness)
+        let arrow = new Group(pointer, sideVertex1, sideVertex2)
+        arrow.moveTo(destPt)
+        return arrow
+    }
+
 
     drawText(n) {
         //font style

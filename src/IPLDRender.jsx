@@ -14,7 +14,7 @@ export class IPLDRender extends PtsCanvas {
     }
 
     create() {
-        this.world = new World(this.space.innerBound, 0.99, new Pt(0, 0));
+        this.world = new World(this.space.innerBound, 0.9, new Pt(0, 0));
         let i = 0
         let group = []
         for (let cid in nodes) {
@@ -102,7 +102,6 @@ export class IPLDRender extends PtsCanvas {
         return arrow
     }
 
-
     drawText(n) {
         //font style
         this.form.font(12).alignText("center");
@@ -137,38 +136,6 @@ export class IPLDRender extends PtsCanvas {
             this.drawText(n)
             this.world.update(ftime)
         }
-
-        //this.center()
-
-        /*
-        let nodeSize = 100
-        this.nodesCircles.forEach(n => {
-            this.form.fill(n.color).point(n.position, 100, 'circle');
-            let p = Polygon.fromCenter(this.space.pointer,100 , 10)
-
-            this.form.fill("#f00").polygon(p)
-        });
-
-        let n = this.nodesCircles[0]
-        let p = this.space.center
-        this.form.font(20 ).alignText( "center" );
-        this.form.fill("#f368").point(p, nodeSize, 'circle')
-        let tb = Rectangle.fromCenter(p, nodeSize)
-        this.form.fill("#000").textBox(tb, n.nodeName, "middle", "...")
-
-        */
-
-
-        /*if (!this.noiseGrid) return;
-
-        // Use pointer position to change speed
-        let speed = this.space.pointer.$subtract(this.space.center).divide(this.space.center).abs();
-
-        // Generate noise in a grid
-        this.noiseGrid.forEach((p) => {
-            p.step(0.01 * (1 - speed.x), 0.01 * (1 - speed.y));
-            this.form.fillOnly("#123").point(p, Math.abs(p.noise2D() * this.space.size.x / 18), "circle");
-        });*/
 
     }
 

@@ -1,4 +1,4 @@
-import { Pt, Group, Line, Create, Circle, Polygon, Rectangle, Util, World, Particle,Triangle, Geom, Const } from 'pts/dist/es5';
+import { Pt, Group, Line, Create, Circle, Polygon, Rectangle, Util, World, Particle, Triangle, Geom, Const } from 'pts/dist/es5';
 import PtsCanvas from "./PtsCanvas";
 
 import nodes from "./mockData"
@@ -7,10 +7,10 @@ export class IPLDRender extends PtsCanvas {
 
     constructor() {
         super();
-        this.nodeSize = 50
-        this.nodeArm = 10
+        this.nodeRadius = 20
+        this.nodeArm = 50
         this.world = null
-        this.pts=null
+        this.pts = null
     }
 
     create() {
@@ -50,12 +50,12 @@ export class IPLDRender extends PtsCanvas {
         //this.create();
     }
 
-    setNodePt(n,i) {
+    setNodePt(n, i) {
         if (!n.pt) {
             let random = new Pt([Util.randomInt(100), Util.randomInt(100)])
             let initPt = this.space.center.$add(random)
-            n.pt = new Particle(initPt).size(this.nodeSize + this.nodeArm);
-            this.world.add(n.pt)            
+            n.pt = new Particle(initPt).size(this.nodeRadius + this.nodeArm);
+            this.world.add(n.pt)
         }
     }
 
@@ -67,7 +67,7 @@ export class IPLDRender extends PtsCanvas {
                 let distance = n.pt.$subtract(destPt)
                 let forceAmount = 2
                 //negative so it attracts
-                let force = distance.$multiply(-1*forceAmount)
+                let force = distance.$multiply(-1 * forceAmount)
                 n.pt.addForce(force)
                 //oposite force is added to the destination pt
                 destPt.addForce(force.multiply(-1))
@@ -81,38 +81,24 @@ export class IPLDRender extends PtsCanvas {
         if (n.relationships) {
             for (let r of n.relationships) {
                 let destPt = nodes[r.destinationNode].pt
-                let line = new Group(n.pt,destPt )
+                let line = new Group(n.pt, destPt)
                 this.form.strokeOnly(lineColor, 1)
                 this.form.line(line)
 
-                //arrow
-                //Pt unit of same directions as relaationship line
-                /*let sharpness = 0.3//
-                let pointer = destPt.$subtract(n.pt).unit().multiply(50)
-                let sideVertex1 = new Pt(pointer.y, -pointer.x).multiply(sharpness)
-                let sideVertex2 = new Pt(-pointer.y, pointer.x).multiply(sharpness)
-                let arrow = new Group(pointer, sideVertex1, sideVertex2)
-                arrow.moveTo(destPt)
-                */
-                let arrow = this.getArrow(n.pt, destPt)
-                
+                let arrow = this.getArrow(n.pt, destPt, -this.nodeRadius)
                 this.form.fillOnly('#f36', 1)
                 this.form.polygon(arrow)
-                //let pointer = new Triangle.fromCircle([n.pt, destPt] )
-                //this.form.fillOnly(lineColor)
-                //this.form.polygon(pointer)
             }
         }
     }
 
-    getArrow(originPt, destPt, offset = 0, length = 50, sharpness = 0.3)
-    {
-        
+    getArrow(originPt, destPt, offset = 1, length = 10, sharpness = 0.3) {
         let pointer = destPt.$subtract(originPt).unit().multiply(length)
         let sideVertex1 = new Pt(pointer.y, -pointer.x).multiply(sharpness)
         let sideVertex2 = new Pt(-pointer.y, pointer.x).multiply(sharpness)
         let arrow = new Group(pointer, sideVertex1, sideVertex2)
-        arrow.moveTo(destPt)
+        let offsetPt = pointer.$unit().multiply(offset).add(destPt)
+        arrow.moveTo(offsetPt)
         return arrow
     }
 
@@ -122,21 +108,19 @@ export class IPLDRender extends PtsCanvas {
         this.form.font(12).alignText("center");
         this.form.fill("#333")
         //text box
-        let tb = Rectangle.fromCenter(n.pt, this.nodeSize)
+        let tb = Rectangle.fromCenter(n.pt, this.nodeRadius * 2)
         this.form.textBox(tb, n['/'], "middle", "…")
     }
 
     drawBubble(n) {
         this.form.fillOnly("#eee")
-        this.form.point(n.pt, this.nodeSize * 0.5, 'circle')
+        this.form.point(n.pt, this.nodeRadius, 'circle')
     }
 
-    center()
-    {
+    center() {
         let center = this.pts.centroid()
-        console.log(center)
         let offset = center.subtract(this.space.center)
-        this.pts.moveTo([100,100])
+        this.pts.moveTo([100, 100])
     }
 
     animate(time, ftime) {

@@ -1,4 +1,4 @@
-import { Pt, Group, Line, Create, Circle, Polygon, Rectangle, Util, World, Particle, Triangle, Geom, Const } from 'pts/dist/es5';
+import { Pt, Group, Line, Create, Circle, Polygon, Rectangle, Util, World, Particle, Triangle, Geom, Const, UIButton, UI } from 'pts/dist/es5';
 import PtsCanvas from "./PtsCanvas";
 
 import nodes from "./mockData"
@@ -11,7 +11,9 @@ export class IPLDRender extends PtsCanvas {
         this.nodeArm = 50
         this.world = null
         this.pts = null
+        this.btns = []
         this.selectedCID = null
+        this.ui = null
     }
 
     create() {
@@ -25,12 +27,28 @@ export class IPLDRender extends PtsCanvas {
             let n = nodes[cid]
             this.setNodePt(n, i)
             group.push(n.pt)
-            if(i==0)
-                this.selectedCID =n.cid
+            if (i == 0)
+                this.selectedCID = n.cid
             i++
+
+            this.addInteraction(n)
         }
         this.pts = new Group(group)
+    }
 
+    addInteraction(n) {
+        n.btn = UIButton.fromCircle(Circle.fromCenter(n.pt, this.nodeRadius))
+        console.log(n.btn)
+        n.btn.onClick((a) => {
+            this.selectedCID = n.cid
+        })
+
+        //n.btn.onHover(console.log, console.log)
+        this.btns.push(n.btn)
+    }
+
+    updateBtn(n) {
+        n.btn.group[0].to(n.pt)
     }
 
     componentDidUpdate() {
@@ -99,8 +117,7 @@ export class IPLDRender extends PtsCanvas {
     getArrow(originPt, destPt, offset = 1, length = 10, sharpness = 0.3) {
         let pointer = destPt.$subtract(originPt)
         let offsetPt = destPt
-        if(pointer.magnitude())
-        {
+        if (pointer.magnitude()) {
             pointer.unit()
             offsetPt = pointer.$unit().multiply(offset).add(destPt)
         }
@@ -144,16 +161,19 @@ export class IPLDRender extends PtsCanvas {
                 continue
 
             let n = nodes[cid]
-
+            this.updateBtn(n)
             this.addForces(nodes, n)
             this.drawRelationships(nodes, n)
             this.drawBubble(n)
-            if(n.cid == this.selectedCID)
+            if (n.cid == this.selectedCID)
                 this.drawHighlightBubble(n)
             this.drawText(n)
             this.world.update(ftime)
         }
+    }
 
+    action(type, px, py) {
+        UI.track(this.btns, type, new Pt(px, py));
     }
 
 }

@@ -12,8 +12,12 @@ export class IPLDRender extends PtsCanvas {
         this.world = null
         this.pts = null
         this.btns = []
+        this.previousSelectedCID = null
         this.selectedCID = null
+        this.selectedRelationship = undefined
         this.ui = null
+
+        document.onkeydown = this.checkKey.bind(this);
     }
 
     create() {
@@ -38,7 +42,6 @@ export class IPLDRender extends PtsCanvas {
 
     addInteraction(n) {
         n.btn = UIButton.fromCircle(Circle.fromCenter(n.pt, this.nodeRadius))
-        console.log(n.btn)
         n.btn.onClick((a) => {
             this.selectedCID = n.cid
         })
@@ -143,15 +146,37 @@ export class IPLDRender extends PtsCanvas {
         this.form.point(n.pt, this.nodeRadius, 'circle')
     }
 
-    drawHighlightBubble(n) {
-        this.form.strokeOnly("#f36")
-        this.form.point(n.pt, this.nodeRadius, 'circle')
+    drawHighlightBubble(pt, color = "#f36") {
+        this.form.strokeOnly(color)
+        this.form.point(pt, this.nodeRadius, 'circle')
+    }
+
+    drawHighlightLine(pt1, pt2, color = "#f36") {
+        this.form.strokeOnly(color)
+        this.form.line([pt1, pt2])
     }
 
     center() {
         let center = this.pts.centroid()
         let offset = center.subtract(this.space.center)
         this.pts.moveTo([100, 100])
+    }
+
+    highlight(n) {
+        if (!n)
+            return
+
+        this.drawHighlightBubble(n.pt)
+        if (!this.selectedRelationship)
+            return
+
+        for (let r of n.relationships) {
+            if (r.destinationNode === this.selectedRelationship) {
+                let destNode = nodes[r.destinationNode]
+                this.drawHighlightLine(n.pt, destNode.pt)
+                this.drawHighlightBubble(destNode.pt)
+            }
+        }
     }
 
     animate(time, ftime) {
@@ -165,15 +190,74 @@ export class IPLDRender extends PtsCanvas {
             this.addForces(nodes, n)
             this.drawRelationships(nodes, n)
             this.drawBubble(n)
-            if (n.cid == this.selectedCID)
-                this.drawHighlightBubble(n)
             this.drawText(n)
             this.world.update(ftime)
         }
+        this.highlight(nodes[this.selectedCID])
+
     }
 
     action(type, px, py) {
         UI.track(this.btns, type, new Pt(px, py));
+    }
+
+    selectNextNode() {
+        this.selectedCID = this.nodes[this.selectedCID].relationships
+    }
+
+    selectNextRelationship(jumps) {
+        let currentN = nodes[this.selectedCID]
+        let currentIndex = this.getRelationshipIndex(currentN, this.selectedRelationship)
+        console.log(currentIndex)
+        if (currentIndex === undefined)
+        {
+            if(currentN.relationships.length>0)
+            this.selectedRelationship = currentN.relationships[0].destinationNode
+            return
+        }
+        
+        let nextIndex = (currentIndex+jumps)%currentN.relationships.length
+        console.log(currentIndex, nextIndex)
+        if(nextIndex<0)
+            nextIndex = currentN.relationships.length+nextIndex
+        let relationship = currentN.relationships[nextIndex]
+        if(relationship)
+            this.selectedRelationship = relationship.destinationNode
+        
+        console.log(nextIndex,  relationship)
+        
+    }
+
+    getRelationshipIndex(n, relationshipCid) {
+        if(!n.relationships)
+            return
+        return n.relationships.findIndex((r) => {
+            console.log(r.destinationNode, relationshipCid)
+            return r.destinationNode === relationshipCid
+        })
+    }
+
+    checkKey(e) {
+
+        e = e || window.event;
+
+        if (e.keyCode == '38') {
+            this.previousSelectedCID = this.selectedCID
+            this.selectedCID = this.selectedRelationship
+            this.selectedRelationship = null
+        }
+        else if (e.keyCode == '40') {
+            // down arrow
+        }
+        else if (e.keyCode == '37') {
+            this.selectNextRelationship(-1)
+            // left arrow
+        }
+        else if (e.keyCode == '39') {
+            this.selectNextRelationship(1)
+            // right arrow
+        }
+
     }
 
 }

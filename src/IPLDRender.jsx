@@ -7,7 +7,7 @@ export class IPLDRender extends PtsCanvas {
 
     constructor() {
         super();
-        this.nodeRadius = 80
+        this.nodeRadius = 50
         this.nodeArm = 50
         this.world = null
         this.pts = null

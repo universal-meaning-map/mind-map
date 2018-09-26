@@ -1,7 +1,7 @@
 import { Pt, Group, Line, Create, Circle, Polygon, Rectangle, Util, World, Particle, Triangle, Geom, Const, UIButton, UI } from 'pts/dist/es5';
 import PtsCanvas from "./PtsCanvas";
-
-import nodes from "./mockData"
+import Converter from "./Converter"
+import data from "./mockIPLDData"
 
 export class IPLDRender extends PtsCanvas {
 
@@ -19,17 +19,20 @@ export class IPLDRender extends PtsCanvas {
         this.selectedNodeHistory = []
 
         document.onkeydown = this.checkKey.bind(this);
+
+        this.nodes = Converter.dagsToRender(data)
+        console.log(this.nodes)
     }
 
     create() {
         this.world = new World(this.space.innerBound, 1, new Pt(0, 0));
         let i = 0
         let group = []
-        for (let cid in nodes) {
-            if (!nodes.hasOwnProperty(cid))
+        for (let cid in this.nodes) {
+            if (!this.nodes.hasOwnProperty(cid))
                 continue
 
-            let n = nodes[cid]
+            let n = this.nodes[cid]
             this.setNodePt(n, i)
             group.push(n.pt)
             if (i == 0)
@@ -88,6 +91,7 @@ export class IPLDRender extends PtsCanvas {
     addForces(nodes, n) {
         if (n.relationships) {
             for (let r of n.relationships) {
+
                 let destPt = nodes[r.destinationNode].pt
                 //the attraction force will be proporcional to its distance
                 let distance = n.pt.$subtract(destPt)
@@ -173,7 +177,7 @@ export class IPLDRender extends PtsCanvas {
 
         for (let r of n.relationships) {
             if (r.destinationNode === this.selectedRelationship) {
-                let destNode = nodes[r.destinationNode]
+                let destNode = this.nodes[r.destinationNode]
                 this.drawHighlightLine(n.pt, destNode.pt)
                 this.drawHighlightBubble(destNode.pt)
             }
@@ -182,19 +186,19 @@ export class IPLDRender extends PtsCanvas {
 
     animate(time, ftime) {
 
-        for (let cid in nodes) {
-            if (!nodes.hasOwnProperty(cid))
+        for (let cid in this.nodes) {
+            if (!this.nodes.hasOwnProperty(cid))
                 continue
 
-            let n = nodes[cid]
+            let n = this.nodes[cid]
             this.updateBtn(n)
-            this.addForces(nodes, n)
-            this.drawRelationships(nodes, n)
+            this.addForces(this.nodes, n)
+            this.drawRelationships(this.nodes, n)
             this.drawBubble(n)
             this.drawText(n)
             this.world.update(ftime)
         }
-        this.highlight(nodes[this.selectedCID])
+        this.highlight(this.nodes[this.selectedCID])
     }
 
     action(type, px, py) {
@@ -202,7 +206,7 @@ export class IPLDRender extends PtsCanvas {
     }
 
     selectNewNode(newCID) {
-        if (!nodes[newCID])
+        if (!this.nodes[newCID])
             return
 
         if (this.selectedNodeHistory[this.selectedNodeHistory.length - 1] !== newCID) {
@@ -224,7 +228,7 @@ export class IPLDRender extends PtsCanvas {
     }
 
     selectNextRelationship(jumps) {
-        let currentN = nodes[this.selectedCID]
+        let currentN = this.nodes[this.selectedCID]
         if (!currentN)
             return
         let currentIndex = this.getRelationshipIndex(currentN, this.selectedRelationship)

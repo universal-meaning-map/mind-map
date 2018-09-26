@@ -1,0 +1,21 @@
+[
+    {
+        "/":"<CID1>",
+        "relationships": [
+            {
+                "destinationNode": "<CID2>"
+            }
+        ]
+    },
+    {
+        "/":"<CID1>",
+        "relationships": [
+            {
+                "destinationNode": "<CID3>"
+            }
+        ]
+    },
+    {
+        "/":"<CID2>"
+    }
+]

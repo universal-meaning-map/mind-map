@@ -1,28 +1,31 @@
-Find the details of this project on the [IPLD-mindmap repo](https://github.com/arxiu/ipld-mindmap)
+# ipld-mindmap-ptsjs-render
 
-Design
-- [x] - Define base data structure
-- [ ] - Adapt for any IPFS object
+> A render component using pts.js for ipld-mindmap
 
-Network Display
-- [x] - Display nodes
-- [x] - Display relationships
-- [x] - Basic node layout
-- [x] - Display arrows
-- [ ] - Drag and drop layout
+[![NPM](https://img.shields.io/npm/v/ipld-mindmap-ptsjs-render.svg)](https://www.npmjs.com/package/ipld-mindmap-ptsjs-render) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-Input
-- [ ] - Select node by clicking
-- [ ] - Navigate nodes with keyboard
-- [ ] - Visualize content
-- [ ] - Add new CID
-- [ ] - Render to render-object
-- [ ] - Render-object to IPLD
-- [ ] - Remove node
-- [ ] - Add relationship
+## Install
 
-Integration
-- [ ] - Load real IPLD objects
-- [ ] - Store changes back to IPFS
-- [ ] - Define content by url
-- [ ] - Define Render through url
+```bash
+npm install --save ipld-mindmap-ptsjs-render
+```
+
+## Usage
+
+```jsx
+import React, { Component } from 'react'
+
+import MyComponent from 'ipld-mindmap-ptsjs-render'
+
+class Example extends Component {
+  render () {
+    return (
+      <MyComponent />
+    )
+  }
+}
+```
+
+## License
+
+MIT © [xavivives](https://github.com/xavivives)

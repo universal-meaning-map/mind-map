@@ -1,9 +1,5 @@
-import { Pt, Group, Circle, Rectangle, Util, World, Particle, UIButton, UI } from 'pts/dist/es5';
-import PtsCanvas from "./PtsCanvas";
-import Converter from "./Converter"
-import data from "./mockIPLDData"
 
-export class IPLDRender extends PtsCanvas {
+export default class IPLDRender extends PtsCanvas {
 
     constructor(props) {
         super(props);
@@ -18,10 +14,10 @@ export class IPLDRender extends PtsCanvas {
         this.ui = null
         this.selectedNodeHistory = []
 
+        
         document.onkeydown = this.checkKey.bind(this);
 
         this.nodes = Converter.dagsToRender(data)
-
     }
 
     create() {

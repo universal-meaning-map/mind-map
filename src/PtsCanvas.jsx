@@ -1,7 +1,7 @@
 import React from 'react';
 
 // For ES5 builds, import from 'pts/dist/es5'. For ES6 or custom builds, import from 'pts'.
-import { CanvasSpace } from 'pts/dist/es5';
+import { CanvasSpace } from 'pts';
 //var Hammer = require('react-hammerjs');
 import TapAndPinchable from 'react-tappable/lib/TapAndPinchable';
 

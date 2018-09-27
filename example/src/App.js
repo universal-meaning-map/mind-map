@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { IPLDRender } from './IPLDRender'
+import IPLDRender from 'ipld-mindmap-ptsjs-render'
 
 export default class App extends Component {
     constructor(props) {

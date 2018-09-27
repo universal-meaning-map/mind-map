@@ -1,0 +1,8 @@
+{
+  "short_name": "ipld-mindmap-ptsjs-render",
+  "name": "ipld-mindmap-ptsjs-render",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

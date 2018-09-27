@@ -1,0 +1,20 @@
+{
+  "name": "ipld-mindmap-ptsjs-render-example",
+  "homepage": "https://xavivives.github.io/ipld-mindmap-ptsjs-render",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-scripts": "^1.1.4",
+    "ipld-mindmap-ptsjs-render": "link:.."
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

@@ -1,4 +1,4 @@
-import { Pt, Group, Line, Create, Circle, Polygon, Rectangle, Util, World, Particle, Triangle, Geom, Const, UIButton, UI } from 'pts/dist/es5';
+import { Pt, Group, Circle, Rectangle, Util, World, Particle, UIButton, UI } from 'pts/dist/es5';
 import PtsCanvas from "./PtsCanvas";
 import Converter from "./Converter"
 import data from "./mockIPLDData"
@@ -21,7 +21,7 @@ export class IPLDRender extends PtsCanvas {
         document.onkeydown = this.checkKey.bind(this);
 
         this.nodes = Converter.dagsToRender(data)
-        console.log(this.nodes)
+
     }
 
     create() {
@@ -35,7 +35,7 @@ export class IPLDRender extends PtsCanvas {
             let n = this.nodes[cid]
             this.setNodePt(n, i)
             group.push(n.pt)
-            if (i == 0)
+            if (i === 0)
                 this.selectNewNode(n.cid)
             i++
 
@@ -83,6 +83,7 @@ export class IPLDRender extends PtsCanvas {
         if (!n.pt) {
             let random = new Pt([Util.randomInt(100), Util.randomInt(100)])
             let initPt = this.space.center.$add(random)
+            //Todo: Never updated
             n.pt = new Particle(initPt).size(this.getNodeRadius() + this.getNodeArm());
             this.world.add(n.pt)
         }
@@ -107,7 +108,6 @@ export class IPLDRender extends PtsCanvas {
 
     drawRelationships(nodes, n) {
         let lineColor = "#999"
-        let pointerSize = 10
         if (n.relationships) {
             for (let r of n.relationships) {
                 let destPt = nodes[r.destinationNode].pt
@@ -137,13 +137,11 @@ export class IPLDRender extends PtsCanvas {
         return arrow
     }
 
-    getNodeRadius()
-    {
+    getNodeRadius() {
         return (this.nodeRadius * this.props.zoom)
     }
 
-    getNodeArm()
-    {
+    getNodeArm() {
         return (this.nodeArm * this.props.zoom)
     }
 
@@ -172,9 +170,9 @@ export class IPLDRender extends PtsCanvas {
     }
 
     center() {
-        let center = this.pts.centroid()
+        /*let center = this.pts.centroid()
         let offset = center.subtract(this.space.center)
-        this.pts.moveTo([100, 100])
+        this.pts.moveTo([100, 100])*/
     }
 
     highlight(n) {
@@ -268,17 +266,17 @@ export class IPLDRender extends PtsCanvas {
 
         e = e || window.event;
 
-        if (e.keyCode == '38') {//up arrow
+        if (e.keyCode === '38') {//up arrow
             this.selectNewNode(this.selectedRelationship)
         }
-        else if (e.keyCode == '40') {// down arrow
+        else if (e.keyCode === '40') {// down arrow
             this.selectPreviousNode()
         }
-        else if (e.keyCode == '37') {// left arrow
+        else if (e.keyCode === '37') {// left arrow
             this.selectNextRelationship(-1)
 
         }
-        else if (e.keyCode == '39') {// right arrow
+        else if (e.keyCode === '39') {// right arrow
             this.selectNextRelationship(1)
         }
 

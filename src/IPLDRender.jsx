@@ -5,8 +5,8 @@ import data from "./mockIPLDData"
 
 export class IPLDRender extends PtsCanvas {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.nodeRadius = 50
         this.nodeArm = 50
         this.world = null

@@ -29,7 +29,7 @@ export default class App extends Component {
             <div className="App">
 
                 <div><IPLDRender
-                    name="pts_chart"
+                    name="IPLDRender"
                     background="#fff"
                     pause={true}/>
                 </div>

@@ -65,7 +65,6 @@ export default class PtsCanvas extends React.Component {
   }
 
   onPinchStart(e) {
-    console.log(this.props)
     if (this.props.onPinchStart)
       this.props.onPinchStart(e)
   }
@@ -83,17 +82,17 @@ export default class PtsCanvas extends React.Component {
   render() {
     return (
 
-        <TapAndPinchable
-        style={{touchAction:'none'}}
-        stopPropagation = {false}
-          onPinchMove={this.onPinchMove.bind(this)}
-          onPinchStart={this.onPinchStart.bind(this)}
-          onPinchEnd={this.onPinchEnd.bind(this)}>
-          <div className={this.props.name || ""}>
-            <canvas height={800}
-              ref={c => (this.canvRef = c)}></canvas>
-          </div>
-        </TapAndPinchable>
+      <TapAndPinchable
+        style={{ touchAction: 'none' }}
+        stopPropagation={false}
+        onPinchMove={this.onPinchMove.bind(this)}
+        onPinchStart={this.onPinchStart.bind(this)}
+        onPinchEnd={this.onPinchEnd.bind(this)}>
+        <div className={this.props.name || ""}>
+          <canvas height={800}
+            ref={c => (this.canvRef = c)}></canvas>
+        </div>
+      </TapAndPinchable>
 
     );
   }

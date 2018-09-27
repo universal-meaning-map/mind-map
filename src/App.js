@@ -1,14 +1,15 @@
-import React, { Component } from 'react';
-import {IPLDRender} from './IPLDRender'
+import React, { Component } from 'react'
+import { IPLDRender } from './IPLDRender'
+
 export default class App extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             variance: 0.2,
-            pauseAnimation: false
+            pauseAnimation: false,
+            currentZoom: 1
         }
-
     }
 
     handleChange(event) {
@@ -19,19 +20,24 @@ export default class App extends Component {
         this.setState({ pauseAnimation: !this.state.pauseAnimation });
     }
 
-    componentWillUpdate(nextProps, nextState) {
-        this.mockData(nextState.variance);
+    onPinchMove(e) {
+        console.log(e.distance)
+        let zoomDelta = e.zoom
+        let currentZoom = this.state.currentZoom * zoomDelta
+        this.setState({ currentZoom: currentZoom })
     }
 
     render() {
         return (
 
-            <div className="App">
+            <div className="App" style={{touchAction:'none'}}>
 
                 <div><IPLDRender
                     name="IPLDRender"
                     background="#fff"
-                    pause={true}/>
+                    onPinchMove={this.onPinchMove.bind(this)}
+                    zoom={this.state.currentZoom}
+                    pause={true} />
                 </div>
 
             </div>

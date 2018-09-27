@@ -52,7 +52,6 @@ x.dagsToRender = (dags) => {
 
     for (let d of dags) {
         let r = x.mindmapToRender(d)
-        console.log(r.cid)
         if (renderObj[r.cid]) {
             renderObj[r.cid] = Object.assign(renderObj[r.cid], r)
         }
@@ -65,9 +64,7 @@ x.dagsToRender = (dags) => {
 
     for (let cid of missingCIDs) {
         if (!renderObj[cid]) {
-            console.log('falti', cid)
             renderObj[cid] = x.renderNodeFromCID(cid)
-            console.log(renderObj)
         }
     }
     return renderObj

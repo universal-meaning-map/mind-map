@@ -45,7 +45,7 @@ export class IPLDRender extends PtsCanvas {
     }
 
     addInteraction(n) {
-        n.btn = UIButton.fromCircle(Circle.fromCenter(n.pt, this.nodeRadius))
+        n.btn = UIButton.fromCircle(Circle.fromCenter(n.pt, this.getNodeRadius()))
         n.btn.onClick((a) => {
             this.selectNewNode(n.cid)
         })
@@ -83,7 +83,7 @@ export class IPLDRender extends PtsCanvas {
         if (!n.pt) {
             let random = new Pt([Util.randomInt(100), Util.randomInt(100)])
             let initPt = this.space.center.$add(random)
-            n.pt = new Particle(initPt).size(this.nodeRadius + this.nodeArm);
+            n.pt = new Particle(initPt).size(this.getNodeRadius() + this.getNodeArm());
             this.world.add(n.pt)
         }
     }
@@ -115,7 +115,7 @@ export class IPLDRender extends PtsCanvas {
                 this.form.strokeOnly(lineColor, 1)
                 this.form.line(line)
 
-                let arrow = this.getArrow(n.pt, destPt, -this.nodeRadius)
+                let arrow = this.getArrow(n.pt, destPt, -this.getNodeRadius())
                 this.form.fillOnly('#f36', 1)
                 this.form.polygon(arrow)
             }
@@ -137,23 +137,33 @@ export class IPLDRender extends PtsCanvas {
         return arrow
     }
 
+    getNodeRadius()
+    {
+        return (this.nodeRadius * this.props.zoom)
+    }
+
+    getNodeArm()
+    {
+        return (this.nodeArm * this.props.zoom)
+    }
+
     drawText(n) {
         //font style
         this.form.font(12).alignText("center");
         this.form.fill("#333")
         //text box
-        let tb = Rectangle.fromCenter(n.pt, this.nodeRadius * 2)
+        let tb = Rectangle.fromCenter(n.pt, this.getNodeRadius() * 2)
         this.form.textBox(tb, n.cid, "middle", "…")
     }
 
     drawBubble(n) {
         this.form.fillOnly("#eee")
-        this.form.point(n.pt, this.nodeRadius, 'circle')
+        this.form.point(n.pt, this.getNodeRadius(), 'circle')
     }
 
     drawHighlightBubble(pt, color = "#f36") {
         this.form.strokeOnly(color)
-        this.form.point(pt, this.nodeRadius, 'circle')
+        this.form.point(pt, this.getNodeRadius(), 'circle')
     }
 
     drawHighlightLine(pt1, pt2, color = "#f36") {

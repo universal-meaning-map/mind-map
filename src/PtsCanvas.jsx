@@ -2,9 +2,11 @@ import React from 'react';
 
 // For ES5 builds, import from 'pts/dist/es5'. For ES6 or custom builds, import from 'pts'.
 import { CanvasSpace } from 'pts/dist/es5';
-
+//var Hammer = require('react-hammerjs');
+import TapAndPinchable from 'react-tappable/lib/TapAndPinchable';
 
 export default class PtsCanvas extends React.Component {
+
   constructor(props) {
     super(props);
     this.canvRef = React.createRef();
@@ -62,12 +64,37 @@ export default class PtsCanvas extends React.Component {
     this.space.bindMouse().bindTouch();
   }
 
+  onPinchStart(e) {
+    console.log(this.props)
+    if (this.props.onPinchStart)
+      this.props.onPinchStart(e)
+  }
+
+  onPinchMove(e) {
+    if (this.props.onPinchMove)
+      this.props.onPinchMove(e)
+  }
+
+  onPinchEnd(e) {
+    if (this.props.onPinchEnd)
+      this.props.onPinchEnd(e)
+  }
+
   render() {
     return (
-      <div className={this.props.name || ""}>
-        <canvas height={800}
-          ref={c => (this.canvRef = c)}></canvas>
-      </div>
+
+        <TapAndPinchable
+        style={{touchAction:'none'}}
+        stopPropagation = {false}
+          onPinchMove={this.onPinchMove.bind(this)}
+          onPinchStart={this.onPinchStart.bind(this)}
+          onPinchEnd={this.onPinchEnd.bind(this)}>
+          <div className={this.props.name || ""}>
+            <canvas height={800}
+              ref={c => (this.canvRef = c)}></canvas>
+          </div>
+        </TapAndPinchable>
+
     );
   }
 }

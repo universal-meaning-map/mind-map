@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "create-react-class": "^15.6.3",
     "pts": "^0.6.1",
     "react": "^16.5.1",
     "react-dom": "^16.5.1",
-    "react-scripts": "1.1.5"
+    "react-scripts": "1.1.5",
+    "react-tappable": "^1.0.4"
   },
   "scripts": {
     "start": "react-scripts start",

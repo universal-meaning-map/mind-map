@@ -31,13 +31,9 @@ export default class PtsCanvas extends React.Component {
     }
   }
 
-
   // Required: Override this to use Pts' player `animate` callback
   // See guide: https://ptsjs.org/guide/space-0500
-  animate(time, ftime) {
-    this.form.point(this.space.pointer, 10);
-  }
-
+  animate(time, ftime) { }
 
   // Optional: Override this to use Pts' player `start` callback
   start(space, bound) { }

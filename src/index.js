@@ -59,6 +59,7 @@ export default class IPLDRender extends PtsCanvas {
     }
 
     setNodePts(n, ncid) {
+        //TODO what if the node exists...
         //if it has link the pt is the ccid
         if (NodeUtil.hasLink(n)) {
             let ccid = NodeUtil.getLink(n)
@@ -68,8 +69,20 @@ export default class IPLDRender extends PtsCanvas {
             //node pt is the same as the content pt
             this.pts[ncid]= this.pts[ccid]
         }
-        else{
+        else
+        {
             this.pts[ncid] = this.getRandomPt(this.space.center)
+        }
+        //relationships
+        if(NodeUtil.hasRelationships(n))
+        {
+            for(let r of n.relationships)
+            {
+                let tcid = NodeUtil.getRelationshipTarget(r)
+                if (!this.ptExists(tcid)) {
+                    this.pts[tcid] = this.getRandomPt(this.space.center)
+                }
+            }
         }
 
         console.log('pts',this.pts)
@@ -79,6 +92,8 @@ export default class IPLDRender extends PtsCanvas {
     ptExists(cid) {
         return (this.pts[cid] ? true : false)
     }
+
+   
 
 
     create() {

@@ -3,6 +3,7 @@ import PtsCanvas from "./PtsCanvas.jsx";
 import Converter from "./Converter.js"
 import data from "./mockIPLDData.js"
 import React, { Component } from 'react'
+import NodeUtil from './NodeUtil'
 
 export default class IPLDRender extends PtsCanvas {
 
@@ -13,6 +14,8 @@ export default class IPLDRender extends PtsCanvas {
         this.world = null
 
         this.nodes = {}
+        this.pts = {}
+
         this.btns = []
 
         this.selectedCID = null
@@ -48,12 +51,35 @@ export default class IPLDRender extends PtsCanvas {
                 throw (error)
             }
 
-            let node = Converter.dagToRender(result.value)
-            this.nodes[cid] = {}
-            this.nodes[cid] = node
-            console.log('nodes', this.nodes)
+            let n = result.value
+            console.log("node", n)
+            this.nodes[cid] = n
+            this.setNodePts(n, cid)
         })
     }
+
+    setNodePts(n, ncid) {
+        //if it has link the pt is the ccid
+        if (NodeUtil.hasLink(n)) {
+            let ccid = NodeUtil.getLink(n)
+            if (!this.ptExists(ccid)) {
+                this.pts[ccid] = this.getRandomPt(this.space.center)
+            }
+            //node pt is the same as the content pt
+            this.pts[ncid]= this.pts[ccid]
+        }
+        else{
+            this.pts[ncid] = this.getRandomPt(this.space.center)
+        }
+
+        console.log('pts',this.pts)
+            
+    }
+
+    ptExists(cid) {
+        return (this.pts[cid] ? true : false)
+    }
+
 
     create() {
         this.world = new World(this.space.innerBound, 1, new Pt(0, 0));
@@ -113,11 +139,17 @@ export default class IPLDRender extends PtsCanvas {
     setNodePt(n, i) {
         if (!n.pt) {
             let random = new Pt([Util.randomInt(100), Util.randomInt(100)])
-            let initPt = this.space.center.$add(random)
+            let initPt = this.space.center.add(random)
             //Todo: Never updated
             n.pt = new Particle(initPt).size(this.getNodeRadius() + this.getNodeArm());
             this.world.add(n.pt)
         }
+    }
+
+    getRandomPt(center, extend = 100) {
+        let pt = new Pt([Util.randomInt(extend), Util.randomInt(extend)])
+        pt.add(center).subtract(extend * 0.5)
+        return pt
     }
 
     addForces(nodes, n) {

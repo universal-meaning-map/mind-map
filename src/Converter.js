@@ -12,7 +12,8 @@ let x = {}
 //converts a single dagObj node into a renderObj
 x.mindmapToRender = (dagObj) => {
     let n = Object.assign({}, dagObj)
-    n.cid = x.getCID(dagObj)
+    n.cid = x.getCID(dagObj)// to be removed
+    n.tcid = x.getCID(dagObj) //targed cid
     return n
 }
 
@@ -69,6 +70,31 @@ x.dagsToRender = (dags) => {
     }
     return renderObj
 }
+
+x.dagToRender = (dag) => {
+
+    let renderObj = {}
+
+    let r = x.mindmapToRender(dag)
+    if (renderObj[r.tcid]) {
+        renderObj[r.tcid] = Object.assign(renderObj[r.tcid], r)
+    }
+    else {
+        renderObj[r.tcid] = r
+    }
+
+    /*
+    let missingCIDs = x.getRelationshipsCID(dag)
+
+    for (let cid of missingCIDs) {
+        if (!renderObj[cid]) {
+            renderObj[cid] = x.renderNodeFromCID(cid)
+        }
+    }*/
+    return renderObj
+}
+
+
 
 
 export default x

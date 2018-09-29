@@ -11,22 +11,20 @@ export default class IPLDRender extends PtsCanvas {
         this.nodeRadius = 50
         this.nodeArm = 50
         this.world = null
-        this.pts = null
+
+        this.nodes = {}
         this.btns = []
-        this.previousSelectedCID = null
+
         this.selectedCID = null
         this.selectedRelationship = undefined
-        this.ui = null
+
         this.selectedNodeHistory = []
-        this.nodes = Converter.dagsToRender(data)
+        this._nodes = Converter.dagsToRender(data)
 
         document.onkeydown = this.checkKey.bind(this);
 
-        
         this.setIpfs()
     }
-
-    
 
     setIpfs() {
         if (!this.props.ipfs) throw (new Error('No IPFS object'))
@@ -41,16 +39,19 @@ export default class IPLDRender extends PtsCanvas {
 
     onIpfsReady(ipfs) {
         for (let cid of this.props.cids)
-            this.loadOriginNode(cid)
+            this.loadOriginCid(cid)
     }
 
-    loadOriginNode(cid) {
+    loadOriginCid(cid) {
         ipfs.dag.get(cid, (error, result) => {
-            if (error){
+            if (error) {
                 throw (error)
             }
-        
-            //this.nodes = Converter.dagsToRender([result.value])
+
+            let node = Converter.dagToRender(result.value)
+            this.nodes[cid] = {}
+            this.nodes[cid] = node
+            console.log('nodes', this.nodes)
         })
     }
 
@@ -58,11 +59,11 @@ export default class IPLDRender extends PtsCanvas {
         this.world = new World(this.space.innerBound, 1, new Pt(0, 0));
         let i = 0
         let group = []
-        for (let cid in this.nodes) {
-            if (!this.nodes.hasOwnProperty(cid))
+        for (let cid in this._nodes) {
+            if (!this._nodes.hasOwnProperty(cid))
                 continue
 
-            let n = this.nodes[cid]
+            let n = this._nodes[cid]
             this.setNodePt(n, i)
             group.push(n.pt)
             if (i === 0)
@@ -71,7 +72,7 @@ export default class IPLDRender extends PtsCanvas {
 
             this.addInteraction(n)
         }
-        this.pts = new Group(group)
+        this.allPts = new Group(group)
     }
 
     addInteraction(n) {
@@ -199,12 +200,6 @@ export default class IPLDRender extends PtsCanvas {
         this.form.line([pt1, pt2])
     }
 
-    center() {
-        /*let center = this.pts.centroid()
-        let offset = center.subtract(this.space.center)
-        this.pts.moveTo([100, 100])*/
-    }
-
     highlight(n) {
         if (!n)
             return
@@ -215,7 +210,7 @@ export default class IPLDRender extends PtsCanvas {
 
         for (let r of n.relationships) {
             if (r.destinationNode === this.selectedRelationship) {
-                let destNode = this.nodes[r.destinationNode]
+                let destNode = this._nodes[r.destinationNode]
                 this.drawHighlightLine(n.pt, destNode.pt)
                 this.drawHighlightBubble(destNode.pt)
             }
@@ -223,21 +218,19 @@ export default class IPLDRender extends PtsCanvas {
     }
 
     animate(time, ftime) {
-
-        console.log(this.nodes)
-        for (let cid in this.nodes) {
-            if (!this.nodes.hasOwnProperty(cid))
+        for (let cid in this._nodes) {
+            if (!this._nodes.hasOwnProperty(cid))
                 continue
 
-            let n = this.nodes[cid]
+            let n = this._nodes[cid]
             this.updateBtn(n)
-            this.addForces(this.nodes, n)
-            this.drawRelationships(this.nodes, n)
+            this.addForces(this._nodes, n)
+            this.drawRelationships(this._nodes, n)
             this.drawBubble(n)
             this.drawText(n)
             this.world.update(ftime)
         }
-        this.highlight(this.nodes[this.selectedCID])
+        this.highlight(this._nodes[this.selectedCID])
     }
 
     action(type, px, py) {
@@ -245,7 +238,7 @@ export default class IPLDRender extends PtsCanvas {
     }
 
     selectNewNode(newCID) {
-        if (!this.nodes[newCID])
+        if (!this._nodes[newCID])
             return
 
         if (this.selectedNodeHistory[this.selectedNodeHistory.length - 1] !== newCID) {
@@ -267,7 +260,7 @@ export default class IPLDRender extends PtsCanvas {
     }
 
     selectNextRelationship(jumps) {
-        let currentN = this.nodes[this.selectedCID]
+        let currentN = this._nodes[this.selectedCID]
         if (!currentN)
             return
         let currentIndex = this.getRelationshipIndex(currentN, this.selectedRelationship)

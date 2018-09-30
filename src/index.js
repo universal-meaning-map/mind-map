@@ -165,7 +165,7 @@ export default class IPLDRender extends PtsCanvas {
         return particle
     }
 
-    addForces(nodes, n) {
+    /*addForces(nodes, n) {
         if (n.relationships) {
             for (let r of n.relationships) {
 
@@ -180,9 +180,9 @@ export default class IPLDRender extends PtsCanvas {
                 destPt.addForce(force.multiply(-1))
             }
         }
-    }
+    }*/
 
-    addForces2(n) {
+    addForces(n) {
         if (n.relationships) {
             for (let r of n.relationships) {
                 //targetPt
@@ -202,7 +202,7 @@ export default class IPLDRender extends PtsCanvas {
         }
     }
 
-    drawRelationships(nodes, n) {
+    /*drawRelationships(nodes, n) {
         let lineColor = "#999"
         if (n.relationships) {
             for (let r of n.relationships) {
@@ -216,9 +216,9 @@ export default class IPLDRender extends PtsCanvas {
                 this.form.polygon(arrow)
             }
         }
-    }
+    }*/
 
-    drawRelationships2(n) {
+    drawRelationships(n) {
         let lineColor = "#999"
         if (NodeUtil.hasLink(n) && NodeUtil.hasRelationships(n)) {
             for (let r of n.relationships) {                
@@ -263,13 +263,10 @@ export default class IPLDRender extends PtsCanvas {
         this.form.font(12).alignText("center");
         this.form.fill("#333")
         //text box
-        let tb = Rectangle.fromCenter(n.pt, this.getNodeRadius() * 2)
-        this.form.textBox(tb, n.cid, "middle", "…")
-    }
-
-    drawBubble(n) {
-        this.form.fillOnly("#eee")
-        this.form.point(n.pt, this.getNodeRadius(), 'circle')
+        let ncid = NodeUtil.getLink(n)
+        let npt = this.pts[ncid]
+        let tb = Rectangle.fromCenter(npt, this.getNodeRadius() * 2)
+        this.form.textBox(tb, ncid, "middle", "…")
     }
 
     drawContentBubble(pt) {
@@ -277,7 +274,8 @@ export default class IPLDRender extends PtsCanvas {
         this.form.point(pt, this.getNodeRadius(), 'circle')
     }
 
-    drawNodeBubble(pt) {
+    drawNodeBubble(n) {
+        let pt = this.pts[NodeUtil.getLink(n)]
         this.form.fillOnly("#fee")
         this.form.point(pt, this.getNodeRadius() * 1.2, 'circle')
     }
@@ -325,19 +323,43 @@ export default class IPLDRender extends PtsCanvas {
         }
         this.highlight(this._nodes[this.selectedCID])*/
 
+        this.toAll(this.nodes,this.addForces.bind(this))
+        this.toAll(this.nodes,this.drawRelationships.bind(this))
+        this.toAll(this.nodes,this.drawNodeBubble.bind(this))
+        this.toAll(this.pts,this.drawContentBubble.bind(this))
+        this.toAll(this.nodes,this.drawText.bind(this))
+
+/*
         for (let ncid in this.nodes) {
             if (!this.nodes.hasOwnProperty(ncid))
                 continue
             this.drawNode(this.nodes[ncid])
         }
+
+        for (let cid in this.pts) {
+            if (!this.pts.hasOwnProperty(cid))
+                continue
+            this.drawContentBubble(this.pts[cid])
+        }
+*/
     }
 
-    drawNode(n) {
-        this.addForces2(n)
-        this.drawRelationships2(n)
-        this.drawContentBubble(n)
-        this.drawNodeBubble(this.pts[NodeUtil.getLink(n)])
+    toAll(obj,fnc)
+    {
+        for (let cid in obj) {
+            if (!obj.hasOwnProperty(cid))
+                continue
+            fnc.bind(this)
+            fnc(obj[cid])
+        }
     }
+
+    /*drawNode(n) {
+        this.addForces(n)
+        this.drawRelationships(n)
+        this.drawNodeBubble(this.pts[NodeUtil.getLink(n)])
+        this.drawText(n)
+    }*/
 
     action(type, px, py) {
         UI.track(this.btns, type, new Pt(px, py));

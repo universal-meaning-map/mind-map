@@ -1,6 +1,8 @@
 export default {
     hasLink(node) {
-        return (node['/'] ? true : false)
+        if (node['/'])
+            return true
+        return false
     },
 
     getLink(node) {
@@ -8,14 +10,15 @@ export default {
     },
 
     hasRelationships(node) {
-        return (node.relationships ? true : false)
+        if (node.relationships)
+            return true
+        return false
     },
 
-    getRelationshipTarget(r)
-    {
-        if(r.destinationNode)
+    getRelationshipTarget(r) {
+        if (r.destinationNode)
             return r.destinationNode
-        else 
+        else
             return null
     }
 }

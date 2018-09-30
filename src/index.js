@@ -1,7 +1,6 @@
 import { Pt, Group, Circle, Rectangle, Util, World, Particle, UIButton, UI } from 'pts';
 import PtsCanvas from "./PtsCanvas.jsx";
 import Converter from "./Converter.js"
-import data from "./mockIPLDData.js"
 import React, { Component } from 'react'
 import NodeUtil from './NodeUtil'
 
@@ -22,7 +21,6 @@ export default class IPLDRender extends PtsCanvas {
         this.selectedRelationship = undefined
 
         this.selectedNodeHistory = []
-        this._nodes = Converter.dagsToRender(data)
 
         document.onkeydown = this.checkKey.bind(this);
 
@@ -63,20 +61,20 @@ export default class IPLDRender extends PtsCanvas {
         if (NodeUtil.hasLink(n)) {
             let ccid = NodeUtil.getLink(n)
             if (!this.ptExists(ccid)) {
-                this.pts[ccid] = this.getRandomPt(this.space.center)
+                this.pts[ccid] = this.addNewPtParticle()
             }
             //node pt is the same as the content pt
             this.pts[ncid] = this.pts[ccid]
         }
         else {
-            this.pts[ncid] = this.getRandomPt(this.space.center)
+            this.pts[ncid] = this.addNewPtParticle()
         }
         //relationships
         if (NodeUtil.hasRelationships(n)) {
             for (let r of n.relationships) {
                 let tcid = NodeUtil.getRelationshipTarget(r)
                 if (!this.ptExists(tcid)) {
-                    this.pts[tcid] = this.getRandomPt(this.space.center)
+                    this.pts[tcid] = this.addNewPtParticle()
                 }
             }
         }
@@ -86,7 +84,7 @@ export default class IPLDRender extends PtsCanvas {
         return (this.pts[cid] ? true : false)
     }
 
-    create() {
+    /*create() {
         this.world = new World(this.space.innerBound, 1, new Pt(0, 0));
         let i = 0
         let group = []
@@ -104,7 +102,7 @@ export default class IPLDRender extends PtsCanvas {
             this.addInteraction(n)
         }
         this.allPts = new Group(group)
-    }
+    }*/
 
     addInteraction(n) {
         n.btn = UIButton.fromCircle(Circle.fromCenter(n.pt, this.getNodeRadius()))
@@ -134,7 +132,8 @@ export default class IPLDRender extends PtsCanvas {
     }
 
     start(space, bound) {
-        this.create();
+        this.world = new World(this.space.innerBound, 1, new Pt(0, 0));
+       // this.create();
     }
 
     resize() {
@@ -155,6 +154,15 @@ export default class IPLDRender extends PtsCanvas {
         let pt = new Pt([Util.randomInt(extend), Util.randomInt(extend)])
         pt.add(center).subtract(extend * 0.5)
         return pt
+    }
+
+
+    addNewPtParticle()
+    {
+        let initPt = this.getRandomPt(this.space.center)
+        let particle  = new Particle(initPt).size(this.getNodeRadius() + this.getNodeArm());
+        this.world.add(particle)
+        return particle
     }
 
     addForces(nodes, n) {
@@ -178,15 +186,18 @@ export default class IPLDRender extends PtsCanvas {
         if (n.relationships) {
             for (let r of n.relationships) {
                 //targetPt
-                let tPt = this.pts[NodeUtil.getRelationshipTarget(r)]
+                let tpt = this.pts[NodeUtil.getRelationshipTarget(r)]
                 //the attraction force will be proporcional to its distance
-                let distance = n.pt.$subtract(tPt)
+                let ccid = NodeUtil.getLink(n)
+                let cpt = this.pts[ccid]
+
                 let forceAmount = 2
+                let distance = cpt.$subtract(tpt)
                 //negative so it attracts
                 let force = distance.$multiply(-1 * forceAmount)
-                n.pt.addForce(force)
+                cpt.addForce(force)
                 //oposite force is added to the destination pt
-                tPt.addForce(force.multiply(-1))
+                tpt.addForce(force.multiply(-1))
             }
         }
     }
@@ -322,10 +333,10 @@ export default class IPLDRender extends PtsCanvas {
     }
 
     drawNode(n) {
-        //this.addForces2(n)
+        this.addForces2(n)
         this.drawRelationships2(n)
         this.drawContentBubble(n)
-        this.drawNodeBubble(n)
+        this.drawNodeBubble(this.pts[NodeUtil.getLink(n)])
     }
 
     action(type, px, py) {

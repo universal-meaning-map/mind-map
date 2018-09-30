@@ -10,8 +10,8 @@ export default class IPLDRender extends PtsCanvas {
         super(props);
         this.nodeRadius = 50
         this.nodeArm = 50
-        this.world = null
 
+        this.world = null
         this.nodes = {}
         this.pts = {}
 
@@ -19,7 +19,6 @@ export default class IPLDRender extends PtsCanvas {
 
         this.selectedCID = null
         this.selectedRelationship = undefined
-
         this.selectedNodeHistory = []
 
         document.onkeydown = this.checkKey.bind(this);
@@ -133,7 +132,6 @@ export default class IPLDRender extends PtsCanvas {
 
     start(space, bound) {
         this.world = new World(this.space.innerBound, 1, new Pt(0, 0));
-       // this.create();
     }
 
     resize() {
@@ -157,30 +155,12 @@ export default class IPLDRender extends PtsCanvas {
     }
 
 
-    addNewPtParticle()
-    {
+    addNewPtParticle() {
         let initPt = this.getRandomPt(this.space.center)
-        let particle  = new Particle(initPt).size(this.getNodeRadius() + this.getNodeArm());
+        let particle = new Particle(initPt).size(this.getNodeRadius() + this.getNodeArm());
         this.world.add(particle)
         return particle
     }
-
-    /*addForces(nodes, n) {
-        if (n.relationships) {
-            for (let r of n.relationships) {
-
-                let destPt = nodes[r.destinationNode].pt
-                //the attraction force will be proporcional to its distance
-                let distance = n.pt.$subtract(destPt)
-                let forceAmount = 2
-                //negative so it attracts
-                let force = distance.$multiply(-1 * forceAmount)
-                n.pt.addForce(force)
-                //oposite force is added to the destination pt
-                destPt.addForce(force.multiply(-1))
-            }
-        }
-    }*/
 
     addForces(n) {
         if (n.relationships) {
@@ -202,26 +182,10 @@ export default class IPLDRender extends PtsCanvas {
         }
     }
 
-    /*drawRelationships(nodes, n) {
-        let lineColor = "#999"
-        if (n.relationships) {
-            for (let r of n.relationships) {
-                let destPt = nodes[r.destinationNode].pt
-                let line = new Group(n.pt, destPt)
-                this.form.strokeOnly(lineColor, 1)
-                this.form.line(line)
-
-                let arrow = this.getArrow(n.pt, destPt, -this.getNodeRadius())
-                this.form.fillOnly('#f36', 1)
-                this.form.polygon(arrow)
-            }
-        }
-    }*/
-
     drawRelationships(n) {
         let lineColor = "#999"
         if (NodeUtil.hasLink(n) && NodeUtil.hasRelationships(n)) {
-            for (let r of n.relationships) {                
+            for (let r of n.relationships) {
                 let npt = this.pts[NodeUtil.getLink(n)]
                 let tpt = this.pts[NodeUtil.getRelationshipTarget(r)]
                 let line = new Group(npt, tpt)
@@ -309,43 +273,14 @@ export default class IPLDRender extends PtsCanvas {
 
     animate(time, ftime) {
         this.world.update(ftime)
-
-        /*for (let cid in this._nodes) {
-            if (!this._nodes.hasOwnProperty(cid))
-                continue
-
-            let n = this._nodes[cid]
-            this.updateBtn(n)
-            this.addForces(this._nodes, n)
-            this.drawRelationships(this._nodes, n)
-            this.drawBubble(n)
-            this.drawText(n)
-        }
-        this.highlight(this._nodes[this.selectedCID])*/
-
-        this.toAll(this.nodes,this.addForces.bind(this))
-        this.toAll(this.nodes,this.drawRelationships.bind(this))
-        this.toAll(this.nodes,this.drawNodeBubble.bind(this))
-        this.toAll(this.pts,this.drawContentBubble.bind(this))
-        this.toAll(this.nodes,this.drawText.bind(this))
-
-/*
-        for (let ncid in this.nodes) {
-            if (!this.nodes.hasOwnProperty(ncid))
-                continue
-            this.drawNode(this.nodes[ncid])
-        }
-
-        for (let cid in this.pts) {
-            if (!this.pts.hasOwnProperty(cid))
-                continue
-            this.drawContentBubble(this.pts[cid])
-        }
-*/
+        this.toAll(this.nodes, this.addForces.bind(this))
+        this.toAll(this.nodes, this.drawRelationships.bind(this))
+        this.toAll(this.nodes, this.drawNodeBubble.bind(this))
+        this.toAll(this.pts, this.drawContentBubble.bind(this))
+        this.toAll(this.nodes, this.drawText.bind(this))
     }
 
-    toAll(obj,fnc)
-    {
+    toAll(obj, fnc) {
         for (let cid in obj) {
             if (!obj.hasOwnProperty(cid))
                 continue
@@ -353,13 +288,6 @@ export default class IPLDRender extends PtsCanvas {
             fnc(obj[cid])
         }
     }
-
-    /*drawNode(n) {
-        this.addForces(n)
-        this.drawRelationships(n)
-        this.drawNodeBubble(this.pts[NodeUtil.getLink(n)])
-        this.drawText(n)
-    }*/
 
     action(type, px, py) {
         UI.track(this.btns, type, new Pt(px, py));

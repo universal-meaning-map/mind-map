@@ -12,13 +12,13 @@ export default class NodeType extends IpldType {
             this._origin = new LinkType(obj.origin)
             this._relations = []
             
-        if(Array.isArray(obj.relations)
-        
-        for (let r of obj.relations) {
-            console.log(r)
-            _relations.push(new RelationType(r))
-        }
-        
+        if(obj.relations)
+        {
+            for (let r of obj.relations) {
+                console.log(r)
+                this._relations.push(new RelationType(r))
+            }
+        }        
     }
 
     get origin() {

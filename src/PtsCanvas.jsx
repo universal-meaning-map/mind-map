@@ -55,9 +55,13 @@ export default class PtsCanvas extends React.Component {
     });
 
     this.form = this.space.getForm();
-
     this.space.add(this);
     this.space.bindMouse().bindTouch();
+    this.onCreated()
+  }
+
+  onCreated(){
+    //overwritten by sub class
   }
 
   onPinchStart(e) {

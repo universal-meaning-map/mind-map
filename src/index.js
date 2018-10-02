@@ -1,11 +1,12 @@
 import { Pt, Group, Circle, Rectangle, Util, World, Particle, UIButton, UI } from 'pts';
-import PtsCanvas from "./PtsCanvas.jsx";
+import PtsCanvas from "./PtsCanvas.jsx"
 import Converter from "./Converter.js"
 import React, { Component } from 'react'
-import NodeUtil from './NodeUtil'
-import NodeType from './NodeType';
+import NodeType from './NodeType'
+import Shape from './Shape'
+import Paint from './Paint'
 
-export default class IPLDRender extends PtsCanvas {
+export default class IPLDReodeder extends PtsCanvas {
 
     constructor(props) {
         super(props);
@@ -20,10 +21,17 @@ export default class IPLDRender extends PtsCanvas {
         this.selectedId = null
         this.selectedRelation = undefined
         this.selectedIdHistory = []
-
+        this.paint = {}
+        
         document.onkeydown = this.checkKey.bind(this);
-
+        
         this.setIpfs()
+    }
+    
+    onCreated()
+    {
+        this.paint = new Paint(this.form)
+
     }
 
     setIpfs() {
@@ -115,14 +123,8 @@ export default class IPLDRender extends PtsCanvas {
         //this.create();
     }
 
-    getRandomPt(center, extend = 100) {
-        let pt = new Pt([Util.randomInt(extend), Util.randomInt(extend)])
-        pt.add(center).subtract(extend * 0.5)
-        return pt
-    }
-
     addNewPtParticle() {
-        let initPt = this.getRandomPt(this.space.center)
+        let initPt = Shape.randomPt(this.space.center)
         let particle = new Particle(initPt).size(this.getNodeRadius() + this.getNodeArm());
         this.world.add(particle)
         return particle
@@ -135,7 +137,7 @@ export default class IPLDRender extends PtsCanvas {
             let tpt = this.pts[r.target.link]
             //the attraction force will be proporcional to its distance
             let oid = n.origin.link
-            if (!this.ptExists(oid))
+            if (!this.pts[oid])
                 return
 
             let opt = this.pts[oid]
@@ -148,7 +150,6 @@ export default class IPLDRender extends PtsCanvas {
             //oposite force is added to the destination pt
             tpt.addForce(force.multiply(-1))
         }
-
     }
 
     drawRelations(n) {
@@ -156,29 +157,8 @@ export default class IPLDRender extends PtsCanvas {
         for (let r of n.relations) {
             let opt = this.pts[n.origin.link]
             let tpt = this.pts[r.target.link]
-            let line = new Group(opt, tpt)
-            this.form.strokeOnly(lineColor, 1)
-            this.form.line(line)
-
-            let arrow = this.getArrow(opt, tpt, -this.getNodeRadius())
-            this.form.fillOnly('#f36', 1)
-            this.form.polygon(arrow)
+            this.paint.arrow(opt, tpt, this.getNodeRadius(), lineColor)
         }
-    }
-
-    getArrow(originPt, destPt, offset = 1, length = 10, sharpness = 0.3) {
-        let pointer = destPt.$subtract(originPt)
-        let offsetPt = destPt
-        if (pointer.magnitude()) {
-            pointer.unit()
-            offsetPt = pointer.$unit().multiply(offset).add(destPt)
-        }
-        pointer.multiply(length)
-        let sideVertex1 = new Pt(pointer.y, -pointer.x).multiply(sharpness)
-        let sideVertex2 = new Pt(-pointer.y, pointer.x).multiply(sharpness)
-        let arrow = new Group(pointer, sideVertex1, sideVertex2)
-        arrow.moveTo(offsetPt)
-        return arrow
     }
 
     getNodeRadius() {
@@ -190,30 +170,18 @@ export default class IPLDRender extends PtsCanvas {
     }
 
     drawText(n) {
-        //font style
-        this.form.font(12).alignText("center");
-        this.form.fill("#333")
-        //text box
         let oid = n.origin.link
         let opt = this.pts[oid]
-        let tb = Rectangle.fromCenter(opt, this.getNodeRadius() * 2)
-        this.form.textBox(tb, oid, "middle", "…")
+        this.paint.text(oid,opt,this.getNodeRadius()*2)
     }
 
     drawContentBubble(pt) {
-        this.form.fillOnly("#eee")
-        this.form.point(pt, this.getNodeRadius(), 'circle')
+        this.paint.bubble(pt, this.getNodeRadius(), 'eee')
     }
 
     drawNodeBubble(n) {
-        let pt = this.pts[NodeUtil.getLink(n)]
-        this.form.fillOnly("#fee")
-        this.form.point(pt, this.getNodeRadius() * 1.2, 'circle')
-    }
-
-    drawHighlightBubble(pt, color = "#f36") {
-        this.form.strokeOnly(color)
-        this.form.point(pt, this.getNodeRadius(), 'circle')
+        let pt = this.pts[n.origin.link]
+        this.paint.bubble(pt, this.getNodeRadius() * 1.2, '#fee')
     }
 
     drawHighlightLine(pt1, pt2, color = "#f36") {
@@ -226,8 +194,8 @@ export default class IPLDRender extends PtsCanvas {
             return
         let npt = this.pts[this.selectedId]
         let n = this.nodes[this.selectedId]
-        this.drawHighlightBubble(npt)
-        return
+        this.paint.bubbleOutline(npt, this.nodeRadius)
+        /*
         if (!this.selectedRelation)
             return
 
@@ -237,10 +205,11 @@ export default class IPLDRender extends PtsCanvas {
                 this.drawHighlightLine(npt, tpt)
                 this.drawHighlightBubble(npt)
             }
-        }
+        }*/
     }
 
     animate(time, ftime) {
+       // console.log(this.form)
         this.world.update(ftime)
         this.toAll(this.nodes, this.addForces.bind(this))
         this.toAll(this.nodes, this.drawRelations.bind(this))
@@ -254,7 +223,6 @@ export default class IPLDRender extends PtsCanvas {
         for (let cid in obj) {
             if (!obj.hasOwnProperty(cid))
                 continue
-            fnc.bind(this)
             fnc(obj[cid])
         }
     }
@@ -289,7 +257,7 @@ export default class IPLDRender extends PtsCanvas {
         let currentN = this._nodes[this.selectedId]
         if (!currentN)
             return
-            
+
         let currentIndex = this.getRelationIndex(currentN, this.selectedRelation)
         if (currentIndex === undefined) {
             if (currentN.relationships)

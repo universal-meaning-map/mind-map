@@ -1,5 +1,15 @@
 import React, { Component } from 'react'
 import IPLDRender from 'ipld-mindmap-ptsjs-render'
+//import './IpfsController'
+import IPFS from 'ipfs'
+
+const cids = [
+    //'zdpuAvYJaZxBjTV4WH3irwThm5t2a7yTccoN9cWpDmtV4CiNz',//not using link properly
+    //'zdpuAyvmoJWTiVrCv1aCHV5xUZ1fxUf4XLkrprKPMMFCNKfj3',
+    //'zdpuAxh9rv4ZTUFfogJh7ysjBW7F5iKEyPZ3somVv2B3UvtkS'
+    'zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC'
+]
+
 
 export default class App extends Component {
     constructor(props) {
@@ -10,6 +20,8 @@ export default class App extends Component {
             currentZoom: 1,
             lastZoom: 1
         }
+        
+        this.ipfs = new IPFS()
     }
 
     handleChange(event) {
@@ -23,6 +35,7 @@ export default class App extends Component {
     onPinchStart(e) {
         this.setState({ lastZoom: this.state.currentZoom })
     }
+
     onPinchMove(e) {
         let zoomDelta = e.zoom
         let currentZoom = this.state.lastZoom * zoomDelta
@@ -38,6 +51,8 @@ export default class App extends Component {
                 onClick={this.handleClick.bind(this)}>
 
                 <div><IPLDRender
+                    ipfs = {this.ipfs}
+                    cids = {cids}
                     name="IPLDRender"
                     background="#fff"
                     onPinchStart={this.onPinchStart.bind(this)}

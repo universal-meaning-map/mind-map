@@ -11,7 +11,7 @@ export default class LinkType {
     }
 
     get link() {
-        return _link
+        return this._link
     }
 
     static isLink(obj) {

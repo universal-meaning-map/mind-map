@@ -75,14 +75,16 @@ class RelationType {
 
         if (obj.type)
             this._type = obj.type
+        else
+            this._type = null
     }
 
     get target() {
-        return obj._target
+        return this._target
     }
 
     get type() {
-        return obj._type
+        return this._type
     }
 
     static isRelation(obj) {
@@ -107,8 +109,12 @@ class LinkWrapType {
         this._wrap = new LinkType(obj.link)
     }
 
-    get wrap() {
-        return _wrap
+    get link() {
+        return this._wrap.link
+    }
+
+    get wrap(){
+        return this._wrap
     }
 
     static isLinkWrap(obj, logError = true) {

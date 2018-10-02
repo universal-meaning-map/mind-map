@@ -3,6 +3,8 @@ import PtsCanvas from "./PtsCanvas.jsx";
 import Converter from "./Converter.js"
 import React, { Component } from 'react'
 import NodeUtil from './NodeUtil'
+import NodeType from './NodeType';
+
 
 export default class IPLDRender extends PtsCanvas {
 
@@ -48,8 +50,22 @@ export default class IPLDRender extends PtsCanvas {
             }
 
             let n = result.value
-            this.nodes[cid] = n
-            this.setNodePts(n, cid)
+            
+            let node = new NodeType(n)
+            console.log('cidnode', node)
+            if(node.origin)
+            {
+                console.log(node.origin)
+                ipfs.dag.get(cid, (error, result) => {
+                    if (error) {
+                        throw (error)
+                    }
+                    console.log('second',result.value)
+                })
+            }
+
+            //this.nodes[cid] = n
+            //this.setNodePts(n, cid)
         })
     }
 
@@ -83,26 +99,6 @@ export default class IPLDRender extends PtsCanvas {
     ptExists(cid) {
         return (this.pts[cid] ? true : false)
     }
-
-    /*create() {
-        this.world = new World(this.space.innerBound, 1, new Pt(0, 0));
-        let i = 0
-        let group = []
-        for (let cid in this._nodes) {
-            if (!this._nodes.hasOwnProperty(cid))
-                continue
-
-            let n = this._nodes[cid]
-            this.setNodePt(n, i)
-            group.push(n.pt)
-            if (i === 0)
-                this.selectNewNode(n.cid)
-            i++
-
-            this.addInteraction(n)
-        }
-        this.allPts = new Group(group)
-    }*/
 
     addInteraction(n) {
         let ncid = NodeUtil.getLink(n)
@@ -171,6 +167,8 @@ export default class IPLDRender extends PtsCanvas {
                 let tpt = this.pts[NodeUtil.getRelationshipTarget(r)]
                 //the attraction force will be proporcional to its distance
                 let ccid = NodeUtil.getLink(n)
+                if(!this.ptExists(ccid))
+                    return
                 let cpt = this.pts[ccid]
 
                 let forceAmount = 2

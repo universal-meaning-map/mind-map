@@ -169,13 +169,20 @@ export default class IPLDReodeder extends PtsCanvas {
         return (this.nodeArm * this.props.zoom)
     }
 
-    drawText(n) {
+    /*drawText(n) {
         let oid = n.origin.link
         let opt = this.pts[oid]
         this.paint.text(oid,opt,this.getNodeRadius()*2)
+    }*/
+
+    paintIdText(opt, oid)
+    {
+        if(this.nodes[oid])
+            return
+        this.paint.text(oid,opt,this.getNodeRadius()*2)
     }
 
-    drawContentBubble(pt) {
+    drawOriginBubble(pt) {
         this.paint.bubble(pt, this.getNodeRadius(), 'eee')
     }
 
@@ -214,8 +221,9 @@ export default class IPLDReodeder extends PtsCanvas {
         this.toAll(this.nodes, this.addForces.bind(this))
         this.toAll(this.nodes, this.drawRelations.bind(this))
         this.toAll(this.nodes, this.drawNodeBubble.bind(this))
-        this.toAll(this.pts, this.drawContentBubble.bind(this))
-        this.toAll(this.nodes, this.drawText.bind(this))
+        this.toAll(this.pts, this.drawOriginBubble.bind(this))
+        //this.toAll(this.nodes, this.drawText.bind(this))
+        this.toAll(this.pts, this.paintIdText.bind(this))
         this.highlight()
     }
 
@@ -223,7 +231,7 @@ export default class IPLDReodeder extends PtsCanvas {
         for (let cid in obj) {
             if (!obj.hasOwnProperty(cid))
                 continue
-            fnc(obj[cid])
+            fnc(obj[cid], cid)
         }
     }
 

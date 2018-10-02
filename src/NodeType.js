@@ -3,26 +3,24 @@ import LinkType from "./LinkType";
 
 export default class NodeType extends IpldType {
     constructor(obj) {
-        console.log('nooode',obj)
         if (!NodeType.isNode(obj))
             throw (new Error('Object is not a valid NodeType'))
-        
-            super(obj)
-            
-            this._origin = new LinkType(obj.origin)
-            this._relations = []
-            
-        if(obj.relations)
-        {
+
+        super(obj)
+
+        this._origin = new LinkType(obj.origin)
+        this._relations = []
+
+        if (obj.relations) {
             for (let r of obj.relations) {
-                console.log(r)
                 this._relations.push(new RelationType(r))
             }
-        }        
+        }
+
     }
 
     get origin() {
-        return this._origin.link
+        return this._origin
     }
 
     get relations() {
@@ -30,7 +28,7 @@ export default class NodeType extends IpldType {
     }
 
     static isNode(obj) {
-        if(!obj)
+        if (!obj)
             return false
 
         if (!obj.origin)
@@ -52,7 +50,6 @@ export default class NodeType extends IpldType {
 
         return true
     }
-
 }
 
 class RelationType {
@@ -75,7 +72,7 @@ class RelationType {
     }
 
     static isRelation(obj) {
-        if(!obj)
+        if (!obj)
             return false
 
         if (!obj.target)
@@ -84,6 +81,24 @@ class RelationType {
         if (!LinkType.isLink(obj.target))
             return false
 
+        return true
+    }
+}
+
+class LinkWrapperType {
+    constructor (obj){
+        if(LinkWrapperType.isLinkWrapper(obj))
+            throw(new Error('Object is no LinkWrapper Type'))
+    }
+
+    static isLinkWrapper(obj)
+    {
+        if(!obj)
+            return false
+        if(!obj.link)
+            return false
+        if(!LinkType.isLink(obj.link))
+            return false
         return true
     }
 }

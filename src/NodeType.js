@@ -8,7 +8,7 @@ export default class NodeType extends IpldType {
 
         super(obj)
 
-        this._origin = new LinkType(obj.origin)
+        this._origin = new LinkWrapType(obj.origin)
         this._relations = []
 
         if (obj.relations) {
@@ -16,7 +16,6 @@ export default class NodeType extends IpldType {
                 this._relations.push(new RelationType(r))
             }
         }
-
     }
 
     get origin() {
@@ -27,24 +26,39 @@ export default class NodeType extends IpldType {
         return this._relations
     }
 
-    static isNode(obj) {
-        if (!obj)
+    static isNode(obj, logError = true) {
+        if (!obj) {
+            if (logError)
+                console.error('Node: !obj')
             return false
+        }
 
-        if (!obj.origin)
+        if (!obj.origin) {
+            if (logError)
+                console.error('Node: !obj.origin')
             return false
+        }
 
-        if (!LinkType.isLink(obj.origin))
+        if (!LinkWrapType.isLinkWrap(obj.origin)) {
+            if (logError)
+                console.error('Node: !LinkWrapType.isLinkWrap(obj.origin)')
             return false
+        }
 
         //it may not have relations but if they do they must be right
         if (obj.relations) {
-            if (!Array.isArray(obj.relations))
+            if (!Array.isArray(obj.relations)) {
+                if (logError)
+                    console.error('Node: !Array.isArray(obj.relations)')
                 return false
+            }
 
             for (let r of obj.relations) {
-                if (!RelationType.isRelation(r))
+                if (!RelationType.isRelation(r)) {
+                    if (logError)
+                        console.error('!RelationType.isRelation(r)')
                     return false
+                }
             }
         }
 
@@ -57,7 +71,7 @@ class RelationType {
         if (!RelationType.isRelation(obj))
             throw (new Error('Object is not a valid RelationType'))
 
-        this._target = obj.target
+        this._target = new LinkWrapType(obj.target)
 
         if (obj.type)
             this._type = obj.type
@@ -78,27 +92,46 @@ class RelationType {
         if (!obj.target)
             return false
 
-        if (!LinkType.isLink(obj.target))
+        if (!LinkWrapType.isLinkWrap(obj.target))
             return false
 
         return true
     }
 }
 
-class LinkWrapperType {
-    constructor (obj){
-        if(LinkWrapperType.isLinkWrapper(obj))
-            throw(new Error('Object is no LinkWrapper Type'))
+class LinkWrapType {
+    constructor(obj) {
+        if (!LinkWrapType.isLinkWrap(obj))
+            throw (new Error('Object is no LinkWrap Type'))
+
+        this._wrap = new LinkType(obj.link)
     }
 
-    static isLinkWrapper(obj)
-    {
-        if(!obj)
+    get wrap() {
+        return _wrap
+    }
+
+    static isLinkWrap(obj, logError = true) {
+        if (!obj) {
+            if (logError)
+                console.error('LinkWrapType: !obj', obj)
+
             return false
-        if(!obj.link)
+        }
+        
+        if (!obj.link) {
+            if (logError)
+                console.error('LinkWrapType: !obj.link', obj)
+
             return false
-        if(!LinkType.isLink(obj.link))
+        }
+
+        if (!LinkType.isLink(obj.link)) {
+            if (logError)
+                console.error('LinkWrapType: !LinkType.isLink(obj.link)', obj)
             return false
+        }
+
         return true
     }
 }

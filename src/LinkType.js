@@ -2,6 +2,7 @@ const CID = require('cids')
 const CIDTool = require('cid-tool')
 
 export default class LinkType {
+    
     constructor(obj) {
         if (!LinkType.isLink(obj))
             throw (new Error('Object is not a valid link', obj))

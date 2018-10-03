@@ -12,6 +12,14 @@ export default class PtsCanvas extends React.Component {
     this.canvRef = React.createRef();
     this.space = null;
     this.form = null;
+    this.pressingTimeout = null
+    this.state = {
+      isPressing: false,
+      isLongPress: false,
+      pressDelay: 100,
+      touchStartTimestamp: 0
+    }
+
   }
 
   componentDidMount() {
@@ -57,9 +65,10 @@ export default class PtsCanvas extends React.Component {
     this.form = this.space.getForm();
     this.space.add(this);
     this.space.bindMouse().bindTouch();
+    this.onPressTimeReached = this.onPressTimeReached.bind(this)
   }
 
-  onCanvasReady(){
+  onCanvasReady() {
     //overwritten by sub class
   }
 
@@ -78,9 +87,37 @@ export default class PtsCanvas extends React.Component {
       this.props.onPinchEnd(e)
   }
 
-  onPress(e){
-    if(this.props.onPress)
-      this.props.onPress(e, this.space.pointer)
+  onTouchStart(e) {
+    if (this.pressingTimeout)
+      clearTimeout(this.pressingTimeout)
+    this.pressingTimeout = setTimeout(this.onPressTimeReached, this.state.pressDelay)
+    // this.setState({ touchStartTimestamp: Date.now() })
+    if (this.props.onPressStart)
+      this.props.onPressStart(this.space.pointer)
+
+    this.setState({ isPressing: true })
+  }
+
+  onPressTimeReached() {
+    if (this.state.isPressing)
+      this.onLongPressStart()
+  }
+
+  onLongPressStart() {
+    if (this.props.onLongPressStart)
+      this.props.onLongPressStart(this.space.pointer)
+    this.setState({ isLongPress: true })
+  }
+
+  onTouchEnd(e) {
+    if (this.props.onPressEnd)
+      this.props.onPressEnd(this.space.pointer)
+
+    if (this.state.isLongPress) {
+      if (this.props.onLongPressEnd)
+        this.props.onLongPressEnd()
+    }
+    this.setState({ isPressing: false, isLongPress: false })
   }
 
   render() {
@@ -89,16 +126,21 @@ export default class PtsCanvas extends React.Component {
       <TapAndPinchable
         style={{ touchAction: 'none' }}
         stopPropagation={false}
-        preventDefault = {false}
+        preventDefault={false}
         onPinchMove={this.onPinchMove.bind(this)}
         onPinchStart={this.onPinchStart.bind(this)}
         onPinchEnd={this.onPinchEnd.bind(this)}
-        onPress={this.onPress.bind(this).bind('contextmenu', function(e) {return false})}
-        pressDelay={400}>
+        //onPress={this.onPress.bind(this).bind('contextmenu', function (e) { return false })}
+        onTouchStart={this.onTouchStart.bind(this)}
+        onTouchEnd={this.onTouchEnd.bind(this)}
+        onMouseDown={this.onTouchStart.bind(this)}
+        onMouseUp={this.onTouchEnd.bind(this)}
+
+        pressDelay={50}>
         <div className={this.props.name || ""}>
           <canvas
             height={800}
-            onContextMenu = { (e)=>{e.preventDefault()}}
+            onContextMenu={(e) => { e.preventDefault() }}
             ref={c => (this.canvRef = c)}></canvas>
         </div>
       </TapAndPinchable>

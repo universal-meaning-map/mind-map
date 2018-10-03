@@ -3,6 +3,7 @@ import IPLDRender from 'ipld-mindmap-ptsjs-render'
 //import './IpfsController'
 import IPFS from 'ipfs'
 import { toHexString } from 'multihashes';
+import InvisibleInput from 'ipld-mindmap-ptsjs-render/example/src/InvisibleInput';
 
 const cids = [
     //'zdpuAvYJaZxBjTV4WH3irwThm5t2a7yTccoN9cWpDmtV4CiNz',//not using link properly
@@ -20,12 +21,11 @@ export default class App extends Component {
             pauseAnimation: false,
             currentZoom: 1,
             lastZoom: 1,
-            borningNode:{text:'Unga bunga'}
+            borningNode: { text: 'Unga bunga' },
+            isBorning: false
         }
-        
+
         this.ipfs = new IPFS()
-
-
     }
 
     handleChange(event) {
@@ -46,15 +46,49 @@ export default class App extends Component {
         this.setState({ currentZoom: currentZoom })
     }
 
-    onPress(e, mousePosition){
+    onLongPressStart(mousePosition) {
+        console.log('press')
         let borningNode = {
-            text:'Unga bunga 2',
-            pt:mousePosition
+            text: this.state.borningNode.text,
+            pt: mousePosition
         }
-        this.setState({borningNode:borningNode})
+        this.setState({
+            borningNode: borningNode
+        })
+    }
+
+    onPressStart(mousePosition) {
+        console.log('start')
+        this.setState({ hasFocus: false })
+    }
+
+    onPressEnd(mousePosition) {
+        console.log('end')
+        this.setState({ hasFocus: true })
+    }
+
+    onInputChange(value) {
+        let borningNode = {
+            text: value,
+            pt: this.state.borningNode.pt
+        }
+
+        this.setState({ borningNode: borningNode })
+    }
+
+    getInvisibleInput() {
+        return <InvisibleInput
+            hasFocus={this.state.hasFocus}
+            onChange={this.onInputChange.bind(this)}
+            text={this.state.borningNode.text}
+            hide />
     }
 
     render() {
+        let invisibleInput = (<div/>)
+        if(this.state.hasFocus)
+            invisibleInput = this.getInvisibleInput()
+
         return (
 
             <div
@@ -63,17 +97,22 @@ export default class App extends Component {
                 onClick={this.handleClick.bind(this)}>
 
                 <div><IPLDRender
-                    ipfs = {this.ipfs}
-                    cids = {cids}
+                    ipfs={this.ipfs}
+                    cids={cids}
                     name="IPLDRender"
                     background="#fff"
                     onPinchStart={this.onPinchStart.bind(this)}
                     onPinchMove={this.onPinchMove.bind(this)}
-                    onPress={this.onPress.bind(this)}
+                    onLongPressStart={this.onLongPressStart.bind(this)}
+                    onPressStart={this.onPressStart.bind(this)}
+                    onPressEnd={this.onPressEnd.bind(this)}
                     borningNode={this.state.borningNode}
                     zoom={this.state.currentZoom}
                     loop={true} />
                 </div>
+
+                {invisibleInput}
+
 
             </div>
         );

@@ -19,10 +19,13 @@ export default class App extends Component {
         this.state = {
             pauseAnimation: false,
             currentZoom: 1,
-            lastZoom: 1
+            lastZoom: 1,
+            borningNode:{text:'Unga bunga'}
         }
         
         this.ipfs = new IPFS()
+
+
     }
 
     handleChange(event) {
@@ -43,8 +46,12 @@ export default class App extends Component {
         this.setState({ currentZoom: currentZoom })
     }
 
-    onPress(e){
-        console.log("pressing")
+    onPress(e, mousePosition){
+        let borningNode = {
+            text:'Unga bunga 2',
+            pt:mousePosition
+        }
+        this.setState({borningNode:borningNode})
     }
 
     render() {
@@ -62,7 +69,8 @@ export default class App extends Component {
                     background="#fff"
                     onPinchStart={this.onPinchStart.bind(this)}
                     onPinchMove={this.onPinchMove.bind(this)}
-                    onPress={this.onPress.bind(toHexString)}
+                    onPress={this.onPress.bind(this)}
+                    borningNode={this.state.borningNode}
                     zoom={this.state.currentZoom}
                     loop={true} />
                 </div>

@@ -80,7 +80,7 @@ export default class PtsCanvas extends React.Component {
 
   onPress(e){
     if(this.props.onPress)
-      this.props.onPress(e)
+      this.props.onPress(e, this.space.pointer)
   }
 
   render() {

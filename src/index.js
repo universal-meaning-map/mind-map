@@ -18,6 +18,8 @@ export default class IPLDReodeder extends PtsCanvas {
         this.pts = {}
         this.btns = []
 
+        this.borningNode = new Pt(0, 0)
+
         this.selectedId = null
         this.selectedRelation = undefined
         this.selectedIdHistory = []
@@ -32,7 +34,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
     onCanvasReady() {
         this.paint = new Paint(this.form)
-        
+
     }
 
     addOrigin(data, name, pt) {
@@ -44,10 +46,6 @@ export default class IPLDReodeder extends PtsCanvas {
             // should print:
             //   zdpuAzZSktMhXjJu5zneSFrg9ue5rLXKAMC9KLigqhQ7Q7vRm
         })
-    }
-
-    onBackgroundClick(e){
-        console.log("unga",e)
     }
 
     setIpfs() {
@@ -242,6 +240,7 @@ export default class IPLDReodeder extends PtsCanvas {
         //this.toAll(this.nodes, this.drawText.bind(this))
         this.toAll(this.pts, this.paintIdText.bind(this))
         this.highlight()
+        this.paintBorningNode()
     }
 
     toAll(obj, fnc) {
@@ -252,8 +251,17 @@ export default class IPLDReodeder extends PtsCanvas {
         }
     }
 
+    paintBorningNode() {
+        if (this.props.borningNode) {
+            if (this.props.borningNode.text) {
+                this.paint.bubble(this.props.borningNode.pt, this.getNodeRadius(), '#bfb')
+                this.paint.text(this.props.borningNode.text, this.props.borningNode.pt, this.getNodeRadius() * 2)
+            }
+        }
+    }
+
     action(type, px, py) {
-       // console.log(type,px,py)
+        // console.log(type,px,py)
         UI.track(this.btns, type, new Pt(px, py));
     }
 

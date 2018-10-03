@@ -81,8 +81,8 @@ export default class App extends Component {
     }
 
     render() {
-        let invisibleInput = (<div/>)
-        if(this.state.hasFocus)
+        let invisibleInput = (<div />)
+        if (this.state.hasFocus)
             invisibleInput = this.getInvisibleInput()
 
         return (
@@ -92,6 +92,7 @@ export default class App extends Component {
                 style={{ touchAction: 'none' }}
                 onClick={this.handleClick.bind(this)}>
 
+                {invisibleInput}
                 <div><IPLDRender
                     ipfs={this.ipfs}
                     cids={cids}
@@ -106,10 +107,6 @@ export default class App extends Component {
                     zoom={this.state.currentZoom}
                     loop={true} />
                 </div>
-
-                {invisibleInput}
-
-
             </div>
         );
     }

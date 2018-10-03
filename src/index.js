@@ -22,16 +22,25 @@ export default class IPLDReodeder extends PtsCanvas {
         this.selectedRelation = undefined
         this.selectedIdHistory = []
         this.paint = {}
-        
+
         document.onkeydown = this.checkKey.bind(this);
-        
+
         this.setIpfs()
     }
-    
-    onCreated()
-    {
-        this.paint = new Paint(this.form)
 
+    onCreated() {
+        this.paint = new Paint(this.form)
+    }
+
+    addOrigin(data, name, pt) {
+        this.props.ipfs.dag.put(data, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (err, cid) => {
+            if (err) {
+                throw err
+            }
+            console.log(cid.toBaseEncodedString())
+            // should print:
+            //   zdpuAzZSktMhXjJu5zneSFrg9ue5rLXKAMC9KLigqhQ7Q7vRm
+        })
     }
 
     setIpfs() {
@@ -175,11 +184,10 @@ export default class IPLDReodeder extends PtsCanvas {
         this.paint.text(oid,opt,this.getNodeRadius()*2)
     }*/
 
-    paintIdText(opt, oid)
-    {
-        if(this.nodes[oid])
+    paintIdText(opt, oid) {
+        if (this.nodes[oid])
             return
-        this.paint.text(oid,opt,this.getNodeRadius()*2)
+        this.paint.text(oid, opt, this.getNodeRadius() * 2)
     }
 
     drawOriginBubble(pt) {
@@ -216,7 +224,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     animate(time, ftime) {
-       // console.log(this.form)
+        // console.log(this.form)
         this.world.update(ftime)
         this.toAll(this.nodes, this.addForces.bind(this))
         this.toAll(this.nodes, this.drawRelations.bind(this))

@@ -253,9 +253,12 @@ export default class IPLDReodeder extends PtsCanvas {
 
     paintBorningNode() {
         if (this.props.borningNode) {
+            this.paint.bubble(this.props.borningNode.pt, this.getNodeRadius(), '#bfb')
             if (this.props.borningNode.text) {
-                this.paint.bubble(this.props.borningNode.pt, this.getNodeRadius(), '#bfb')
                 this.paint.text(this.props.borningNode.text, this.props.borningNode.pt, this.getNodeRadius() * 2)
+            }
+            else{
+                this.paint.text("what's in your mind?", this.props.borningNode.pt, this.getNodeRadius() * 2, '#666')
             }
         }
     }

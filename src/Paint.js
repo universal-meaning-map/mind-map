@@ -26,10 +26,10 @@ export default class Paint {
         this.form.polygon(arrowPointer)
     }
 
-    text(text, opt, size) {
+    text(text, opt, size, color = "#333") {
         //font style
         this.form.font(12).alignText("center");
-        this.form.fill("#333")
+        this.form.fill(color)
         //text box
         let tb = Rectangle.fromCenter(opt, size)
         this.form.textBox(tb, text, "middle", "…")

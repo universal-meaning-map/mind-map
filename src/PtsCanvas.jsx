@@ -48,7 +48,7 @@ export default class PtsCanvas extends React.Component {
 
 
   _create() {
-    this.space = new CanvasSpace(this.canvRef).setup({
+    this.space = new CanvasSpace(this.canvRef, this.onCanvasReady).setup({
       bgcolor: this.props.background,
       resize: true,
       retina: true
@@ -57,10 +57,9 @@ export default class PtsCanvas extends React.Component {
     this.form = this.space.getForm();
     this.space.add(this);
     this.space.bindMouse().bindTouch();
-    this.onCreated()
   }
 
-  onCreated(){
+  onCanvasReady(){
     //overwritten by sub class
   }
 
@@ -79,17 +78,27 @@ export default class PtsCanvas extends React.Component {
       this.props.onPinchEnd(e)
   }
 
+  onPress(e){
+    if(this.props.onPress)
+      this.props.onPress(e)
+  }
+
   render() {
     return (
 
       <TapAndPinchable
         style={{ touchAction: 'none' }}
         stopPropagation={false}
+        preventDefault = {false}
         onPinchMove={this.onPinchMove.bind(this)}
         onPinchStart={this.onPinchStart.bind(this)}
-        onPinchEnd={this.onPinchEnd.bind(this)}>
+        onPinchEnd={this.onPinchEnd.bind(this)}
+        onPress={this.onPress.bind(this).bind('contextmenu', function(e) {return false})}
+        pressDelay={400}>
         <div className={this.props.name || ""}>
-          <canvas height={800}
+          <canvas
+            height={800}
+            onContextMenu = { (e)=>{e.preventDefault()}}
             ref={c => (this.canvRef = c)}></canvas>
         </div>
       </TapAndPinchable>

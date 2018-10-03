@@ -22,14 +22,17 @@ export default class IPLDReodeder extends PtsCanvas {
         this.selectedRelation = undefined
         this.selectedIdHistory = []
         this.paint = {}
+        this.background = null
 
         document.onkeydown = this.checkKey.bind(this);
+        this.onCanvasReady = this.onCanvasReady.bind(this)
 
         this.setIpfs()
     }
 
-    onCreated() {
+    onCanvasReady() {
         this.paint = new Paint(this.form)
+        
     }
 
     addOrigin(data, name, pt) {
@@ -41,6 +44,10 @@ export default class IPLDReodeder extends PtsCanvas {
             // should print:
             //   zdpuAzZSktMhXjJu5zneSFrg9ue5rLXKAMC9KLigqhQ7Q7vRm
         })
+    }
+
+    onBackgroundClick(e){
+        console.log("unga",e)
     }
 
     setIpfs() {
@@ -226,6 +233,8 @@ export default class IPLDReodeder extends PtsCanvas {
     animate(time, ftime) {
         // console.log(this.form)
         this.world.update(ftime)
+        //this.form.fill('#f00')
+        //this.form.rect(this.background)
         this.toAll(this.nodes, this.addForces.bind(this))
         this.toAll(this.nodes, this.drawRelations.bind(this))
         this.toAll(this.nodes, this.drawNodeBubble.bind(this))
@@ -244,6 +253,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     action(type, px, py) {
+       // console.log(type,px,py)
         UI.track(this.btns, type, new Pt(px, py));
     }
 

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import IPLDRender from 'ipld-mindmap-ptsjs-render'
 //import './IpfsController'
 import IPFS from 'ipfs'
+import { toHexString } from 'multihashes';
 
 const cids = [
     //'zdpuAvYJaZxBjTV4WH3irwThm5t2a7yTccoN9cWpDmtV4CiNz',//not using link properly
@@ -42,6 +43,10 @@ export default class App extends Component {
         this.setState({ currentZoom: currentZoom })
     }
 
+    onPress(e){
+        console.log("pressing")
+    }
+
     render() {
         return (
 
@@ -57,6 +62,7 @@ export default class App extends Component {
                     background="#fff"
                     onPinchStart={this.onPinchStart.bind(this)}
                     onPinchMove={this.onPinchMove.bind(this)}
+                    onPress={this.onPress.bind(toHexString)}
                     zoom={this.state.currentZoom}
                     loop={true} />
                 </div>

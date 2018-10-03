@@ -5,11 +5,11 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "ipfs": "^0.32.3",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "react-scripts": "^1.1.4",
-    "ipld-mindmap-ptsjs-render": "link:.."
+    "react-scripts": "^1.1.4"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -125,8 +125,8 @@ export default class PtsCanvas extends React.Component {
 
       <TapAndPinchable
         style={{ touchAction: 'none' }}
-        stopPropagation={false}
-        preventDefault={false}
+        stopPropagation={true}
+        preventDefault={true}
         onPinchMove={this.onPinchMove.bind(this)}
         onPinchStart={this.onPinchStart.bind(this)}
         onPinchEnd={this.onPinchEnd.bind(this)}

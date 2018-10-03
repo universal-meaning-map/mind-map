@@ -46,24 +46,21 @@ export default class App extends Component {
         this.setState({ currentZoom: currentZoom })
     }
 
+    onPressStart(mousePosition) {
+        this.setState({ hasFocus: false })
+    }
+
     onLongPressStart(mousePosition) {
-        console.log('press')
         let borningNode = {
             text: this.state.borningNode.text,
             pt: mousePosition
         }
         this.setState({
-            borningNode: borningNode
+            borningNode: borningNode,
         })
     }
 
-    onPressStart(mousePosition) {
-        console.log('start')
-        this.setState({ hasFocus: false })
-    }
-
-    onPressEnd(mousePosition) {
-        console.log('end')
+    onLongPressEnd(mousePosition) {
         this.setState({ hasFocus: true })
     }
 
@@ -78,7 +75,6 @@ export default class App extends Component {
 
     getInvisibleInput() {
         return <InvisibleInput
-            hasFocus={this.state.hasFocus}
             onChange={this.onInputChange.bind(this)}
             text={this.state.borningNode.text}
             hide />
@@ -104,8 +100,8 @@ export default class App extends Component {
                     onPinchStart={this.onPinchStart.bind(this)}
                     onPinchMove={this.onPinchMove.bind(this)}
                     onLongPressStart={this.onLongPressStart.bind(this)}
+                    onLongPressEnd={this.onLongPressEnd.bind(this)}
                     onPressStart={this.onPressStart.bind(this)}
-                    onPressEnd={this.onPressEnd.bind(this)}
                     borningNode={this.state.borningNode}
                     zoom={this.state.currentZoom}
                     loop={true} />

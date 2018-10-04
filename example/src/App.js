@@ -52,7 +52,7 @@ export default class App extends Component {
 
     onLongPressStart(mousePosition) {
         let borningNode = {
-            text: this.state.borningNode.text,
+            text: '',
             pt: mousePosition
         }
         this.setState({
@@ -77,7 +77,7 @@ export default class App extends Component {
         return <InvisibleInput
             onChange={this.onInputChange.bind(this)}
             text={this.state.borningNode.text}
-            hide />
+            hide={false} />
     }
 
     render() {

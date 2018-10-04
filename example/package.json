@@ -5,6 +5,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "buffer": "^5.2.1",
     "ipfs": "^0.32.3",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",

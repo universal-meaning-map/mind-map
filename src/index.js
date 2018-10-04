@@ -41,6 +41,10 @@ export default class IPLDReodeder extends PtsCanvas {
         this.setCids(nextProps.cids)
     }
 
+    componentDidUpdate(prevProps) {
+        this.checkPause()
+    }
+
     onCanvasReady() {
         this.paint = new Paint(this.form)
     }
@@ -126,33 +130,6 @@ export default class IPLDReodeder extends PtsCanvas {
         this.burls[oid].addNode(n)
     }
 
-    /*newPt(id){
-        if (!this.pts[id]) {
-            this.pts[id] = this.addNewPtParticle()
-        }
-    }*/
-
-    /*setNodePts(n, nid) {
-        //origin id (origin cid or link)
-        let oid = n.origin.link
-        if (!this.pts[oid]) {
-            this.pts[oid] = this.addNewPtParticle()
-        }
-        //node pt has its own pt wich is the same as the content pt
-        this.pts[nid] = this.pts[oid]
-
-        //interaction to node
-        this.addInteraction(n)
-        
-        //relationships
-        for (let r of n.relations) {
-            let tid = r.target.link
-            if (!this.pts[tid]) {
-                this.pts[tid] = this.addNewPtParticle()
-            }
-        }
-    }*/
-
     addInteraction(n) {
         let oid = n.origin.link
         let pt = this.pts[oid]
@@ -168,9 +145,7 @@ export default class IPLDReodeder extends PtsCanvas {
         this.btns.push(btn)
     }
 
-    componentDidUpdate(prevProps) {
-        this.checkPause()
-    }
+
 
     checkPause() {
         if (this.props.pause) {
@@ -235,18 +210,6 @@ export default class IPLDReodeder extends PtsCanvas {
         return (this.nodeArm * this.props.zoom)
     }
 
-    /*drawText(n) {
-        let oid = n.origin.link
-        let opt = this.pts[oid]
-        this.paint.text(oid,opt,this.getNodeRadius()*2)
-    }*/
-
-    paintIdText(opt, oid) {
-        if (this.nodes[oid])
-            return
-        this.paint.text(oid, opt, this.getNodeRadius() * 2)
-    }
-
     drawBurl(b) {
         if (b.nodes.length) {
             this.paint.bubble(b.pt, this.getNodeRadius() * 1.2, '#ede')
@@ -260,11 +223,6 @@ export default class IPLDReodeder extends PtsCanvas {
             this.paint.text(b.oid, b.pt, this.getNodeRadius() * 2)
         }
 
-    }
-
-    drawNodeBubble(n) {
-        let pt = this.pts[n.origin.link]
-        this.paint.bubble(pt, this.getNodeRadius() * 1.2, '#fee')
     }
 
     drawHighlightLine(pt1, pt2, color = "#f36") {
@@ -292,16 +250,10 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     animate(time, ftime) {
-        // console.log(this.form)
         this.world.update(ftime)
-        //this.form.fill('#f00')
-        //this.form.rect(this.background)
         this.toAll(this.nodes, this.addForces.bind(this))
         this.toAll(this.nodes, this.drawRelations.bind(this))
-        //this.toAll(this.nodes, this.drawNodeBubble.bind(this))
         this.toAll(this.burls, this.drawBurl.bind(this))
-        //this.toAll(this.nodes, this.drawText.bind(this))
-        //this.toAll(this.pts, this.paintIdText.bind(this))
         this.highlight()
         this.paintBorningNode()
     }
@@ -327,7 +279,6 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     action(type, px, py) {
-        // console.log(type,px,py)
         UI.track(this.btns, type, new Pt(px, py));
     }
 

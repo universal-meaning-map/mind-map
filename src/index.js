@@ -33,6 +33,8 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     componentWillReceiveProps(oldProps) {
+        if(JSON.stringify(oldProps.cids) === JSON.stringify(this.props.cids))
+            return
         this.setCids()
     }
 
@@ -57,6 +59,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     setCids() {
+        console.log(this.props.cids)
         for (let cid of this.props.cids) {
             if (!this.pts[cid])
                 this.loadCID(cid)
@@ -67,9 +70,12 @@ export default class IPLDReodeder extends PtsCanvas {
         //nid = node id (node cid or node link)
         ipfs.dag.get(cid, (error, result) => {
             if (error) {
-                throw (error)
-            }
+                console.warn(error)
+                return
+            } 
+
             let data = result.value
+            //NodeTypes is a mindmap node type
             if (NodeType.isNode(data)) {
                 let n = new NodeType(data)
                 this.nodes[n.origin.link] = n
@@ -80,10 +86,21 @@ export default class IPLDReodeder extends PtsCanvas {
                     this.loadCID(tid)
                 }
             }
-            else {
-                console.log(data)
+            else{
+                ipfs.files.cat(cid, (error, file) => {
+                    if(error)
+                    {
+                        console.warn(error)
+                        return
+                    }
+                    console.log('Getting',cid,file.toString('utf-8'))
+                })
             }
+            
+            
         })
+
+  
     }
 
     setNodePts(n, nid) {

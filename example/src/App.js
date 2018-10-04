@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import IPLDRender from 'ipld-mindmap-ptsjs-render'
 //import './IpfsController'
 import IPFS from 'ipfs'
-import { toHexString } from 'multihashes';
 import InvisibleInput from 'ipld-mindmap-ptsjs-render/example/src/InvisibleInput'
 //import Buffer from 'buffer'
 var Buffer = require('buffer/').Buffer
@@ -24,12 +23,17 @@ export default class App extends Component {
     }
 
     addTextOrigin(text) {
-        let b = Buffer.from(text, 'utf8')
-        this.ipfs.files.add(b, (error, result) => {
+
+        let file = {
+            path: 'origin.txt',
+            content: Buffer.from(text, 'utf8')
+        }
+        this.ipfs.files.add(file, (error, result) => {
             if (error)
                 throw (error)
 
             let cid = result[0].hash
+            console.log('New cid', cid)
             this.addNewCID(cid)
 
         })
@@ -91,10 +95,6 @@ export default class App extends Component {
 
     onInputReturn(text) {
         this.addTextOrigin(text)
-        let borningNode = {
-            text: '',
-            pt: this.state.borningNode.pt
-        }
         this.setState({ hasFocus: false })
     }
 

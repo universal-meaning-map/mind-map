@@ -5,6 +5,7 @@ import React, { Component } from 'react'
 import NodeType from './NodeType'
 import Shape from './Shape'
 import Paint from './Paint'
+import Burl from './Burl'
 
 export default class IPLDReodeder extends PtsCanvas {
 
@@ -16,6 +17,7 @@ export default class IPLDReodeder extends PtsCanvas {
         this.world = null
         this.nodes = {}
         this.pts = {}
+        this.burls ={}//a global index of burls cid:{pt,nodes[nid1,nid2],contentPreview}
         this.btns = []
 
         this.borningNode = new Pt(0, 0)
@@ -66,7 +68,9 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     loadCID(cid) {
-        //nid = node id (node cid or node link)
+        //We display the cid right awy
+        this.newBurl(cid)
+        //we try to load its content as a dag
         ipfs.dag.get(cid, (error, result) => {
             if (error) {
                 console.warn(error)
@@ -76,10 +80,12 @@ export default class IPLDReodeder extends PtsCanvas {
             let data = result.value
             //NodeTypes is a mindmap node type
             if (NodeType.isNode(data)) {
+                /*
                 let n = new NodeType(data)
                 this.nodes[n.origin.link] = n
                 this.setNodePts(n, cid)
-
+                */
+                let n = this.newNode(data)
                 let targets = n.targetCids
                 for (let tid of targets) {
                     this.loadCID(tid)
@@ -94,12 +100,45 @@ export default class IPLDReodeder extends PtsCanvas {
                     console.log('Getting', cid, file.toString('utf-8'))
                 })
             }
-
-
         })
     }
 
-    setNodePts(n, nid) {
+    newBurl(oid)
+    {
+        if(this.burls[oid])
+            return
+
+        if (this.pts[oid])
+            return
+
+        let pt = this.addNewPtParticle()
+        this.pts[oid] = pt
+
+        let b = new Burl(oid, pt)
+        this.burls[oid] = b
+
+        return b
+    }
+
+    //assumes it has a burl already
+    newNode(data, nid)
+    {
+        let n = new NodeType(data)
+        let oid = n.origin.link
+        this.newBurl(oid)
+        this.nodes[nid] = n
+        this.burls[oid].addNode(n)
+
+        return n
+    }
+
+    /*newPt(id){
+        if (!this.pts[id]) {
+            this.pts[id] = this.addNewPtParticle()
+        }
+    }*/
+
+    /*setNodePts(n, nid) {
         //origin id (origin cid or link)
         let oid = n.origin.link
         if (!this.pts[oid]) {
@@ -110,6 +149,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
         //interaction to node
         this.addInteraction(n)
+        
         //relationships
         for (let r of n.relations) {
             let tid = r.target.link
@@ -117,7 +157,7 @@ export default class IPLDReodeder extends PtsCanvas {
                 this.pts[tid] = this.addNewPtParticle()
             }
         }
-    }
+    }*/
 
     ptExists(cid) {
         return (this.pts[cid] ? true : false)

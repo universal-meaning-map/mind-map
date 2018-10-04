@@ -24,7 +24,7 @@ export default class InvisibleInput extends React.Component {
         return (
             <div style={{ position: 'relative', zIndex: this.getZIndex(this.props.hide) }}>
                 <div style={{ position: 'absolute' }}>
-                    <input
+                    <textarea
                         ref={(input) => { this.nameInput = input }}
                         value={this.props.text}
                         onChange={this.onChange.bind(this)}

@@ -10,10 +10,13 @@ export default class NodeType extends IpldType {
 
         this._origin = new LinkWrapType(obj.origin)
         this._relations = []
+        this._targetCids = []
 
         if (obj.relations) {
             for (let r of obj.relations) {
-                this._relations.push(new RelationType(r))
+                let relation = new RelationType(r)
+                this._relations.push(relation)
+                this._targetCids.push(relation.target.link)
             }
         }
     }
@@ -26,7 +29,11 @@ export default class NodeType extends IpldType {
         return this._relations
     }
 
-    static isNode(obj, logError = true) {
+    get targetCids() {
+        return this._targetCids
+    }
+
+    static isNode(obj, logError = false) {
         if (!obj) {
             if (logError)
                 console.error('Node: !obj')

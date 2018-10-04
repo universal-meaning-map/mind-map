@@ -32,15 +32,15 @@ export default class IPLDReodeder extends PtsCanvas {
         this.setIpfs()
     }
 
-    componentWillReceiveProps(oldProps) {
-        if(JSON.stringify(oldProps.cids) === JSON.stringify(this.props.cids))
+    componentWillReceiveProps(nextProps) {
+        if (JSON.stringify(nextProps.cids) === JSON.stringify(this.props.cids))
             return
-        this.setCids()
+
+        this.setCids(nextProps.cids)
     }
 
     onCanvasReady() {
         this.paint = new Paint(this.form)
-
     }
 
     setIpfs() {
@@ -55,12 +55,11 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     onIpfsReady() {
-        this.setCids()
+        this.setCids(this.props.cids)
     }
 
-    setCids() {
-        console.log(this.props.cids)
-        for (let cid of this.props.cids) {
+    setCids(cids) {
+        for (let cid of cids) {
             if (!this.pts[cid])
                 this.loadCID(cid)
         }
@@ -72,7 +71,7 @@ export default class IPLDReodeder extends PtsCanvas {
             if (error) {
                 console.warn(error)
                 return
-            } 
+            }
 
             let data = result.value
             //NodeTypes is a mindmap node type
@@ -86,21 +85,18 @@ export default class IPLDReodeder extends PtsCanvas {
                     this.loadCID(tid)
                 }
             }
-            else{
+            else {
                 ipfs.files.cat(cid, (error, file) => {
-                    if(error)
-                    {
-                        console.warn(error)
+                    if (error) {
+                        console.warn("ipfs.files.cat...", cid, error)
                         return
                     }
-                    console.log('Getting',cid,file.toString('utf-8'))
+                    console.log('Getting', cid, file.toString('utf-8'))
                 })
             }
-            
-            
-        })
 
-  
+
+        })
     }
 
     setNodePts(n, nid) {

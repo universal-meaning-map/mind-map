@@ -35,13 +35,13 @@ export default class App extends Component {
             let cid = result[0].hash
             console.log('New cid', cid)
             this.addNewCID(cid)
-
         })
     }
 
     addNewCID(cid) {
         if (this.state.cids.indexOf(cid) === -1) {
             this.setState({ cids: [...this.state.cids, cid] })
+            console.log('added', cid)
         }
         else {
             console.log('cid exists already')
@@ -112,7 +112,6 @@ export default class App extends Component {
             invisibleInput = this.getInvisibleInput()
 
         return (
-
             <div
                 className="App"
                 style={{ touchAction: 'none' }}

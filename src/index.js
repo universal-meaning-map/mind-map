@@ -80,17 +80,7 @@ export default class IPLDReodeder extends PtsCanvas {
             let data = result.value
             //NodeTypes is a mindmap node type
             if (NodeType.isNode(data)) {
-                /*
-                let n = new NodeType(data)
-                this.nodes[n.origin.link] = n
-                this.setNodePts(n, cid)
-                */
                 this.newNode(data)
-                /*let n = 
-                let targets = n.targetCids
-                for (let tid of targets) {
-                    this.loadCID(tid)
-                }*/
             }
             else {
                 ipfs.files.cat(cid, (error, file) => {
@@ -123,15 +113,17 @@ export default class IPLDReodeder extends PtsCanvas {
 
     newNode(data, nid) {
         let n = new NodeType(data)
-        let oid = n.origin.link
-        this.newBurl(oid)
         this.nodes[nid] = n
-        this.burls[oid].addNode(n)
+
+        let oid = n.origin.link
+        this.loadCID(oid)
 
         let targets = n.targetCids
         for (let tid of targets) {
-            this.newBurl(tid)
+            this.loadCID(tid)
         }
+
+        this.burls[oid].addNode(n)
     }
 
     /*newPt(id){

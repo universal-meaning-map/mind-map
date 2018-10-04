@@ -32,20 +32,13 @@ export default class IPLDReodeder extends PtsCanvas {
         this.setIpfs()
     }
 
+    componentWillReceiveProps(oldProps) {
+        this.setCids()
+    }
+
     onCanvasReady() {
         this.paint = new Paint(this.form)
 
-    }
-
-    addOrigin(data, name, pt) {
-        this.props.ipfs.dag.put(data, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (err, cid) => {
-            if (err) {
-                throw err
-            }
-            console.log(cid.toBaseEncodedString())
-            // should print:
-            //   zdpuAzZSktMhXjJu5zneSFrg9ue5rLXKAMC9KLigqhQ7Q7vRm
-        })
     }
 
     setIpfs() {
@@ -59,21 +52,37 @@ export default class IPLDReodeder extends PtsCanvas {
             this.onIpfsReady()
     }
 
-    onIpfsReady(ipfs) {
-        for (let cid of this.props.cids)
-            this.loadOriginCid(cid)
+    onIpfsReady() {
+        this.setCids()
     }
 
-    loadOriginCid(nid) {
+    setCids() {
+        for (let cid of this.props.cids) {
+            if (!this.pts[cid])
+                this.loadCID(cid)
+        }
+    }
+
+    loadCID(cid) {
         //nid = node id (node cid or node link)
-        ipfs.dag.get(nid, (error, result) => {
+        ipfs.dag.get(cid, (error, result) => {
             if (error) {
                 throw (error)
             }
+            let data = result.value
+            if (NodeType.isNode(data)) {
+                let n = new NodeType(data)
+                this.nodes[n.origin.link] = n
+                this.setNodePts(n, cid)
 
-            let n = new NodeType(result.value)
-            this.nodes[n.origin.link] = n
-            this.setNodePts(n, nid)
+                let targets = n.targetCids
+                for (let tid of targets) {
+                    this.loadCID(tid)
+                }
+            }
+            else {
+                console.log(data)
+            }
         })
     }
 
@@ -257,7 +266,7 @@ export default class IPLDReodeder extends PtsCanvas {
             if (this.props.borningNode.text) {
                 this.paint.text(this.props.borningNode.text, this.props.borningNode.pt, this.getNodeRadius() * 2)
             }
-            else{
+            else {
                 this.paint.text("what's in your mind?", this.props.borningNode.pt, this.getNodeRadius() * 2, '#666')
             }
         }

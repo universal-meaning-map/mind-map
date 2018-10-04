@@ -7,10 +7,25 @@ export default class InvisibleInput extends React.Component {
         this.state = {
             text: '...',
         }
+        document.onkeydown = this.checkKey.bind(this);
+    }
+
+    checkKey(e) {
+        e = e || window.event;
+
+        if (e.keyCode === 13 && e.shiftKey) {
+            return
+        }
+
+        if (e.keyCode === 13) {
+            if (this.props.onReturn)
+                this.props.onReturn()
+        }
     }
 
     onChange(e) {
-        this.props.onChange(e.target.value)
+        let newText = e.target.value
+        this.props.onChange(newText)
     }
 
     getZIndex(hide) {

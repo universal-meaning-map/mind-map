@@ -73,9 +73,18 @@ export default class App extends Component {
         this.setState({ borningNode: borningNode })
     }
 
+    onInputReturn(){
+        let borningNode = {
+            text: '',
+            pt: this.state.borningNode.pt
+        }
+        this.setState({ hasFocus: false })
+    }
+
     getInvisibleInput() {
         return <InvisibleInput
             onChange={this.onInputChange.bind(this)}
+            onReturn={this.onInputReturn.bind(this)}
             text={this.state.borningNode.text}
             hide={false} />
     }

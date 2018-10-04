@@ -17,7 +17,7 @@ export default class IPLDReodeder extends PtsCanvas {
         this.world = null
         this.nodes = {}
         this.pts = {}
-        this.burls ={}//a global index of burls cid:{pt,nodes[nid1,nid2],contentPreview}
+        this.burls = {}//a global index of burls cid:{pt,nodes[nid1,nid2],contentPreview}
         this.btns = []
 
         this.borningNode = new Pt(0, 0)
@@ -85,11 +85,12 @@ export default class IPLDReodeder extends PtsCanvas {
                 this.nodes[n.origin.link] = n
                 this.setNodePts(n, cid)
                 */
-                let n = this.newNode(data)
+                this.newNode(data)
+                /*let n = 
                 let targets = n.targetCids
                 for (let tid of targets) {
                     this.loadCID(tid)
-                }
+                }*/
             }
             else {
                 ipfs.files.cat(cid, (error, file) => {
@@ -97,15 +98,15 @@ export default class IPLDReodeder extends PtsCanvas {
                         console.warn("ipfs.files.cat...", cid, error)
                         return
                     }
+                    this.burls[cid].file = file
                     console.log('Getting', cid, file.toString('utf-8'))
                 })
             }
         })
     }
 
-    newBurl(oid)
-    {
-        if(this.burls[oid])
+    newBurl(oid) {
+        if (this.burls[oid])
             return
 
         if (this.pts[oid])
@@ -120,16 +121,17 @@ export default class IPLDReodeder extends PtsCanvas {
         return b
     }
 
-    //assumes it has a burl already
-    newNode(data, nid)
-    {
+    newNode(data, nid) {
         let n = new NodeType(data)
         let oid = n.origin.link
         this.newBurl(oid)
         this.nodes[nid] = n
         this.burls[oid].addNode(n)
 
-        return n
+        let targets = n.targetCids
+        for (let tid of targets) {
+            this.newBurl(tid)
+        }
     }
 
     /*newPt(id){
@@ -158,10 +160,6 @@ export default class IPLDReodeder extends PtsCanvas {
             }
         }
     }*/
-
-    ptExists(cid) {
-        return (this.pts[cid] ? true : false)
-    }
 
     addInteraction(n) {
         let oid = n.origin.link
@@ -257,8 +255,19 @@ export default class IPLDReodeder extends PtsCanvas {
         this.paint.text(oid, opt, this.getNodeRadius() * 2)
     }
 
-    drawOriginBubble(pt) {
-        this.paint.bubble(pt, this.getNodeRadius(), 'eee')
+    drawBurl(b) {
+        if (b.nodes.length) {
+            this.paint.bubble(b.pt, this.getNodeRadius() * 1.2, '#ede')
+        }
+        if (b.hasPreview) {
+            this.paint.bubble(b.pt, this.getNodeRadius(), '#eee')
+            this.paint.text(b.preview, b.pt, this.getNodeRadius() * 2)
+        }
+        else {
+            this.paint.bubble(b.pt, this.getNodeRadius(), '#dee')
+            this.paint.text(b.oid, b.pt, this.getNodeRadius() * 2)
+        }
+
     }
 
     drawNodeBubble(n) {
@@ -297,10 +306,10 @@ export default class IPLDReodeder extends PtsCanvas {
         //this.form.rect(this.background)
         this.toAll(this.nodes, this.addForces.bind(this))
         this.toAll(this.nodes, this.drawRelations.bind(this))
-        this.toAll(this.nodes, this.drawNodeBubble.bind(this))
-        this.toAll(this.pts, this.drawOriginBubble.bind(this))
+        //this.toAll(this.nodes, this.drawNodeBubble.bind(this))
+        this.toAll(this.burls, this.drawBurl.bind(this))
         //this.toAll(this.nodes, this.drawText.bind(this))
-        this.toAll(this.pts, this.paintIdText.bind(this))
+        //this.toAll(this.pts, this.paintIdText.bind(this))
         this.highlight()
         this.paintBorningNode()
     }

@@ -17,33 +17,29 @@ export default class App extends Component {
             lastZoom: 1,
             borningNode: { text: 'Unga bunga' },
             isBorning: false,
-            cids : ['zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC']
+            cids: ['zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC']
         }
 
         this.ipfs = new IPFS()
     }
 
-    addTextOrigin(text)
-    {
-        let b = Buffer.from(text,'utf8')
-        this.ipfs.files.add(b, (error, result)=>{
-            if(error)
-                throw(error)
+    addTextOrigin(text) {
+        let b = Buffer.from(text, 'utf8')
+        this.ipfs.files.add(b, (error, result) => {
+            if (error)
+                throw (error)
 
-                console.log(result)
             let cid = result[0].hash
-           this.addNewCID(cid)
+            this.addNewCID(cid)
 
         })
     }
 
-    addNewCID(cid)
-    {
-        if(this.state.cids.indexOf(cid) === -1 )
-        {
-            this.setState({cids:[...this.state.cids, cid]})
+    addNewCID(cid) {
+        if (this.state.cids.indexOf(cid) === -1) {
+            this.setState({ cids: [...this.state.cids, cid] })
         }
-        else{
+        else {
             console.log('cid exists already')
         }
     }
@@ -93,7 +89,7 @@ export default class App extends Component {
         this.setState({ borningNode: borningNode })
     }
 
-    onInputReturn(text){
+    onInputReturn(text) {
         this.addTextOrigin(text)
         let borningNode = {
             text: '',
@@ -115,7 +111,6 @@ export default class App extends Component {
         if (this.state.hasFocus)
             invisibleInput = this.getInvisibleInput()
 
-            console.log(this.state.cids)
         return (
 
             <div

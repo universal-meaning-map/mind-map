@@ -13,10 +13,16 @@ export default class InvisibleInput extends React.Component {
         this.props.onChange(e.target.value)
     }
 
+    getZIndex(hide) {
+        if (hide)
+            return -1
+        return 'auto'
+    }
+
     render() {
 
         return (
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', zIndex: this.getZIndex(this.props.hide) }}>
                 <div style={{ position: 'absolute' }}>
                     <input
                         ref={(input) => { this.nameInput = input }}

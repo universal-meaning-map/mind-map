@@ -19,7 +19,7 @@ export default class InvisibleInput extends React.Component {
 
         if (e.keyCode === 13) {
             if (this.props.onReturn)
-                this.props.onReturn()
+                this.props.onReturn(this.props.text)
         }
     }
 

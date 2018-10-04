@@ -3,15 +3,9 @@ import IPLDRender from 'ipld-mindmap-ptsjs-render'
 //import './IpfsController'
 import IPFS from 'ipfs'
 import { toHexString } from 'multihashes';
-import InvisibleInput from 'ipld-mindmap-ptsjs-render/example/src/InvisibleInput';
-
-const cids = [
-    //'zdpuAvYJaZxBjTV4WH3irwThm5t2a7yTccoN9cWpDmtV4CiNz',//not using link properly
-    //'zdpuAyvmoJWTiVrCv1aCHV5xUZ1fxUf4XLkrprKPMMFCNKfj3',
-    //'zdpuAxh9rv4ZTUFfogJh7ysjBW7F5iKEyPZ3somVv2B3UvtkS'
-    'zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC'
-]
-
+import InvisibleInput from 'ipld-mindmap-ptsjs-render/example/src/InvisibleInput'
+//import Buffer from 'buffer'
+var Buffer = require('buffer/').Buffer
 
 export default class App extends Component {
     constructor(props) {
@@ -22,10 +16,36 @@ export default class App extends Component {
             currentZoom: 1,
             lastZoom: 1,
             borningNode: { text: 'Unga bunga' },
-            isBorning: false
+            isBorning: false,
+            cids : ['zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC']
         }
 
         this.ipfs = new IPFS()
+    }
+
+    addTextOrigin(text)
+    {
+        let b = Buffer.from(text,'utf8')
+        this.ipfs.files.add(b, (error, result)=>{
+            if(error)
+                throw(error)
+
+                console.log(result)
+            let cid = result[0].hash
+           this.addNewCID(cid)
+
+        })
+    }
+
+    addNewCID(cid)
+    {
+        if(this.state.cids.indexOf(cid) === -1 )
+        {
+            this.setState({cids:[...this.state.cids, cid]})
+        }
+        else{
+            console.log('cid exists already')
+        }
     }
 
     handleChange(event) {
@@ -73,7 +93,8 @@ export default class App extends Component {
         this.setState({ borningNode: borningNode })
     }
 
-    onInputReturn(){
+    onInputReturn(text){
+        this.addTextOrigin(text)
         let borningNode = {
             text: '',
             pt: this.state.borningNode.pt
@@ -94,6 +115,7 @@ export default class App extends Component {
         if (this.state.hasFocus)
             invisibleInput = this.getInvisibleInput()
 
+            console.log(this.state.cids)
         return (
 
             <div
@@ -104,7 +126,7 @@ export default class App extends Component {
                 {invisibleInput}
                 <div><IPLDRender
                     ipfs={this.ipfs}
-                    cids={cids}
+                    cids={this.state.cids}
                     name="IPLDRender"
                     background="#fff"
                     onPinchStart={this.onPinchStart.bind(this)}

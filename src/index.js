@@ -27,8 +27,12 @@ export default class IPLDReodeder extends PtsCanvas {
         this.paint = {}
         this.background = null
 
-        document.onkeydown = this.checkKey.bind(this);
+        document.onkeydown = this.checkKey.bind(this)
         this.onCanvasReady = this.onCanvasReady.bind(this)
+        this.onBurlDown = this.onBurlDown.bind(this)
+        this.onBurlUp = this.onBurlUp.bind(this)
+        this.onBurlHover = this.onBurlHover.bind(this)
+        this.onBurlLeave = this.onBurlLeave.bind(this)
 
         this.setIpfs()
     }
@@ -152,11 +156,28 @@ export default class IPLDReodeder extends PtsCanvas {
     onBurlHover(pt, burl)
     {
         console.log('jover')
+        console.log(this.getRelationsIntersections(burl))
     }
 
     onBurlLeave(pt, burl)
     {
         console.log('leave')
+    }
+
+    //list of points of the relations that intersect with the node bubble
+    getRelationsIntersections(burl)
+    {
+        let intersections = []
+        for(let n of burl.nodes )
+        {
+            for (let r of n.relations)
+            {
+                let line = new Group(burl.pt, this.pts[r.target.link])
+                let circle = Circle.fromCenter(burl.pt, Now.nodeRadius())
+                let pts = Circle.intersectLine2D(circle, line)
+                intersections = intersections.concat(pts)
+            }
+        }
     }
 
     onZoomChange(zoom) {

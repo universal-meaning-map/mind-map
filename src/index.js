@@ -35,7 +35,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.zoom)
-            Now.setZoom(nextProps.zoom)
+            this.onZoomChange(nextProps.zoom)
 
         if (JSON.stringify(nextProps.cids) === JSON.stringify(this.props.cids))
             return
@@ -139,6 +139,11 @@ export default class IPLDReodeder extends PtsCanvas {
         }
 
         this.burls[oid].addNode(n)
+    }
+
+    onZoomChange(zoom) {
+        Now.setZoom(zoom)
+        this.toAll(this.pts, (pt) => { pt.radius = Now.nodeArm() })
     }
 
     /*(n) {

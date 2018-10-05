@@ -75,9 +75,9 @@ export default class Burl {
     }
 
     getInteractionArea() {
-        let area = [Now.getOriginRadius(), Now.getOriginRadius()]
+        let area = [Now.originRadius(), Now.originRadius()]
         if (this._nodes.length > 0)
-            area = [Now.getNodeRadius() * 1.2, Now.getNodeRadius() * 1.2]
+            area = [Now.nodeRadius() * 1.2, Now.nodeRadius() * 1.2]
 
         return area
     }
@@ -87,7 +87,7 @@ export default class Burl {
         let oid = n.origin.link
         let pt = this.pts[oid]
 
-        let area = [Now.getNodeRadius(), Now.getNodeRadius()]
+        let area = [Now.nodeRadius(), Now.nodeRadius()]
         let btn = UIButton.fromCircle([pt, area])
         btn.onClick((a) => {
             console.log('Hello', oid)

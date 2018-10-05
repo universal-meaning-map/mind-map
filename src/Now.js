@@ -1,17 +1,28 @@
 export default class Now {
 
 
-    static getNodeRadius()
+    static nodeRadius()
     {
-        return Now.nodeRadius * Now.zoom
+        return Now._nodeRadius * Now._zoom
     }
 
-    static getOriginRadius()
+    static originRadius()
     {
-        return Now.originRadius * Now.zoom
+        return Now._originRadius * Now._zoom
+    }
+
+    static nodeArm()
+    {
+        return Now._nodeArm * Now._zoom
+    }
+
+    static setZoom(z)
+    {
+        Now._zoom = z
     }
 }
 
-Now.zoom = 1
-Now.originRadius = 30
-Now.nodeRadius = Now.originRadius * 1.2
+Now._zoom = 1
+Now._originRadius = 50
+Now._nodeRadius = Now._originRadius * 1.2
+Now._nodeArm = 100

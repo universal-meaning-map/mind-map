@@ -6,13 +6,12 @@ import NodeType from './NodeType'
 import Shape from './Shape'
 import Paint from './Paint'
 import Burl from './Burl'
+import Now from './Now'
 
 export default class IPLDReodeder extends PtsCanvas {
 
     constructor(props) {
         super(props);
-        this.nodeRadius = 50
-        this.nodeArm = 50
 
         this.world = null
         this.nodes = {}
@@ -35,6 +34,9 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     componentWillReceiveProps(nextProps) {
+        if (nextProps.zoom)
+            Now.setZoom(nextProps.zoom)
+
         if (JSON.stringify(nextProps.cids) === JSON.stringify(this.props.cids))
             return
 
@@ -143,7 +145,7 @@ export default class IPLDReodeder extends PtsCanvas {
         let oid = n.origin.link
         let pt = this.pts[oid]
 
-        let size = [this.getNodeRadius(), this.getNodeRadius()]
+        let size = [Now.originRadius(), Now.originRadius()]
         let btn = UIButton.fromCircle([pt, size])
         btn.onClick((a) => {
             console.log('Hello', oid)
@@ -173,7 +175,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
     addNewPtParticle() {
         let initPt = Shape.randomPt(this.space.center)
-        let particle = new Particle(initPt).size(this.getNodeRadius() + this.getNodeArm());
+        let particle = new Particle(initPt).size(Now.originRadius() + Now.nodeArm());
         this.world.add(particle)
         return particle
     }
@@ -205,32 +207,24 @@ export default class IPLDReodeder extends PtsCanvas {
         for (let r of n.relations) {
             let opt = this.pts[n.origin.link]
             let tpt = this.pts[r.target.link]
-            this.paint.arrow(opt, tpt, this.getNodeRadius(), lineColor)
+            this.paint.arrow(opt, tpt, Now.originRadius(), lineColor)
         }
-    }
-
-    getNodeRadius() {
-        return (this.nodeRadius * this.props.zoom)
-    }
-
-    getNodeArm() {
-        return (this.nodeArm * this.props.zoom)
     }
 
     drawBurl(b) {
         //node bubble
         if (b.nodes.length) {
-            this.paint.bubble(b.pt, this.getNodeRadius() * 1.2, '#EA9674')
+            this.paint.bubble(b.pt, Now.nodeRadius(), '#EA9674')
         }
         //preview bubble
         if (b.hasPreview) {
-            this.paint.bubble(b.pt, this.getNodeRadius(), '#FCBC80')
-            this.paint.text(b.preview, b.pt, this.getNodeRadius() * 1.5, '#8B4B62')
+            this.paint.bubble(b.pt, Now.originRadius(), '#FCBC80')
+            this.paint.text(b.preview, b.pt, Now.originRadius() * 1.5, '#8B4B62')
         }
         //cid bubble
         else {
-            this.paint.bubble(b.pt, this.getNodeRadius(), '#F7E29C88')
-            this.paint.text(b.oid, b.pt, this.getNodeRadius() * 1.5, '#BB6F6B88', false)
+            this.paint.bubble(b.pt, Now.originRadius(), '#F7E29C88')
+            this.paint.text(b.oid, b.pt, Now.originRadius() * 1.5, '#BB6F6B88', false)
         }
 
     }
@@ -278,12 +272,12 @@ export default class IPLDReodeder extends PtsCanvas {
 
     paintBorningNode() {
         if (this.props.borningNode) {
-            this.paint.bubble(this.props.borningNode.pt, this.getNodeRadius(), '#bfb')
+            this.paint.bubble(this.props.borningNode.pt, Now.originRadius(), '#bfb')
             if (this.props.borningNode.text) {
-                this.paint.text(this.props.borningNode.text, this.props.borningNode.pt, this.getNodeRadius() * 2)
+                this.paint.text(this.props.borningNode.text, this.props.borningNode.pt, Now.originRadius() * 2)
             }
             else {
-                this.paint.text("what's in your mind?", this.props.borningNode.pt, this.getNodeRadius() * 2, '#666')
+                this.paint.text("what's in your mind?", this.props.borningNode.pt, Now.originRadius() * 2, '#666')
             }
         }
     }

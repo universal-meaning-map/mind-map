@@ -38,7 +38,13 @@ export default class IPLDReodeder extends PtsCanvas {
         if (JSON.stringify(nextProps.cids) === JSON.stringify(this.props.cids))
             return
 
-        this.setCids(nextProps.cids)
+        if (this.props.ipfs.isOnline()) {
+            this.setCids(nextProps.cids)
+            console.log("in")
+        }
+        else {
+            console.warn("IPFS not ready yet")
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -75,7 +81,7 @@ export default class IPLDReodeder extends PtsCanvas {
         //We display the cid right awy
         this.newBurl(cid)
         //we try to load its content as a dag
-        ipfs.dag.get(cid, (error, result) => {
+        this.props.ipfs.dag.get(cid, (error, result) => {
             if (error) {
                 console.warn(error)
                 return
@@ -87,7 +93,7 @@ export default class IPLDReodeder extends PtsCanvas {
                 this.newNode(data)
             }
             else {
-                ipfs.files.cat(cid, (error, file) => {
+                this.props.ipfs.files.cat(cid, (error, file) => {
                     if (error) {
                         console.warn("ipfs.files.cat...", cid, error)
                         return
@@ -112,6 +118,9 @@ export default class IPLDReodeder extends PtsCanvas {
         let b = new Burl(oid, pt)
         this.burls[oid] = b
 
+        let btn = b.btn
+        this.btns.push(btn)
+
         return b
     }
 
@@ -130,7 +139,7 @@ export default class IPLDReodeder extends PtsCanvas {
         this.burls[oid].addNode(n)
     }
 
-    addInteraction(n) {
+    /*(n) {
         let oid = n.origin.link
         let pt = this.pts[oid]
 
@@ -143,9 +152,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
         //n.btn.onHover(console.log, console.log)
         this.btns.push(btn)
-    }
-
-
+    }*/
 
     checkPause() {
         if (this.props.pause) {
@@ -211,16 +218,19 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     drawBurl(b) {
+        //node bubble
         if (b.nodes.length) {
-            this.paint.bubble(b.pt, this.getNodeRadius() * 1.2, '#ede')
+            this.paint.bubble(b.pt, this.getNodeRadius() * 1.2, '#EA9674')
         }
+        //preview bubble
         if (b.hasPreview) {
-            this.paint.bubble(b.pt, this.getNodeRadius(), '#eee')
-            this.paint.text(b.preview, b.pt, this.getNodeRadius() * 2)
+            this.paint.bubble(b.pt, this.getNodeRadius(), '#FCBC80')
+            this.paint.text(b.preview, b.pt, this.getNodeRadius() * 1.5, '#8B4B62')
         }
+        //cid bubble
         else {
-            this.paint.bubble(b.pt, this.getNodeRadius(), '#dee')
-            this.paint.text(b.oid, b.pt, this.getNodeRadius() * 2)
+            this.paint.bubble(b.pt, this.getNodeRadius(), '#F7E29C88')
+            this.paint.text(b.oid, b.pt, this.getNodeRadius() * 1.5, '#BB6F6B88', false)
         }
 
     }

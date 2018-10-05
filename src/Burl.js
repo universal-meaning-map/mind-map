@@ -1,4 +1,4 @@
-import { UIButton, UIDragger } from 'pts'
+import { UIButton, UIDragger, Group } from 'pts'
 import Now from './Now'
 
 const OTYPE = {
@@ -16,6 +16,7 @@ export default class Burl {
         this._fileExtension = OTYPE.UNDEFINED
         this._file = null
         this._btn = null
+        this._isHover = false
 
         //this.setInteraction()
     }
@@ -58,13 +59,41 @@ export default class Burl {
         return this._btn
     }
 
-    setInteraction(onDown, onUp, onHover, onLeave) {
+    get isHover() {
+        return this._isHover
+    }
+
+    setInteraction(onDown, onUp, onHover, onLeave, onMove) {
         let area = this.getInteractionArea()
         this._btn = UIButton.fromCircle([this.pt, area])
         this._btn.on('down', (ui, pt) => { onDown(pt, this) })
         this._btn.on('up', (ui, pt) => { onUp(pt, this) })
-        this._btn.onHover((ui, pt) => { onHover(pt, this) }, (ui, pt) => { onLeave(pt, this) })
+        this._btn.onHover(
+            (ui, pt) => {
+                this._isHover = true
+                onHover(pt, this)
+            },
+            (ui, pt) => {
+                this._isHover = false
+                onLeave(pt, this)
+            })
+
+        this._btn.on('move',
+            (ui, pt) => {
+                if (this.isHover) {
+                    onMove(pt, this)
+                }
+            })
+            
         return this._btn
+    }
+
+    onHover() {
+
+    }
+
+    onLeave() {
+
     }
 
     /*updateInteraction() {
@@ -80,6 +109,8 @@ export default class Burl {
 
         return area
     }
+
+
 
 
 }

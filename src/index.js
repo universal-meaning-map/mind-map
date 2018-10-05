@@ -33,8 +33,13 @@ export default class IPLDReodeder extends PtsCanvas {
         this.onBurlUp = this.onBurlUp.bind(this)
         this.onBurlHover = this.onBurlHover.bind(this)
         this.onBurlLeave = this.onBurlLeave.bind(this)
+        this.onBurlMove = this.onBurlMove.bind(this)
+
+        this.borningRelation = []
 
         this.setIpfs()
+
+        this._ptsToDraw = []
     }
 
     componentWillReceiveProps(nextProps) {
@@ -124,7 +129,7 @@ export default class IPLDReodeder extends PtsCanvas {
         let b = new Burl(oid, pt)
         this.burls[oid] = b
 
-        let btn = b.setInteraction(this.onBurlDown, this.onBurlUp, this.onBurlHover, this.onBurlLeave)
+        let btn = b.setInteraction(this.onBurlDown, this.onBurlUp, this.onBurlHover, this.onBurlLeave, this.onBurlMove)
         this.btns.push(btn)
 
         return b
@@ -146,38 +151,91 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     onBurlDown(pt, burl) {
+        Now.startBurl = burl
         console.log('down', pt, burl)
     }
 
     onBurlUp(pt, burl) {
+        Now.startBurl = null
         console.log('upoo')
     }
 
-    onBurlHover(pt, burl)
-    {
+    onBurlHover(pt, burl) {
         console.log('jover')
-        console.log(this.getRelationsIntersections(burl))
+        console.log(Now.currentBurl)
     }
 
-    onBurlLeave(pt, burl)
-    {
+    onBurlLeave(pt, burl) {
+        Now.currentBurl = null
         console.log('leave')
     }
 
+    onBurlMove(pt, burl) {
+        this.chooseHighlight(pt, burl)
+    }
+
+    chooseHighlight(pointer, burl) {
+        this.paintPt(burl.pt)
+        let closest = this.getClosestNodeRelationToPointer(pointer, burl)
+        let nearbyNode = closest.node
+        let nodeDistance = closest.distance
+        if (nodeDistance === null) {
+            this.highlightOrigin()
+        }
+        else {
+            let originDistance = pointer.$subtract(burl.pt).magnitude()
+            if (originDistance <= nodeDistance) {
+                this.highlightOrigin()
+            }
+            else {
+                this.highlightNode()
+            }
+        }
+    }
+
+    highlightOrigin() {
+        console.log("origin")
+
+    }
+
+    highlightNode() {
+        console.log("node")
+    }
+
     //list of points of the relations that intersect with the node bubble
-    getRelationsIntersections(burl)
-    {
-        let intersections = []
-        for(let n of burl.nodes )
-        {
-            for (let r of n.relations)
-            {
+    getClosestNodeRelationToPointer(pointer, burl) {
+        let closestNode = null
+        let closestDistance = null
+
+        for (let n of burl.nodes) {
+            for (let r of n.relations) {
                 let line = new Group(burl.pt, this.pts[r.target.link])
                 let circle = Circle.fromCenter(burl.pt, Now.nodeRadius())
                 let pts = Circle.intersectLine2D(circle, line)
-                intersections = intersections.concat(pts)
+                for (let pt of pts) {
+                    this.paintPt(pt)
+                    let distance = pointer.$subtract(pt).magnitude()
+
+                    if (closestDistance == null) {
+                        closestDistance = distance
+                        closestNode = n
+                    }
+                    else {
+                        if (distance < closestDistance) {
+                            closestDistance = distance
+                            closestNode = n
+                        }
+
+                    }
+                }
             }
         }
+        return { n: closestNode, distance: closestDistance }
+    }
+
+    paintPt(pt) {
+        this._ptsToDraw.push(pt)
+
     }
 
     onZoomChange(zoom) {
@@ -258,16 +316,16 @@ export default class IPLDReodeder extends PtsCanvas {
     drawBurl(b) {
         //node bubble
         if (b.nodes.length) {
-            this.paint.bubble(b.pt, Now.nodeRadius(), '#EA9674')
+            this.paint.bubble(b.pt, Now.nodeRadius(), '#EA967455')
         }
         //preview bubble
         if (b.hasPreview) {
-            this.paint.bubble(b.pt, Now.originRadius(), '#FCBC80')
+            this.paint.bubble(b.pt, Now.originRadius(), '#FCBC8055')
             this.paint.text(b.preview, b.pt, Now.originRadius() * 1.5, '#8B4B62')
         }
         //cid bubble
         else {
-            this.paint.bubble(b.pt, Now.originRadius(), '#F7E29C88')
+            this.paint.bubble(b.pt, Now.originRadius(), '#F7E29C55')
             this.paint.text(b.oid, b.pt, Now.originRadius() * 1.5, '#BB6F6B88', false)
         }
 
@@ -304,6 +362,10 @@ export default class IPLDReodeder extends PtsCanvas {
         this.toAll(this.burls, this.drawBurl.bind(this))
         this.highlight()
         this.paintBorningNode()
+        this.paintBorningRelation()
+        for (let pt of this._ptsToDraw)
+            this.paint.bubble(pt, 10, '#f36')
+        this._ptsToDraw = []
     }
 
     toAll(obj, fnc) {
@@ -326,8 +388,15 @@ export default class IPLDReodeder extends PtsCanvas {
         }
     }
 
-    action(type, px, py) 
-    {
+    paintBorningRelation() {
+        if (!Now.startBurl)
+            return
+        let opt = Now.startBurl.pt
+        let tpt = this.space.pointer
+        this.paint.arrow(opt, tpt, 0, '#f36')
+    }
+
+    action(type, px, py) {
         //.log(type)
         UI.track(this.btns, type, new Pt(px, py));
     }

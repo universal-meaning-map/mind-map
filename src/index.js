@@ -120,7 +120,7 @@ export default class IPLDReodeder extends PtsCanvas {
         let b = new Burl(oid, pt)
         this.burls[oid] = b
 
-        let btn = b.btn
+        let btn = b.setInteraction(this.onBurlDown, this.onBurlUp, this.onBurlHover, this.onBurlLeave)
         this.btns.push(btn)
 
         return b
@@ -139,6 +139,24 @@ export default class IPLDReodeder extends PtsCanvas {
         }
 
         this.burls[oid].addNode(n)
+    }
+
+    onBurlDown(pt, burl) {
+        console.log('down', pt, burl)
+    }
+
+    onBurlUp(pt, burl) {
+        console.log('upoo')
+    }
+
+    onBurlHover(pt, burl)
+    {
+        console.log('jover')
+    }
+
+    onBurlLeave(pt, burl)
+    {
+        console.log('leave')
     }
 
     onZoomChange(zoom) {
@@ -287,7 +305,9 @@ export default class IPLDReodeder extends PtsCanvas {
         }
     }
 
-    action(type, px, py) {
+    action(type, px, py) 
+    {
+        //.log(type)
         UI.track(this.btns, type, new Pt(px, py));
     }
 

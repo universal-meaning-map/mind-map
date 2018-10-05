@@ -1,4 +1,4 @@
-import { UIButton } from 'pts'
+import { UIButton, UIDragger } from 'pts'
 import Now from './Now'
 
 const OTYPE = {
@@ -17,7 +17,7 @@ export default class Burl {
         this._file = null
         this._btn = null
 
-        this.setInteraction()
+        //this.setInteraction()
     }
 
     get oid() {
@@ -58,21 +58,20 @@ export default class Burl {
         return this._btn
     }
 
-    setInteraction() {
+    setInteraction(onDown, onUp, onHover, onLeave) {
         let area = this.getInteractionArea()
         this._btn = UIButton.fromCircle([this.pt, area])
-
-        this._btn.onClick(() => {
-            console.log('Hello', this._oid)
-            //this.selectNewId(oid)
-        })
+        this._btn.on('down', (ui, pt) => { onDown(pt, this) })
+        this._btn.on('up', (ui, pt) => { onUp(pt, this) })
+        this._btn.onHover((ui, pt) => { onHover(pt, this) }, (ui, pt) => { onLeave(pt, this) })
+        return this._btn
     }
 
-    updateInteraction() {
+    /*updateInteraction() {
         if (!this._btn)
             this.setInteraction()
         this._btn.group = this.getInteractionArea()
-    }
+    }*/
 
     getInteractionArea() {
         let area = [Now.originRadius(), Now.originRadius()]
@@ -80,22 +79,6 @@ export default class Burl {
             area = [Now.nodeRadius() * 1.2, Now.nodeRadius() * 1.2]
 
         return area
-    }
-
-    addInteraction() {
-
-        let oid = n.origin.link
-        let pt = this.pts[oid]
-
-        let area = [Now.nodeRadius(), Now.nodeRadius()]
-        let btn = UIButton.fromCircle([pt, area])
-        btn.onClick((a) => {
-            console.log('Hello', oid)
-            this.selectNewId(oid)
-        })
-
-        //n.btn.onHover(console.log, console.log)
-        this.btns.push(btn)
     }
 
 

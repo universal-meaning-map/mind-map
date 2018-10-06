@@ -1,47 +1,37 @@
 export default class Now {
 
 
-    static nodeRadius()
-    {
+    static nodeRadius() {
         return Now._nodeRadius * Now._zoom
     }
 
-    static originRadius()
-    {
+    static originRadius() {
         return Now._originRadius * Now._zoom
     }
 
-    static nodeArm()
-    {
+    static nodeArm() {
         return Now._nodeArm * Now._zoom
     }
 
-    static setZoom(z)
-    {
+    static setZoom(z) {
         Now._zoom = z
     }
 
-    static get currentBurl()
-    {
-        return this._currentBurl
+    static set clickDownBurlSelection(burlSelection) {
+        Now._clickDownBurlSelection = burlSelection
     }
 
-    static set currentBurl(burl)
-    {   
-        this._currentBurl = burl
+    static set clickUpBurlSelection(burlSelection) {
+        Now._clickUpBurlSelection = burlSelection
     }
 
-
-    static get startBurl()
-    {
-        return this._startBurl
+    static set currentBurlSelection(burlSelection) {
+        Now._currentBurlSelection = burlSelection
     }
 
-    static set startBurl(burl)
-    {   
-        this._startBurl = burl
+    static get currentBurlSelection() {
+        return Now._currentBurlSelection
     }
-
 
 }
 
@@ -52,6 +42,7 @@ Now._nodeArm = 100
 
 Now._isPressing = false
 
-Now._currentBurl = null
-Now._startBurl = null
-Now._startNode = null
+Now._clickDownBurlSelection = null
+Now._clickUpBurlSelection = null
+Now._currentBurlSelection = null
+

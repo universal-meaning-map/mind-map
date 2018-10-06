@@ -7,6 +7,7 @@ import Shape from './Shape'
 import Paint from './Paint'
 import Burl from './Burl'
 import Now from './Now'
+import BurlSelection from './BurlSelection';
 
 export default class IPLDReodeder extends PtsCanvas {
 
@@ -151,44 +152,44 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     onBurlDown(pt, burl) {
-        Now.startBurl = burl
-        console.log('down', pt, burl)
+        console.log('down', this.getBurlSelection(pt, burl))
+        Now.currentBurlSelection =  this.getBurlSelection(pt, burl)
+        Now.clickDownBurlSelection = Now.currentBurlSelection
+        console.log(Now.currentBurlSelection)
     }
 
     onBurlUp(pt, burl) {
-        Now.startBurl = null
-        console.log('upoo')
+        Now.currentBurlSelection =  this.getBurlSelection(pt, burl)
+        Now.clickUpBurlSelection = Now.currentBurlSelection
+        console.log(Now.currentBurlSelection)
     }
 
     onBurlHover(pt, burl) {
-        console.log('jover')
-        console.log(Now.currentBurl)
     }
 
     onBurlLeave(pt, burl) {
-        Now.currentBurl = null
-        console.log('leave')
     }
 
-    onBurlMove(pt, burl) {
-        this.chooseHighlight(pt, burl)
+    onBurlMove(pt, burl) 
+    {
+        Now.currentBurlSelection =  this.getBurlSelection(pt, burl)
     }
 
-    chooseHighlight(pointer, burl) {
+    getBurlSelection(pointer, burl) {
         this.paintPt(burl.pt)
         let closest = this.getClosestNodeRelationToPointer(pointer, burl)
         let nearbyNode = closest.node
         let nodeDistance = closest.distance
         if (nodeDistance === null) {
-            this.highlightOrigin()
+            return new BurlSelection(burl, null)
         }
         else {
             let originDistance = pointer.$subtract(burl.pt).magnitude()
             if (originDistance <= nodeDistance) {
-                this.highlightOrigin()
+                return new BurlSelection(burl, null)
             }
             else {
-                this.highlightNode()
+                return new BurlSelection(burl, nearbyNode)
             }
         }
     }
@@ -225,12 +226,11 @@ export default class IPLDReodeder extends PtsCanvas {
                             closestDistance = distance
                             closestNode = n
                         }
-
                     }
                 }
             }
         }
-        return { n: closestNode, distance: closestDistance }
+        return { node: closestNode, distance: closestDistance }
     }
 
     paintPt(pt) {
@@ -242,21 +242,6 @@ export default class IPLDReodeder extends PtsCanvas {
         Now.setZoom(zoom)
         this.toAll(this.pts, (pt) => { pt.radius = Now.nodeArm() })
     }
-
-    /*(n) {
-        let oid = n.origin.link
-        let pt = this.pts[oid]
-
-        let size = [Now.originRadius(), Now.originRadius()]
-        let btn = UIButton.fromCircle([pt, size])
-        btn.onClick((a) => {
-            console.log('Hello', oid)
-            this.selectNewId(oid)
-        })
-
-        //n.btn.onHover(console.log, console.log)
-        this.btns.push(btn)
-    }*/
 
     checkPause() {
         if (this.props.pause) {

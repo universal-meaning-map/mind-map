@@ -14,7 +14,7 @@ export default class App extends Component {
             currentZoom: 1,
             lastZoom: 1,
             borningNode: null,
-            cids:[]
+            cids: []
             //cids: ['zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC']
         }
 
@@ -40,7 +40,7 @@ export default class App extends Component {
     }
 
     addNode(obj) {
-        this.ipfs.dag.put(obj,{ format: 'dag-cbor', hashAlg: 'sha2-256' }, (error, result) => {
+        this.ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (error, result) => {
             if (error)
                 throw (error)
 
@@ -105,8 +105,9 @@ export default class App extends Component {
     }
 
     onInputReturn(text) {
-        this.addTextOrigin(text)
-        this.setState({ hasFocus: false , borningNode:null})
+        if (text)
+            this.addTextOrigin(text)
+        this.setState({ hasFocus: false, borningNode: null })
     }
 
     getInvisibleInput() {
@@ -139,7 +140,7 @@ export default class App extends Component {
                     onLongPressStart={this.onLongPressStart.bind(this)}
                     onLongPressEnd={this.onLongPressEnd.bind(this)}
                     onPressStart={this.onPressStart.bind(this)}
-                    longPressDelay = {100}
+                    longPressDelay={500}
                     borningNode={this.state.borningNode}
                     onNewNode={this.addNode}
                     zoom={this.state.currentZoom}

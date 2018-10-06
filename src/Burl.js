@@ -35,6 +35,9 @@ export default class Burl {
 
     addNode(n) {
         this._nodes.push(n)
+        let area = this.getInteractionArea(this.pt)
+        //TODO: This breaks... 
+        //this._btn.group = area 
     }
 
     set file(file) {
@@ -64,8 +67,7 @@ export default class Burl {
     }
 
     setInteraction(onDown, onUp, onHover, onLeave, onMove) {
-        let area = this.getInteractionArea()
-        this._btn = UIButton.fromCircle([this.pt, area])
+        this._btn = UIButton.fromCircle(this.getInteractionArea(this.pt))
         this._btn.on('down', (ui, pt) => { onDown(pt, this) })
         this._btn.on('up', (ui, pt) => { onUp(pt, this) })
         this._btn.onHover(
@@ -84,34 +86,17 @@ export default class Burl {
                     onMove(pt, this)
                 }
             })
-            
+
         return this._btn
     }
 
-    onHover() {
-
-    }
-
-    onLeave() {
-
-    }
-
-    /*updateInteraction() {
-        if (!this._btn)
-            this.setInteraction()
-        this._btn.group = this.getInteractionArea()
-    }*/
-
-    getInteractionArea() {
+    getInteractionArea(pt) {
         let area = [Now.originRadius(), Now.originRadius()]
         if (this._nodes.length > 0)
-            area = [Now.nodeRadius() * 1.2, Now.nodeRadius() * 1.2]
+            area = [Now.nodeRadius(), Now.nodeRadius()]
 
-        return area
+        return [pt, area]
     }
-
-
-
 
 }
 

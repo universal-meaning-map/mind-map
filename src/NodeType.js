@@ -33,6 +33,11 @@ export default class NodeType extends IpldType {
         return this._targetCids
     }
 
+    hasTarget(tid)
+    {
+        return this._targetCids.indexOf(tid) !== -1
+    }
+
     static isNode(obj, logError = false) {
         if (!obj) {
             if (logError)

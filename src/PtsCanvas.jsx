@@ -16,7 +16,8 @@ export default class PtsCanvas extends React.Component {
     this.state = {
       isPressing: false,
       isLongPress: false,
-      touchStartTimestamp: 0
+      touchStartTimestamp: 0,
+      pressStartPointer: null,
     }
 
   }
@@ -94,11 +95,15 @@ export default class PtsCanvas extends React.Component {
     if (this.props.onPressStart)
       this.props.onPressStart(this.space.pointer)
 
-    this.setState({ isPressing: true })
+    this.setState({ isPressing: true, pressStartPointer: this.space.pointer })
   }
 
   onPressTimeReached() {
-    if (this.state.isPressing)
+    if (!this.state.isPressing)
+      return
+    let distanceMoved = Math.abs(this.space.pointer.$subtract(this.state.pressStartPointer).magnitude())
+    
+    if (distanceMoved < 5)
       this.onLongPressStart()
   }
 
@@ -133,10 +138,10 @@ export default class PtsCanvas extends React.Component {
         onTouchEnd={this.onTouchEnd.bind(this)}
         onMouseDown={this.onTouchStart.bind(this)}
         onMouseUp={this.onTouchEnd.bind(this)}
-        //onPress={this.onPress.bind(this).bind('contextmenu', function (e) { return false })}
-        //pressDelay={this.props.pressDelay}
-        >
-        
+      //onPress={this.onPress.bind(this).bind('contextmenu', function (e) { return false })}
+      //pressDelay={this.props.pressDelay}
+      >
+
         <div className={this.props.name || ""}>
           <canvas
             height={800}

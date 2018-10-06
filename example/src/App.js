@@ -46,12 +46,8 @@ export default class App extends Component {
             if (error)
                 throw (error)
 
-            console.log(result)
-            let cid = result.multihash
-            let strCid = CIDTool.format(cid)
-
-            console.log('New node', strCid, this)
-            this.addNewCID(strCid)
+            let cid = result.toBaseEncodedString()
+            this.addNewCID(cid)
         })
     }
 

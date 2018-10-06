@@ -152,22 +152,20 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     onBurlDown(pt, burl) {
-        console.log('down', this.getBurlSelection(pt, burl))
         Now.currentBurlSelection =  this.getBurlSelection(pt, burl)
         Now.clickDownBurlSelection = Now.currentBurlSelection
-        console.log(Now.currentBurlSelection)
     }
 
     onBurlUp(pt, burl) {
         Now.currentBurlSelection =  this.getBurlSelection(pt, burl)
         Now.clickUpBurlSelection = Now.currentBurlSelection
-        console.log(Now.currentBurlSelection)
     }
 
     onBurlHover(pt, burl) {
     }
 
     onBurlLeave(pt, burl) {
+        Now.currentBurlSelection =  null
     }
 
     onBurlMove(pt, burl) 
@@ -374,15 +372,22 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     paintBorningRelation() {
-        if (!Now.startBurl)
+        if(!Now.isPressing)
             return
-        let opt = Now.startBurl.pt
+        if (!Now.clickDownBurlSelection)
+            return
+
+        let opt = Now.clickDownBurlSelection.burl.pt
         let tpt = this.space.pointer
+
+        if(Now.currentBurlSelection)
+            tpt = Now.currentBurlSelection.burl.pt
+
         this.paint.arrow(opt, tpt, 0, '#f36')
     }
 
     action(type, px, py) {
-        //.log(type)
+        Now.updateAction(type)
         UI.track(this.btns, type, new Pt(px, py));
     }
 

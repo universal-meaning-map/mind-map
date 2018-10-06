@@ -17,12 +17,32 @@ export default class Now {
         Now._zoom = z
     }
 
+    static updateAction(type) {
+        if (type === 'up')
+            Now._isPressing = false
+        if (type === 'down')
+            Now._isPressing = true
+    }
+
+    static get isPressing ()
+    {
+        return Now._isPressing
+    }
+
     static set clickDownBurlSelection(burlSelection) {
         Now._clickDownBurlSelection = burlSelection
     }
 
+    static get clickDownBurlSelection() {
+        return Now._clickDownBurlSelection
+    }
+
     static set clickUpBurlSelection(burlSelection) {
         Now._clickUpBurlSelection = burlSelection
+    }
+
+    static get clickDownBurlSelection() {
+        return Now._clickDownBurlSelection
     }
 
     static set currentBurlSelection(burlSelection) {

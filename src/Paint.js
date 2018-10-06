@@ -12,7 +12,7 @@ export default class Paint {
     }
 
     bubbleOutline(pt, radius = 30, color = "#f36") {
-        this.form.strokeOnly(color)
+        this.form.strokeOnly(color, 5)
         this.form.point(pt, radius, 'circle')
     }
 
@@ -33,7 +33,7 @@ export default class Paint {
         //text box
         let tb = Rectangle.fromCenter(opt, size)
 
-        if(multiline)
+        if (multiline)
             this.form.paragraphBox(tb, text, 1.2, "middle", true)
         else
             this.form.textBox(tb, text, "middle", "…")

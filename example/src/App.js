@@ -3,6 +3,7 @@ import IPLDRender from 'ipld-mindmap-ptsjs-render'
 //import './IpfsController'
 import IPFS from 'ipfs'
 import InvisibleInput from 'ipld-mindmap-ptsjs-render/example/src/InvisibleInput'
+import CIDTool from 'cid-tool'
 //import Buffer from 'buffer'
 var Buffer = require('buffer/').Buffer
 
@@ -20,6 +21,8 @@ export default class App extends Component {
         }
 
         this.ipfs = new IPFS()
+        this.addNode = this.addNode.bind(this)
+        this.addTextOrigin = this.addTextOrigin.bind(this)
     }
 
     addTextOrigin(text) {
@@ -33,18 +36,33 @@ export default class App extends Component {
                 throw (error)
 
             let cid = result[0].hash
-            console.log('New cid', cid)
+            console.log('New origin', cid)
+            this.addNewCID(cid)
+        })
+    }
+
+    addNode(obj)
+    {
+        this.ipfs.dag.put(obj, (error, result) => {
+            if (error)
+                throw (error)
+
+            console.log(result)
+            let cid = result.multihash
+            console.log('New node', cid, this)
             this.addNewCID(cid)
         })
     }
 
     addNewCID(cid) {
-        if (this.state.cids.indexOf(cid) === -1) {
-            this.setState({ cids: [...this.state.cids, cid] })
-            console.log('added', cid)
+        let strCid = CIDTool.format(cid)
+       
+        if (this.state.cids.indexOf(strCid) === -1) {
+            this.setState({ cids: [...this.state.cids, strCid] })
+            console.log('cid added', strCid)
         }
         else {
-            console.log('cid exists already')
+            console.log('cid exists already', strCid)
         }
     }
 
@@ -67,7 +85,7 @@ export default class App extends Component {
     }
 
     onPressStart(mousePosition) {
-        this.setState({ hasFocus: false })
+       // this.setState({ hasFocus: false })
     }
 
     onLongPressStart(mousePosition) {
@@ -75,13 +93,13 @@ export default class App extends Component {
             text: '',
             pt: mousePosition
         }
-        this.setState({
+        /*.setState({
             borningNode: borningNode,
-        })
+        })*/
     }
 
     onLongPressEnd(mousePosition) {
-        this.setState({ hasFocus: true })
+        //this.setState({ hasFocus: true })
     }
 
     onInputChange(value) {
@@ -90,12 +108,12 @@ export default class App extends Component {
             pt: this.state.borningNode.pt
         }
 
-        this.setState({ borningNode: borningNode })
+        //this.setState({ borningNode: borningNode })
     }
 
     onInputReturn(text) {
         this.addTextOrigin(text)
-        this.setState({ hasFocus: false })
+        //this.setState({ hasFocus: false })
     }
 
     getInvisibleInput() {
@@ -129,6 +147,7 @@ export default class App extends Component {
                     onLongPressEnd={this.onLongPressEnd.bind(this)}
                     onPressStart={this.onPressStart.bind(this)}
                     borningNode={this.state.borningNode}
+                    onNewNode={this.addNode}
                     zoom={this.state.currentZoom}
                     loop={true} />
                 </div>

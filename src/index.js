@@ -151,12 +151,12 @@ export default class IPLDReodeder extends PtsCanvas {
 
     onBurlDown(pt, burl) {
         Now.currentBurlSelection = this.getBurlSelection(pt, burl)
-        Now.clickDownBurlSelection = Now.currentBurlSelection
+        Now.downSelection = Now.currentBurlSelection
     }
 
     onBurlUp(pt, burl) {
         Now.currentBurlSelection = this.getBurlSelection(pt, burl)
-        Now.clickUpBurlSelection = Now.currentBurlSelection
+        Now.upSelection = Now.currentBurlSelection
         this.checkBorningRelation()
     }
 
@@ -347,13 +347,20 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     checkBorningRelation() {
-        console.log('checking', Now.clickDownBurlSelection, Now.clickUpBurlSelection)
-        if (!Now.clickDownBurlSelection || !Now.clickUpBurlSelection)
+        if (!Now.downSelection || !Now.upSelection)
             return
-        console.log('here')
-        if(Now.clickDownBurlSelection.burl.oid === Now.clickUpBurlSelection.burl.oid)
+        if (Now.downSelection.burl.oid === Now.upSelection.burl.oid)
             return
-        console.log("relation!")
+
+        this.createRelation(Now.downSelection, Now.upSelection)
+    }
+
+    createRelation(originSelection, targetSelection) {
+        //if(!originSelection.node)
+        let newNode = NodeType.getNewObj(originSelection.burl.oid, [targetSelection.burl.oid])
+        console.log(newNode)
+        this.props.onNewNode(newNode)
+
     }
 
     paintBorningNode() {
@@ -371,10 +378,10 @@ export default class IPLDReodeder extends PtsCanvas {
     paintBorningRelation() {
         if (!Now.isPressing)
             return
-        if (!Now.clickDownBurlSelection)
+        if (!Now.downSelection)
             return
 
-        let opt = Now.clickDownBurlSelection.burl.pt
+        let opt = Now.downSelection.burl.pt
         let tpt = this.space.pointer
 
         if (Now.currentBurlSelection)

@@ -87,19 +87,19 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     loadCID(cid) {
-        //We display the cid right awy
+        //We display the cid right away
         this.newBurl(cid)
         //we try to load its content as a dag
         this.props.ipfs.dag.get(cid, (error, result) => {
             if (error) {
-                console.warn(error)
+                console.warn("props.ipfs.dag.get", cid, error)
                 return
             }
 
             let data = result.value
             //NodeTypes is a mindmap node type
             if (NodeType.isNode(data)) {
-                this.newNode(data)
+                this.newNode(data, cid)
             }
             else {
                 this.props.ipfs.files.cat(cid, (error, file) => {
@@ -108,7 +108,6 @@ export default class IPLDReodeder extends PtsCanvas {
                         return
                     }
                     this.burls[cid].file = file
-                    console.log('Getting', cid, file.toString('utf-8'))
                 })
             }
         })
@@ -134,8 +133,13 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     newNode(data, nid) {
+        if (this.nodes[nid])
+            return
+
         let n = new NodeType(data)
         this.nodes[nid] = n
+
+        //this.toAll(this.nodes, (obj, cid) => { console.log('   ', cid) })
 
         let oid = n.origin.link
         this.loadCID(oid)
@@ -146,6 +150,18 @@ export default class IPLDReodeder extends PtsCanvas {
         }
 
         this.burls[oid].addNode(n)
+
+        this.removeBurl(nid)
+    }
+
+    removeBurl(oid)
+    {
+        console.log('Removing ', oid)
+        if(this.burls[oid])
+            delete this.burls[oid]
+
+        if(this.pts[oid])
+            delete this.pts[oid]
     }
 
     onBurlDown(pt, burl) {
@@ -297,7 +313,6 @@ export default class IPLDReodeder extends PtsCanvas {
             this.paint.bubble(b.pt, Now.originRadius(), '#F7E29C55')
             this.paint.text(b.oid, b.pt, Now.originRadius() * 1.5, '#BB6F6B88', false)
         }
-
     }
 
     paintHighlights() {
@@ -316,31 +331,11 @@ export default class IPLDReodeder extends PtsCanvas {
         }
     }
 
-    highlight() {
-        if (!this.pts[this.selectedId])
-            return
-        let npt = this.pts[this.selectedId]
-        let n = this.nodes[this.selectedId]
-        this.paint.bubbleOutline(npt, this.nodeRadius)
-        /*
-        if (!this.selectedRelation)
-            return
-
-        for (let r of n.relationships) {
-            if (r.destinationNode === this.selectedRelation) {
-                let tpt = this.pts[r.destinationNode]
-                this.drawHighlightLine(npt, tpt)
-                this.drawHighlightBubble(npt)
-            }
-        }*/
-    }
-
     animate(time, ftime) {
         this.world.update(ftime)
         this.toAll(this.nodes, this.addForces.bind(this))
         this.toAll(this.nodes, this.drawRelations.bind(this))
         this.toAll(this.burls, this.drawBurl.bind(this))
-        this.highlight()
         this.paintBorningNode()
         this.paintBorningRelation()
         this.paintHighlights()

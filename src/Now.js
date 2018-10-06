@@ -29,20 +29,20 @@ export default class Now {
         return Now._isPressing
     }
 
-    static set clickDownBurlSelection(burlSelection) {
+    static set downSelection(burlSelection) {
         Now._clickDownBurlSelection = burlSelection
     }
 
-    static get clickDownBurlSelection() {
+    static get downSelection() {
         return Now._clickDownBurlSelection
     }
 
-    static set clickUpBurlSelection(burlSelection) {
+    static set upSelection(burlSelection) {
         Now._clickUpBurlSelection = burlSelection
     }
 
-    static get clickDownBurlSelection() {
-        return Now._clickDownBurlSelection
+    static get upSelection() {
+        return Now._clickUpBurlSelection
     }
 
     static set currentBurlSelection(burlSelection) {

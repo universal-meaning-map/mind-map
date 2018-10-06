@@ -36,8 +36,6 @@ export default class IPLDReodeder extends PtsCanvas {
         this.onBurlLeave = this.onBurlLeave.bind(this)
         this.onBurlMove = this.onBurlMove.bind(this)
 
-        this.borningRelation = []
-
         this.setIpfs()
 
         this._ptsToDraw = []
@@ -152,25 +150,25 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     onBurlDown(pt, burl) {
-        Now.currentBurlSelection =  this.getBurlSelection(pt, burl)
+        Now.currentBurlSelection = this.getBurlSelection(pt, burl)
         Now.clickDownBurlSelection = Now.currentBurlSelection
     }
 
     onBurlUp(pt, burl) {
-        Now.currentBurlSelection =  this.getBurlSelection(pt, burl)
+        Now.currentBurlSelection = this.getBurlSelection(pt, burl)
         Now.clickUpBurlSelection = Now.currentBurlSelection
+        this.checkBorningRelation()
     }
 
     onBurlHover(pt, burl) {
     }
 
     onBurlLeave(pt, burl) {
-        Now.currentBurlSelection =  null
+        Now.currentBurlSelection = null
     }
 
-    onBurlMove(pt, burl) 
-    {
-        Now.currentBurlSelection =  this.getBurlSelection(pt, burl)
+    onBurlMove(pt, burl) {
+        Now.currentBurlSelection = this.getBurlSelection(pt, burl)
     }
 
     getBurlSelection(pointer, burl) {
@@ -192,16 +190,6 @@ export default class IPLDReodeder extends PtsCanvas {
         }
     }
 
-    highlightOrigin() {
-        console.log("origin")
-
-    }
-
-    highlightNode() {
-        console.log("node")
-    }
-
-    //list of points of the relations that intersect with the node bubble
     getClosestNodeRelationToPointer(pointer, burl) {
         let closestNode = null
         let closestDistance = null
@@ -311,7 +299,6 @@ export default class IPLDReodeder extends PtsCanvas {
             this.paint.bubble(b.pt, Now.originRadius(), '#F7E29C55')
             this.paint.text(b.oid, b.pt, Now.originRadius() * 1.5, '#BB6F6B88', false)
         }
-
     }
 
     drawHighlightLine(pt1, pt2, color = "#f36") {
@@ -359,6 +346,16 @@ export default class IPLDReodeder extends PtsCanvas {
         }
     }
 
+    checkBorningRelation() {
+        console.log('checking', Now.clickDownBurlSelection, Now.clickUpBurlSelection)
+        if (!Now.clickDownBurlSelection || !Now.clickUpBurlSelection)
+            return
+        console.log('here')
+        if(Now.clickDownBurlSelection.burl.oid === Now.clickUpBurlSelection.burl.oid)
+            return
+        console.log("relation!")
+    }
+
     paintBorningNode() {
         if (this.props.borningNode) {
             this.paint.bubble(this.props.borningNode.pt, Now.originRadius(), '#bfb')
@@ -372,7 +369,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     paintBorningRelation() {
-        if(!Now.isPressing)
+        if (!Now.isPressing)
             return
         if (!Now.clickDownBurlSelection)
             return
@@ -380,7 +377,7 @@ export default class IPLDReodeder extends PtsCanvas {
         let opt = Now.clickDownBurlSelection.burl.pt
         let tpt = this.space.pointer
 
-        if(Now.currentBurlSelection)
+        if (Now.currentBurlSelection)
             tpt = Now.currentBurlSelection.burl.pt
 
         this.paint.arrow(opt, tpt, 0, '#f36')

@@ -50,7 +50,6 @@ export default class IPLDReodeder extends PtsCanvas {
 
         if (this.props.ipfs.isOnline()) {
             this.setCids(nextProps.cids)
-            console.log("in")
         }
         else {
             console.warn("IPFS not ready yet")
@@ -88,7 +87,6 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     loadCID(cid) {
-        console.log('loading', cid)
         //We display the cid right awy
         this.newBurl(cid)
         //we try to load its content as a dag
@@ -98,12 +96,9 @@ export default class IPLDReodeder extends PtsCanvas {
                 return
             }
 
-
             let data = result.value
-            console.log('loaded', data)
             //NodeTypes is a mindmap node type
             if (NodeType.isNode(data)) {
-                console.log('Loaded new node')
                 this.newNode(data)
             }
             else {
@@ -154,29 +149,30 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     onBurlDown(pt, burl) {
-        Now.currentBurlSelection = this.getBurlSelection(pt, burl)
-        Now.downSelection = Now.currentBurlSelection
+        Now.hoverSelection = this.getBurlSelection(pt, burl)
+        Now.downSelection = Now.hoverSelection
     }
 
     onBurlUp(pt, burl) {
-        Now.currentBurlSelection = this.getBurlSelection(pt, burl)
-        Now.upSelection = Now.currentBurlSelection
+        Now.hoverSelection = this.getBurlSelection(pt, burl)
+        Now.upSelection = Now.hoverSelection
         this.checkBorningRelation()
     }
 
     onBurlHover(pt, burl) {
+        Now.hoverSelection = this.getBurlSelection(pt, burl)
     }
 
     onBurlLeave(pt, burl) {
-        Now.currentBurlSelection = null
+        Now.hoverSelection = null
     }
 
     onBurlMove(pt, burl) {
-        Now.currentBurlSelection = this.getBurlSelection(pt, burl)
+        Now.hoverSelection = this.getBurlSelection(pt, burl)
     }
 
     getBurlSelection(pointer, burl) {
-        this.paintPt(burl.pt)
+
         let closest = this.getClosestNodeRelationToPointer(pointer, burl)
         let nearbyNode = closest.node
         let nodeDistance = closest.distance
@@ -204,7 +200,6 @@ export default class IPLDReodeder extends PtsCanvas {
                 let circle = Circle.fromCenter(burl.pt, Now.nodeRadius())
                 let pts = Circle.intersectLine2D(circle, line)
                 for (let pt of pts) {
-                    this.paintPt(pt)
                     let distance = pointer.$subtract(pt).magnitude()
 
                     if (closestDistance == null) {
@@ -225,7 +220,6 @@ export default class IPLDReodeder extends PtsCanvas {
 
     paintPt(pt) {
         this._ptsToDraw.push(pt)
-
     }
 
     onZoomChange(zoom) {
@@ -303,11 +297,23 @@ export default class IPLDReodeder extends PtsCanvas {
             this.paint.bubble(b.pt, Now.originRadius(), '#F7E29C55')
             this.paint.text(b.oid, b.pt, Now.originRadius() * 1.5, '#BB6F6B88', false)
         }
+
     }
 
-    drawHighlightLine(pt1, pt2, color = "#f36") {
-        this.form.strokeOnly(color)
-        this.form.line([pt1, pt2])
+    paintHighlights() {
+        if (Now.downSelection) {
+            if (Now.downSelection.node)
+                this.paint.bubbleOutline(Now.downSelection.burl.pt, Now.nodeRadius(), '#f36')
+            else
+                this.paint.bubbleOutline(Now.downSelection.burl.pt, Now.originRadius(), '#f36')
+        }
+
+        if (Now.hoverSelection) {
+            if (Now.hoverSelection.node)
+                this.paint.bubbleOutline(Now.hoverSelection.burl.pt, Now.nodeRadius(), '#f365')
+            else
+                this.paint.bubbleOutline(Now.hoverSelection.burl.pt, Now.originRadius(), '#f365')
+        }
     }
 
     highlight() {
@@ -337,6 +343,8 @@ export default class IPLDReodeder extends PtsCanvas {
         this.highlight()
         this.paintBorningNode()
         this.paintBorningRelation()
+        this.paintHighlights()
+
         for (let pt of this._ptsToDraw)
             this.paint.bubble(pt, 10, '#f36')
         this._ptsToDraw = []
@@ -353,16 +361,28 @@ export default class IPLDReodeder extends PtsCanvas {
     checkBorningRelation() {
         if (!Now.downSelection || !Now.upSelection)
             return
+
         if (Now.downSelection.burl.oid === Now.upSelection.burl.oid)
+            return
+
+        //We assume only one relation per target and no type, for now
+        if (Now.downSelection.node && Now.downSelection.node.hasTarget(Now.upSelection.burl.oid))
             return
 
         this.createRelation(Now.downSelection, Now.upSelection)
     }
 
     createRelation(originSelection, targetSelection) {
-        //if(!originSelection.node)
+        if (originSelection.node) {
+            //We assume only one relation per target and no type, for now
+            if (originSelection.node.hasTarget(targetSelection.burl.oid)) {
+                consoe.log('target exists')
+            }
+            else {
+                console.log('target doesnt exists')
+            }
+        }
         let newNode = NodeType.getNewObj(originSelection.burl.oid, [targetSelection.burl.oid])
-        console.log(newNode)
         this.props.onNewNode(newNode)
 
     }
@@ -388,8 +408,8 @@ export default class IPLDReodeder extends PtsCanvas {
         let opt = Now.downSelection.burl.pt
         let tpt = this.space.pointer
 
-        if (Now.currentBurlSelection)
-            tpt = Now.currentBurlSelection.burl.pt
+        if (Now.hoverSelection)
+            tpt = Now.hoverSelection.burl.pt
 
         this.paint.arrow(opt, tpt, 0, '#f36')
     }

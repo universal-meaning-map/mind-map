@@ -45,11 +45,11 @@ export default class Now {
         return Now._clickUpBurlSelection
     }
 
-    static set currentBurlSelection(burlSelection) {
+    static set hoverSelection(burlSelection) {
         Now._currentBurlSelection = burlSelection
     }
 
-    static get currentBurlSelection() {
+    static get hoverSelection() {
         return Now._currentBurlSelection
     }
 

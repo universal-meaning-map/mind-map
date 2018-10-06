@@ -88,6 +88,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     loadCID(cid) {
+        console.log('loading', cid)
         //We display the cid right awy
         this.newBurl(cid)
         //we try to load its content as a dag
@@ -97,9 +98,12 @@ export default class IPLDReodeder extends PtsCanvas {
                 return
             }
 
+
             let data = result.value
+            console.log('loaded', data)
             //NodeTypes is a mindmap node type
             if (NodeType.isNode(data)) {
+                console.log('Loaded new node')
                 this.newNode(data)
             }
             else {

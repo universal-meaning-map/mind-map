@@ -78,7 +78,7 @@ export default class NodeType extends IpldType {
     }
 
     static getNewObj(oid, targets) {
-        let obj = {}
+        const obj = {}
         obj.origin = {}
         obj.origin.link = LinkType.getNewObj(oid)
         obj.relations = []

@@ -13,8 +13,7 @@ export default class App extends Component {
             pauseAnimation: false,
             currentZoom: 1,
             lastZoom: 1,
-            borningNode: { text: 'Unga bunga' },
-            isBorning: false,
+            borningNode: null,
             cids:[]
             //cids: ['zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC']
         }
@@ -107,7 +106,7 @@ export default class App extends Component {
 
     onInputReturn(text) {
         this.addTextOrigin(text)
-        this.setState({ hasFocus: false })
+        this.setState({ hasFocus: false , borningNode:null})
     }
 
     getInvisibleInput() {

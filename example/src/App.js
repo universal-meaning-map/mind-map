@@ -36,13 +36,11 @@ export default class App extends Component {
                 throw (error)
 
             let cid = result[0].hash
-            console.log('New origin', cid)
             this.addNewCID(cid)
         })
     }
 
     addNode(obj) {
-        console.log('new obj', obj)
         this.ipfs.dag.put(obj,{ format: 'dag-cbor', hashAlg: 'sha2-256' }, (error, result) => {
             if (error)
                 throw (error)
@@ -56,7 +54,6 @@ export default class App extends Component {
 
         if (this.state.cids.indexOf(cid) === -1) {
             this.setState({ cids: [...this.state.cids, cid] })
-            console.log('cid added', cid)
         }
         else {
             console.log('cid exists already', cid)

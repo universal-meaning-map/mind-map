@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import IPLDRender from 'ipld-mindmap-ptsjs-render'
-//import './IpfsController'
 import IPFS from 'ipfs'
 import InvisibleInput from 'ipld-mindmap-ptsjs-render/example/src/InvisibleInput'
-import CIDTool from 'cid-tool'
-//import Buffer from 'buffer'
+
 var Buffer = require('buffer/').Buffer
 
 export default class App extends Component {
@@ -17,7 +15,8 @@ export default class App extends Component {
             lastZoom: 1,
             borningNode: { text: 'Unga bunga' },
             isBorning: false,
-            cids: ['zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC']
+            cids:[]
+            //cids: ['zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC']
         }
 
         this.ipfs = new IPFS()
@@ -31,6 +30,7 @@ export default class App extends Component {
             path: 'origin.txt',
             content: Buffer.from(text, 'utf8')
         }
+
         this.ipfs.files.add(file, (error, result) => {
             if (error)
                 throw (error)
@@ -42,7 +42,8 @@ export default class App extends Component {
     }
 
     addNode(obj) {
-        this.ipfs.dag.put(obj, (error, result) => {
+        console.log('new obj', obj)
+        this.ipfs.dag.put(obj,{ format: 'dag-cbor', hashAlg: 'sha2-256' }, (error, result) => {
             if (error)
                 throw (error)
 

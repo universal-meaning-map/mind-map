@@ -18,7 +18,6 @@ export default class IPLDReodeder extends PtsCanvas {
         this.nodes = {}
         this.pts = {}
         this.burls = {}//a global index of burls cid:{pt,nodes[nid1,nid2],contentPreview}
-        this.btns = []
 
         this.borningNode = new Pt(0, 0)
 
@@ -114,20 +113,23 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     newBurl(oid) {
+        //Remove node burls will try to be created again
+        if (this.nodes[oid])
+            return
+        
         if (this.burls[oid])
             return
 
         if (this.pts[oid])
             return
 
-        let pt = this.addNewPtParticle()
+        let pt = this.addNewPtParticle(oid)
         this.pts[oid] = pt
 
         let b = new Burl(oid, pt)
         this.burls[oid] = b
 
         let btn = b.setInteraction(this.onBurlDown, this.onBurlUp, this.onBurlHover, this.onBurlLeave, this.onBurlMove)
-        this.btns.push(btn)
 
         return b
     }
@@ -154,19 +156,24 @@ export default class IPLDReodeder extends PtsCanvas {
         this.removeBurl(nid)
     }
 
-    removeBurl(oid)
-    {
+    removeBurl(oid) {
         console.log('Removing ', oid)
-        if(this.burls[oid])
-            delete this.burls[oid]
-
-        if(this.pts[oid])
-            delete this.pts[oid]
+        if (Now.upSelection.burl.oid)
+            Now.upSelection = null
+        if (Now.hoverSelection.burl.oid)
+            Now.hoverSelection = null
+        if (Now.downSelection.burl.oid)
+            Now.downSelection = null
+        this.world.remove(oid)
+        delete this.burls[oid]
+        delete this.pts[oid]
     }
 
     onBurlDown(pt, burl) {
         Now.hoverSelection = this.getBurlSelection(pt, burl)
         Now.downSelection = Now.hoverSelection
+        console.log('existing burls')
+        this.toAll(this.burls, (a, id) => { console.log("  ", id) })
     }
 
     onBurlUp(pt, burl) {
@@ -260,10 +267,10 @@ export default class IPLDReodeder extends PtsCanvas {
         //this.create();
     }
 
-    addNewPtParticle() {
+    addNewPtParticle(oid) {
         let initPt = Shape.randomPt(this.space.center)
         let particle = new Particle(initPt).size(Now.originRadius() + Now.nodeArm());
-        this.world.add(particle)
+        this.world.add(particle, oid)
         return particle
     }
 
@@ -411,7 +418,10 @@ export default class IPLDReodeder extends PtsCanvas {
 
     action(type, px, py) {
         Now.updateAction(type)
-        UI.track(this.btns, type, new Pt(px, py));
+        this.toAll(this.burls, (burl, oid) => {
+            UI.track([burl.btn], type, new Pt(px, py));
+        })
+
     }
 
     selectNewId(newId) {

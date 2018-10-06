@@ -71,6 +71,20 @@ export default class NodeType extends IpldType {
 
         return true
     }
+
+    static getNewObj(oid, targets) {
+        let obj = {}
+        obj.origin = {}
+        obj.origin.link = LinkType.getNewObj(oid)
+        obj.relations = []
+        for (let tid of targets) {
+            let r = RelationType.getNewObj(tid)
+            obj.relations.push(r)
+        }
+        return obj
+    }
+
+
 }
 
 class RelationType {
@@ -106,6 +120,15 @@ class RelationType {
 
         return true
     }
+
+    static getNewObj(tid, typeId) {
+        let obj = {}
+        obj.target = {}
+        obj.target.link = LinkType.getNewObj(tid)
+        if (typeId)
+            obj.type = LinkType.getNewObj(typeId)
+        return obj
+    }
 }
 
 class LinkWrapType {
@@ -120,7 +143,7 @@ class LinkWrapType {
         return this._wrap.link
     }
 
-    get wrap(){
+    get wrap() {
         return this._wrap
     }
 
@@ -131,7 +154,7 @@ class LinkWrapType {
 
             return false
         }
-        
+
         if (!obj.link) {
             if (logError)
                 console.error('LinkWrapType: !obj.link', obj)
@@ -147,4 +170,5 @@ class LinkWrapType {
 
         return true
     }
+
 }

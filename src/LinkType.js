@@ -30,4 +30,11 @@ export default class LinkType {
 
         return true
     }
+
+    static getNewObj(cid)
+    {
+        let obj = {}
+        obj['/'] = cid
+        return obj
+    }
 }

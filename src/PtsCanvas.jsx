@@ -16,7 +16,6 @@ export default class PtsCanvas extends React.Component {
     this.state = {
       isPressing: false,
       isLongPress: false,
-      pressDelay: 100,
       touchStartTimestamp: 0
     }
 
@@ -90,7 +89,7 @@ export default class PtsCanvas extends React.Component {
   onTouchStart(e) {
     if (this.pressingTimeout)
       clearTimeout(this.pressingTimeout)
-    this.pressingTimeout = setTimeout(this.onPressTimeReached, this.state.pressDelay)
+    this.pressingTimeout = setTimeout(this.onPressTimeReached, this.props.longPressDelay)
     // this.setState({ touchStartTimestamp: Date.now() })
     if (this.props.onPressStart)
       this.props.onPressStart(this.space.pointer)
@@ -130,13 +129,14 @@ export default class PtsCanvas extends React.Component {
         onPinchMove={this.onPinchMove.bind(this)}
         onPinchStart={this.onPinchStart.bind(this)}
         onPinchEnd={this.onPinchEnd.bind(this)}
-        //onPress={this.onPress.bind(this).bind('contextmenu', function (e) { return false })}
         onTouchStart={this.onTouchStart.bind(this)}
         onTouchEnd={this.onTouchEnd.bind(this)}
         onMouseDown={this.onTouchStart.bind(this)}
         onMouseUp={this.onTouchEnd.bind(this)}
-
-        pressDelay={50}>
+        //onPress={this.onPress.bind(this).bind('contextmenu', function (e) { return false })}
+        //pressDelay={this.props.pressDelay}
+        >
+        
         <div className={this.props.name || ""}>
           <canvas
             height={800}

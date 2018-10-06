@@ -41,28 +41,28 @@ export default class App extends Component {
         })
     }
 
-    addNode(obj)
-    {
+    addNode(obj) {
         this.ipfs.dag.put(obj, (error, result) => {
             if (error)
                 throw (error)
 
             console.log(result)
             let cid = result.multihash
-            console.log('New node', cid, this)
-            this.addNewCID(cid)
+            let strCid = CIDTool.format(cid)
+
+            console.log('New node', strCid, this)
+            this.addNewCID(strCid)
         })
     }
 
     addNewCID(cid) {
-        let strCid = CIDTool.format(cid)
-       
-        if (this.state.cids.indexOf(strCid) === -1) {
-            this.setState({ cids: [...this.state.cids, strCid] })
-            console.log('cid added', strCid)
+
+        if (this.state.cids.indexOf(cid) === -1) {
+            this.setState({ cids: [...this.state.cids, cid] })
+            console.log('cid added', cid)
         }
         else {
-            console.log('cid exists already', strCid)
+            console.log('cid exists already', cid)
         }
     }
 
@@ -85,7 +85,7 @@ export default class App extends Component {
     }
 
     onPressStart(mousePosition) {
-       // this.setState({ hasFocus: false })
+        // this.setState({ hasFocus: false })
     }
 
     onLongPressStart(mousePosition) {
@@ -93,13 +93,13 @@ export default class App extends Component {
             text: '',
             pt: mousePosition
         }
-        /*.setState({
+        this.setState({
             borningNode: borningNode,
-        })*/
+        })
     }
 
     onLongPressEnd(mousePosition) {
-        //this.setState({ hasFocus: true })
+        this.setState({ hasFocus: true })
     }
 
     onInputChange(value) {
@@ -108,12 +108,12 @@ export default class App extends Component {
             pt: this.state.borningNode.pt
         }
 
-        //this.setState({ borningNode: borningNode })
+        this.setState({ borningNode: borningNode })
     }
 
     onInputReturn(text) {
         this.addTextOrigin(text)
-        //this.setState({ hasFocus: false })
+        this.setState({ hasFocus: false })
     }
 
     getInvisibleInput() {
@@ -146,6 +146,7 @@ export default class App extends Component {
                     onLongPressStart={this.onLongPressStart.bind(this)}
                     onLongPressEnd={this.onLongPressEnd.bind(this)}
                     onPressStart={this.onPressStart.bind(this)}
+                    longPressDelay = {100}
                     borningNode={this.state.borningNode}
                     onNewNode={this.addNode}
                     zoom={this.state.currentZoom}

@@ -14,6 +14,7 @@ export default class IPLDReodeder extends PtsCanvas {
     constructor(props) {
         super(props);
 
+        this.state.ipfsIsReady = false
         this.world = null
         this.nodes = {}
         this.pts = {}
@@ -41,13 +42,15 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     componentWillReceiveProps(nextProps) {
+       
+
         if (nextProps.zoom)
             this.onZoomChange(nextProps.zoom)
 
         if (JSON.stringify(nextProps.cids) === JSON.stringify(this.props.cids))
             return
 
-        if (this.props.ipfs.isOnline()) {
+        if (this.state.ipfsIsReady) {
             this.setCids(nextProps.cids)
         }
         else {
@@ -56,6 +59,9 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     componentDidUpdate(prevProps) {
+        if (!prevProps.ipfs && this.props.ipfs)
+            this.setIpfs()
+            
         this.checkPause()
     }
 
@@ -63,18 +69,48 @@ export default class IPLDReodeder extends PtsCanvas {
         this.paint = new Paint(this.form)
     }
 
+    isJsIpfs(ipfsId) {
+        if (ipfsId.agentVersion.indexOf('js') !== -1)
+            return true
+        return false
+    }
+
     setIpfs() {
-        if (!this.props.ipfs) throw (new Error('No IPFS object'))
+        console.log('Setting Ipfs')
+
+        if (!this.props.ipfs) {
+            console.warn('No ipfs yet...')
+            return
+        }
+
         let that = this
-        this.props.ipfs.on('start', () => {
-            that.onIpfsReady(that.props.ipfs)
+        this.props.ipfs.id().then((id) => {
+
+            if (this.isJsIpfs(id)) {
+                console.log("isJS")
+
+                if (this.props.ipfs.isOnline()) {
+                    console.log('isOnline')
+                    this.onIpfsReady()
+                }
+                else {
+                    console.log('isOffline')
+                    this.props.ipfs.on('start', () => {
+                        console.log('Was offline')
+                        this.onIpfsReady()
+                    })
+                }
+            }
+            else {
+                console.log("isGo")
+                this.onIpfsReady()
+            }
         })
 
-        if (this.props.ipfs.isOnline())
-            this.onIpfsReady()
     }
 
     onIpfsReady() {
+        this.setState({ ipfsIsReady: true })
         this.setCids(this.props.cids)
     }
 

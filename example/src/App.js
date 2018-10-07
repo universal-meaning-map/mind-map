@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import IPLDRender from 'ipld-mindmap-ptsjs-render'
-import IPFS from 'ipfs'
 import InvisibleInput from 'ipld-mindmap-ptsjs-render/example/src/InvisibleInput'
+import getIpfs from 'window.ipfs-fallback'
 
 var Buffer = require('buffer/').Buffer
 
@@ -14,14 +14,23 @@ export default class App extends Component {
             currentZoom: 1,
             lastZoom: 1,
             borningNode: null,
-            cids: []
+            cids: [],
+            ipfs: null
             //cids: ['zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC']
         }
 
-        this.ipfs = new IPFS()
         this.addNode = this.addNode.bind(this)
         this.addTextOrigin = this.addTextOrigin.bind(this)
+
+        getIpfs()
+            .then((ipfs) => {
+                console.warn('Got IPFS')
+                this.setState({ ipfs: ipfs })
+            })
+            .catch((error) => console.error)
     }
+
+
 
     addTextOrigin(text) {
 
@@ -30,7 +39,7 @@ export default class App extends Component {
             content: Buffer.from(text, 'utf8')
         }
 
-        this.ipfs.files.add(file, (error, result) => {
+        this.state.ipfs.files.add(file, (error, result) => {
             if (error)
                 throw (error)
 
@@ -40,7 +49,7 @@ export default class App extends Component {
     }
 
     addNode(obj) {
-        this.ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (error, result) => {
+        this.state.ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (error, result) => {
             if (error)
                 throw (error)
 
@@ -131,7 +140,7 @@ export default class App extends Component {
 
                 {invisibleInput}
                 <div><IPLDRender
-                    ipfs={this.ipfs}
+                    ipfs={this.state.ipfs}
                     cids={this.state.cids}
                     name="IPLDRender"
                     background="#fff"

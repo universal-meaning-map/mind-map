@@ -86,6 +86,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     loadCID(cid) {
+
         //We display the cid right away
         this.newBurl(cid)
         //we try to load its content as a dag
@@ -116,7 +117,7 @@ export default class IPLDReodeder extends PtsCanvas {
         //Remove node burls will try to be created again
         if (this.nodes[oid])
             return
-        
+
         if (this.burls[oid])
             return
 
@@ -124,6 +125,7 @@ export default class IPLDReodeder extends PtsCanvas {
             return
 
         let pt = this.addNewPtParticle(oid)
+
         this.pts[oid] = pt
 
         let b = new Burl(oid, pt)
@@ -131,17 +133,26 @@ export default class IPLDReodeder extends PtsCanvas {
 
         let btn = b.setInteraction(this.onBurlDown, this.onBurlUp, this.onBurlHover, this.onBurlLeave, this.onBurlMove)
 
+        console.log('Created burl', oid)
+
         return b
+    }
+
+    addNewPtParticle(oid) {
+        let initPt = Shape.randomPt(this.space.center)
+        let particle = new Particle(initPt).size(Now.originRadius() + Now.nodeArm());
+        particle.id = oid // this is so we can retreive it later on
+        this.world.add(particle, oid)
+        return particle
     }
 
     newNode(data, nid) {
         if (this.nodes[nid])
             return
 
+
         let n = new NodeType(data)
         this.nodes[nid] = n
-
-        //this.toAll(this.nodes, (obj, cid) => { console.log('   ', cid) })
 
         let oid = n.origin.link
         this.loadCID(oid)
@@ -153,27 +164,53 @@ export default class IPLDReodeder extends PtsCanvas {
 
         this.burls[oid].addNode(n)
 
+        //previosly created burl before node was loaded
         this.removeBurl(nid)
     }
 
     removeBurl(oid) {
-        console.log('Removing ', oid)
-        if (Now.upSelection.burl.oid)
+        //return
+        if (Now.upSelection && Now.upSelection.burl.oid === oid)
             Now.upSelection = null
-        if (Now.hoverSelection.burl.oid)
+        if (Now.hoverSelection && Now.hoverSelection.burl.oid === oid)
             Now.hoverSelection = null
-        if (Now.downSelection.burl.oid)
+        if (Now.downSelection && Now.downSelection.burl.oid === oid)
             Now.downSelection = null
-        this.world.remove(oid)
+
+        this.getParticleIndex()
+
         delete this.burls[oid]
+        this.world.remove('particle', this.getParticleIndex(oid))
         delete this.pts[oid]
+
+        /*
+        console.log('Particle Index', this.getParticleIndex(oid))
+
+        console.log('Nodes')
+        this.toAll(this.nodes, (obj, cid) => { console.log('   ', cid) })
+
+        console.log('Burls')
+        this.toAll(this.burls, (a, id) => { console.log('   ', id) })
+
+        console.log('Pts')
+        this.toAll(this.pts, (a, id) => { console.log('   ', id) })
+
+        console.log("Removed", oid)
+        */
+    }
+
+    getParticleIndex(pid) {
+        for (let i = 0; i < this.world.particleCount; i++) {
+            if (this.world.particle(i).id === pid) {
+                return i
+            }
+        }
+        return -1
     }
 
     onBurlDown(pt, burl) {
         Now.hoverSelection = this.getBurlSelection(pt, burl)
         Now.downSelection = Now.hoverSelection
-        console.log('existing burls')
-        this.toAll(this.burls, (a, id) => { console.log("  ", id) })
     }
 
     onBurlUp(pt, burl) {
@@ -267,12 +304,6 @@ export default class IPLDReodeder extends PtsCanvas {
         //this.create();
     }
 
-    addNewPtParticle(oid) {
-        let initPt = Shape.randomPt(this.space.center)
-        let particle = new Particle(initPt).size(Now.originRadius() + Now.nodeArm());
-        this.world.add(particle, oid)
-        return particle
-    }
 
     addForces(n) {
 
@@ -347,6 +378,8 @@ export default class IPLDReodeder extends PtsCanvas {
         this.paintBorningRelation()
         this.paintHighlights()
 
+        this.world.drawParticles((p, i) => { this.form.fillOnly('#00f5').point(p, 10, "circle") });
+
         for (let pt of this._ptsToDraw)
             this.paint.bubble(pt, 10, '#f36')
         this._ptsToDraw = []
@@ -391,7 +424,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
     paintBorningNode() {
         if (this.props.borningNode) {
-            this.paint.bubble(this.props.borningNode.pt, Now.originRadius(), '#bfb')
+            this.paint.bubble(this.props.borningNode.pt, Now.originRadius(), '#ecd8')
             if (this.props.borningNode.text) {
                 this.paint.text(this.props.borningNode.text, this.props.borningNode.pt, Now.originRadius() * 2)
             }

@@ -42,7 +42,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     componentWillReceiveProps(nextProps) {
-       
+
 
         if (nextProps.zoom)
             this.onZoomChange(nextProps.zoom)
@@ -61,7 +61,7 @@ export default class IPLDReodeder extends PtsCanvas {
     componentDidUpdate(prevProps) {
         if (!prevProps.ipfs && this.props.ipfs)
             this.setIpfs()
-            
+
         this.checkPause()
     }
 
@@ -106,7 +106,6 @@ export default class IPLDReodeder extends PtsCanvas {
                 this.onIpfsReady()
             }
         })
-
     }
 
     onIpfsReady() {
@@ -125,7 +124,29 @@ export default class IPLDReodeder extends PtsCanvas {
 
         //We display the cid right away
         this.newBurl(cid)
-        //we try to load its content as a dag
+
+        if (this.isDag(cid)) {
+            this.loadDag(cid)
+        }
+        else {
+            console.log('Loading something else')
+            loadFile(cid)
+        }
+    }
+
+    getCodec(cidStr) {
+        let cidObj = new this.props.ipfs.types.CID(cidStr)
+        return cidObj.codec
+    }
+
+    isDag(cid) {
+        let codec = this.getCodec(cid)
+        if (codec === 'dag-cbor' || codec === 'dag-pb')
+            return true
+        return false
+    }
+
+    loadDag(cid) {
         this.props.ipfs.dag.get(cid, (error, result) => {
             if (error) {
                 console.warn("props.ipfs.dag.get", cid, error)
@@ -133,19 +154,33 @@ export default class IPLDReodeder extends PtsCanvas {
             }
 
             let data = result.value
-            //NodeTypes is a mindmap node type
+
             if (NodeType.isNode(data)) {
-                this.newNode(data, cid)
+                this.createNode(data, cid)
             }
             else {
-                this.props.ipfs.files.cat(cid, (error, file) => {
-                    if (error) {
-                        console.warn("ipfs.files.cat...", cid, error)
-                        return
-                    }
-                    this.burls[cid].file = file
-                })
+                this.createIPLD(data, cid)
             }
+        })
+    }
+
+    createIPLD(data, cid) {
+
+        //console.log("Note implemented", cid, data)
+        this.loadFile(cid)
+    }
+
+    loadFile(cid, onFail) {
+        console.log("loading text", cid)
+        this.props.ipfs.files.cat(cid, (error, file) => {
+
+            if (error) {
+                console.warn("ipfs.files.cat...", cid, error)
+                //onFail()
+                return
+            }
+            console.log('text', file)
+            this.burls[cid].file = file
         })
     }
 
@@ -182,7 +217,7 @@ export default class IPLDReodeder extends PtsCanvas {
         return particle
     }
 
-    newNode(data, nid) {
+    createNode(data, nid) {
         if (this.nodes[nid])
             return
 

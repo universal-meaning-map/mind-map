@@ -14,9 +14,9 @@ export default class App extends Component {
             currentZoom: 1,
             lastZoom: 1,
             borningNode: null,
-            cids: [],
+            cids: ["zdpuAxN9YnjyNiU8QqZUeenaeNXgiR1TUKDSbrFJKnme4ZLNa", "zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC", "Qmci4MUoKezwuEyoLbn7LbD8Z3mcyN6q2AHiT4Yp8srdKy"],
             ipfs: null
-            //cids: ['zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC']
+            //cids: ['']
         }
 
         this.addNode = this.addNode.bind(this)
@@ -26,10 +26,19 @@ export default class App extends Component {
             .then((ipfs) => {
                 console.warn('Got IPFS')
                 this.setState({ ipfs: ipfs })
+                //this.testStuff()
             })
             .catch((error) => console.error)
     }
 
+    testStuff() {
+        console.log('testing')
+        this.state.ipfs.file.get('ipfs/QmXoN9ehvmBeCSnjxzs81ZNkQb4Bqwg38GZLn7g9QThBxq', (res) => {
+            console.log(res)
+        }, (err) => {
+            console.error(err)
+        })
+    }
 
 
     addTextOrigin(text) {
@@ -44,6 +53,7 @@ export default class App extends Component {
                 throw (error)
 
             let cid = result[0].hash
+            this.publishToIPNS(cid)
             this.addNewCID(cid)
         })
     }
@@ -66,6 +76,22 @@ export default class App extends Component {
         else {
             console.log('cid exists already', cid)
         }
+    }
+
+    publishToIPNS(cid) {
+        let that = this
+        this.state.ipfs.name.publish(cid, function (err, res) {
+            console.log(res)
+            // You now receive a res which contains two fields:
+            //   - name: the name under which the content was published.
+            //   - value: the "real" address to which Name points.
+            console.log(`https://gateway.ipfs.io/ipns/${res.name}`)
+
+            that.state.ipfs.name.resolve(res.name, function (err, name) {
+                console.log('resolving', name)
+                // /ipfs/QmQrX8hka2BtNHa8N8arAq16TCVx5qHcb46c5yPewRycLm
+            })
+        })
     }
 
     handleChange(event) {

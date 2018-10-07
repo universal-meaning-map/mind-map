@@ -14,32 +14,26 @@ export default class App extends Component {
             currentZoom: 1,
             lastZoom: 1,
             borningNode: null,
-            cids: ["zdpuAxN9YnjyNiU8QqZUeenaeNXgiR1TUKDSbrFJKnme4ZLNa", "zdpuArtVCtqg54KPzzZPBDYvNmfjmqvB9bYtf6p6zPVq2DaGC", "Qmci4MUoKezwuEyoLbn7LbD8Z3mcyN6q2AHiT4Yp8srdKy"],
+            cids: ["zdpuAxN9YnjyNiU8QqZUeenaeNXgiR1TUKDSbrFJKnme4ZLNa", "QmRdgTtGVofrnT3hFsk9fHX5wc2NGzsZ8XR5Lv1tcsi2mo"],
             ipfs: null
-            //cids: ['']
         }
 
         this.addNode = this.addNode.bind(this)
         this.addTextOrigin = this.addTextOrigin.bind(this)
+        this.resolveIPNS = this.resolveIPNS.bind(this)
+        
+        let that = this
 
         getIpfs()
             .then((ipfs) => {
                 console.warn('Got IPFS')
+                ipfs.id().then((peer) => {
+                    this.resolveIPNS(peer.id)
+                })
                 this.setState({ ipfs: ipfs })
-                //this.testStuff()
             })
             .catch((error) => console.error)
     }
-
-    testStuff() {
-        console.log('testing')
-        this.state.ipfs.file.get('ipfs/QmXoN9ehvmBeCSnjxzs81ZNkQb4Bqwg38GZLn7g9QThBxq', (res) => {
-            console.log(res)
-        }, (err) => {
-            console.error(err)
-        })
-    }
-
 
     addTextOrigin(text) {
 
@@ -91,6 +85,16 @@ export default class App extends Component {
                 console.log('resolving', name)
                 // /ipfs/QmQrX8hka2BtNHa8N8arAq16TCVx5qHcb46c5yPewRycLm
             })
+        })
+    }
+
+    resolveIPNS(ipns) {
+        let that = this
+        this.state.ipfs.name.resolve(ipns, function (err, result) {
+            console.log('IPNS resolved', result)
+            let cid = result.path.replace('/ipfs/','')
+            console.log(cid)
+            that.addNewCID(cid)
         })
     }
 

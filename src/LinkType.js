@@ -15,6 +15,7 @@ export default class LinkType {
     }
 
     static isLink(obj) {
+
         if (!obj)
             return false
 
@@ -33,7 +34,7 @@ export default class LinkType {
 
     static getNewObj(cid)
     {
-        let obj = {}
+        const obj = {}
         obj['/'] = cid
         return obj
     }

@@ -14,11 +14,15 @@ export default class NodeType extends IpldType {
 
         if (obj.relations) {
             for (let r of obj.relations) {
-                let relation = new RelationType(r)
-                this._relations.push(relation)
-                this._targetCids.push(relation.target.link)
+                this._addRelation(r)
             }
         }
+    }
+
+    _addRelation(r) {
+        let relation = new RelationType(r)
+        this._relations.push(relation)
+        this._targetCids.push(relation.target.link)
     }
 
     get origin() {
@@ -33,9 +37,46 @@ export default class NodeType extends IpldType {
         return this._targetCids
     }
 
-    hasTarget(tid)
-    {
+    hasTarget(tid) {
         return this._targetCids.indexOf(tid) !== -1
+    }
+
+    newOriginFork(newOrigin) {
+        let newNode = NodeType.clone(this)
+
+        newNode._origin = new LinkWrapType(LinkWrapType.getNewObj(newOrigin))
+        return newNode
+    }
+
+    newRelationFork(newTarget, newType) {
+        let newNode = NodeType.clone(this)
+        let relationObj = RelationType.getNewObj(newTarget, newType)
+        newNode._addRelation(relationObj)
+        return newNode
+    }
+
+    removeRelationFork(oldTarget, oldType = null) {
+        let newNode = NodeType.clone(this)
+        for (let i = 0; i <= newNode._relations.length; i++) {
+            let r = newNode._relations[i]
+            if (r.target.link == oldTarget) {
+                if (r.type) {
+
+                    if (r.type.link == oldTarget) {
+                        newNode._relations.splice(i, 1)
+                        newNode._targetCids.splice(i, 1)
+                        return newNode
+                    }
+                }
+                else {
+                    newNode._relations.splice(i, 1)
+                    newNode._targetCids.splice(i, 1)
+                    return newNode
+                }
+            }
+        }
+        console.warn('No match for removeRelationFork', oldTarget, oldType, this)
+        return newNode
     }
 
     static isNode(obj, logError = false) {
@@ -80,8 +121,7 @@ export default class NodeType extends IpldType {
     //Brand new object from oid and target
     static getNewObj(oid, targets) {
         const obj = {}
-        obj.origin = {}
-        obj.origin.link = LinkType.getNewObj(oid)
+        obj.origin = LinkWrapType.getNewObj(oid)
         obj.relations = []
         for (let tid of targets) {
             let r = RelationType.getNewObj(tid)
@@ -91,13 +131,15 @@ export default class NodeType extends IpldType {
     }
 
     //Object from existing node
-    static toObj(node)
-    {
+    static toObj(node) {
         let oid = node.origin.link
         let targets = node.targetCids
         return NodeType.getNewObj(oid, targets)
     }
 
+    static clone(node) {
+        return new NodeType(NodeType.toObj(node))
+    }
 
 }
 
@@ -136,11 +178,10 @@ class RelationType {
     }
 
     static getNewObj(tid, typeId) {
-        let obj = {}
-        obj.target = {}
-        obj.target.link = LinkType.getNewObj(tid)
+        const obj = {}
+        obj.target = LinkWrapType.getNewObj(tid)
         if (typeId)
-            obj.type = LinkType.getNewObj(typeId)
+            obj.type = LinkWrapType.getNewObj(typeId)
         return obj
     }
 }
@@ -183,6 +224,12 @@ class LinkWrapType {
         }
 
         return true
+    }
+
+    static getNewObj(link) {
+        const obj = {}
+        obj.link = LinkType.getNewObj(link)
+        return obj
     }
 
 }

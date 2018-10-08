@@ -60,6 +60,7 @@
   "dependencies": {
     "buffer": "^5.2.1",
     "cid-tool": "^0.1.0",
+    "cids": "^0.5.5",
     "create-react-class": "^15.6.3",
     "pts": "^0.6.2",
     "react-tappable": "^1.0.4"

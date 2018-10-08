@@ -544,7 +544,7 @@ export default class IPLDReodeder extends PtsCanvas {
         }
 
         if (originSelection.node) {
-            oid = orign.node.origin.link
+            oid = originSelection.node.origin.link
             existingTargets = originSelection.node.targetCids
         }
 

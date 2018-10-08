@@ -7,7 +7,9 @@ import Shape from './Shape'
 import Paint from './Paint'
 import Burl from './Burl'
 import Now from './Now'
-import BurlSelection from './BurlSelection';
+import BurlSelection from './BurlSelection'
+import CID from 'cids';
+
 
 export default class IPLDReodeder extends PtsCanvas {
 
@@ -85,6 +87,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
         let that = this
         this.props.ipfs.id().then((id) => {
+            console.log('Peer id', id)
 
             if (this.isJsIpfs(id)) {
                 console.log("isJS")
@@ -115,13 +118,17 @@ export default class IPLDReodeder extends PtsCanvas {
 
     setCids(cids) {
         for (let cid of cids) {
+            
             if (!this.pts[cid])
                 this.loadCID(cid)
         }
     }
 
     loadCID(cid) {
-
+        console.log('loading',cid)
+        //Check if is valid cid
+        if(!cid)
+            return
         //We display the cid right away
         this.newBurl(cid)
 
@@ -135,12 +142,13 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     getCodec(cidStr) {
-        let cidObj = new this.props.ipfs.types.CID(cidStr)
+        let cidObj = new CID(cidStr)
         return cidObj.codec
     }
 
     isDag(cid) {
         let codec = this.getCodec(cid)
+        
         if (codec === 'dag-cbor' || codec === 'dag-pb')
             return true
         return false

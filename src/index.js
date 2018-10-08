@@ -9,7 +9,7 @@ import Burl from './Burl'
 import Now from './Now'
 import BurlSelection from './BurlSelection'
 import CID from 'cids';
-
+import DAGCBOR from 'ipld-dag-cbor'
 
 export default class IPLDReodeder extends PtsCanvas {
 
@@ -17,6 +17,7 @@ export default class IPLDReodeder extends PtsCanvas {
         super(props);
 
         this.state.ipfsIsReady = false
+        this.start.worldIsReady = false
         this.world = null
         this.nodes = {}
         this.pts = {}
@@ -52,12 +53,14 @@ export default class IPLDReodeder extends PtsCanvas {
         if (JSON.stringify(nextProps.cids) === JSON.stringify(this.props.cids))
             return
 
-        if (this.state.ipfsIsReady) {
-            this.setCids(nextProps.cids)
-        }
-        else {
-            console.warn("IPFS not ready yet")
-        }
+        if (!this.state.worldIsReady)
+            return
+
+        if (!this.state.ipfsIsReady)
+            return
+
+        this.setCids(nextProps.cids)
+
     }
 
     componentDidUpdate(prevProps) {
@@ -117,6 +120,12 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     setCids(cids) {
+        if (!this.state.worldIsReady)
+            return
+
+        if (!this.state.ipfsIsReady)
+            return
+
         for (let cid of cids) {
 
             if (!this.pts[cid])
@@ -180,7 +189,6 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     loadFile(cid, onFail) {
-        console.log("loading text", cid)
         this.props.ipfs.files.cat(cid, (error, file) => {
 
             if (error) {
@@ -188,7 +196,6 @@ export default class IPLDReodeder extends PtsCanvas {
                 //onFail()
                 return
             }
-            console.log('text', file)
             this.burls[cid].file = file
         })
     }
@@ -378,6 +385,8 @@ export default class IPLDReodeder extends PtsCanvas {
 
     start(space, bound) {
         this.world = new World(this.space.innerBound, 0.7, new Pt(0, 0));
+        this.setState({ worldIsReady: true })
+        this.setCids(this.props.cids)
     }
 
     resize() {
@@ -518,23 +527,40 @@ export default class IPLDReodeder extends PtsCanvas {
         let tid = targetSelection.burl.oid
         let existingTargets = []
 
-        if (originSelection.node)
-        {
+        let that = this
+        function make() {
+            
+            let targets = existingTargets.concat([tid])
+            let newNode = NodeType.getNewObj(oid, targets)
+            console.log('node', tid, newNode)
+            //that.props.onNewNode(newNode)
+        }
+
+        if (originSelection.node) {
             oid = orign.node.origin.link
             existingTargets = originSelection.node.targetCids
         }
 
-        if(targetSelection.node)
-        {
-            console.log('target is node')
-            tid = targetSelection.burl.oid
-        }
-        
-        let targets = existingTargets.concat([tid])
-        let newNode = NodeType.getNewObj(oid, targets)
-        console.log('newNode', newNode)
-        this.props.onNewNode(newNode)
+        if (targetSelection.node) {
 
+            let targetNodeObj = NodeType.toObj(targetSelection.node)
+            this.getDagCidFromObj(targetNodeObj, (nid) => {
+                tid = nid
+                console.log('node cid', tid)
+                make()
+            })
+        }
+        else {
+            make()
+        }
+    }
+
+
+    getDagCidFromObj(obj, callback) {
+        DAGCBOR.util.cid(obj, (err, result) => {
+            let cid = result.toBaseEncodedString()
+            callback(cid)
+        })
     }
 
     paintBorningNode() {

@@ -58,6 +58,7 @@ export default class App extends Component {
                 throw (error)
 
             let cid = result.toBaseEncodedString()
+            this.publishToIPNS(cid)
             this.addNewCID(cid)
         })
     }
@@ -76,6 +77,8 @@ export default class App extends Component {
         let that = this
         this.state.ipfs.name.publish(cid, function (err, res) {
             console.log(res)
+            if(!res)
+                return
             // You now receive a res which contains two fields:
             //   - name: the name under which the content was published.
             //   - value: the "real" address to which Name points.
@@ -92,6 +95,8 @@ export default class App extends Component {
         let that = this
         this.state.ipfs.name.resolve(ipns, function (err, result) {
             console.log('IPNS resolved', result)
+            if(!result || !result.path)
+                return
             let cid = result.path.replace('/ipfs/','')
             console.log(cid)
             that.addNewCID(cid)

@@ -96,7 +96,6 @@ export default class IPLDReodeder extends PtsCanvas {
                 console.log("isJS")
 
                 if (this.props.ipfs.isOnline()) {
-                    console.log('isOnline')
                     this.onIpfsReady()
                 }
                 else {
@@ -139,6 +138,7 @@ export default class IPLDReodeder extends PtsCanvas {
         if (!cid)
             return
         //We display the cid right away, will replace it later once its content is loaded
+
         this.newBurl(cid)
 
         if (this.isDag(cid)) {
@@ -202,6 +202,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
     newBurl(oid) {
         //Remove node burls will try to be created again
+        //TODO Should each node have its own pt reference?
         if (this.nodes[oid])
             return
 
@@ -219,8 +220,6 @@ export default class IPLDReodeder extends PtsCanvas {
         this.burls[oid] = b
 
         let btn = b.setInteraction(this.onBurlDown, this.onBurlUp, this.onBurlHover, this.onBurlLeave, this.onBurlMove)
-
-        console.log('Created burl', oid)
 
         return b
     }
@@ -343,7 +342,9 @@ export default class IPLDReodeder extends PtsCanvas {
 
         for (let n of burl.nodes) {
             for (let r of n.relations) {
-                let line = new Group(burl.pt, this.pts[r.target.link])
+                let opt = burl.pt
+                let tpt = this.getTargetPt(r.target.link)
+                let line = new Group(opt, tpt)
                 let circle = Circle.fromCenter(burl.pt, Now.nodeRadius())
                 let pts = Circle.intersectLine2D(circle, line)
                 for (let pt of pts) {
@@ -398,7 +399,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
         for (let r of n.relations) {
             //targetPt
-            let tpt = this.pts[r.target.link]
+            let tpt = this.getTargetPt(r.target.link)
             //the attraction force will be proporcional to its distance
             let oid = n.origin.link
             if (!this.pts[oid])
@@ -416,11 +417,18 @@ export default class IPLDReodeder extends PtsCanvas {
         }
     }
 
+    getTargetPt(id) {
+        if (this.pts[id])
+            return this.pts[id]
+        if (this.nodes[id])
+            return this.getTargetPt(this.nodes[id].origin.link)
+    }
+
     drawRelations(n) {
         let lineColor = "#999"
         for (let r of n.relations) {
             let opt = this.pts[n.origin.link]
-            let tpt = this.pts[r.target.link]
+            let tpt = this.getTargetPt(r.target.link)
             this.paint.arrow(opt, tpt, Now.originRadius(), lineColor)
         }
     }
@@ -472,7 +480,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
         for (let r of n.relations) {
             let tid = r.target.link
-            let tpt = this.pts[tid]
+            let tpt = this.getTargetPt(tid)
             this.paint.arrow(opt, tpt, 0, '#f3f')
 
             if (this.nodes[tid]) {
@@ -529,11 +537,10 @@ export default class IPLDReodeder extends PtsCanvas {
 
         let that = this
         function make() {
-            
+
             let targets = existingTargets.concat([tid])
             let newNode = NodeType.getNewObj(oid, targets)
-            console.log('node', tid, newNode)
-            //that.props.onNewNode(newNode)
+            that.props.onNewNode(newNode)
         }
 
         if (originSelection.node) {
@@ -546,7 +553,6 @@ export default class IPLDReodeder extends PtsCanvas {
             let targetNodeObj = NodeType.toObj(targetSelection.node)
             this.getDagCidFromObj(targetNodeObj, (nid) => {
                 tid = nid
-                console.log('node cid', tid)
                 make()
             })
         }

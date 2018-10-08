@@ -546,6 +546,18 @@ export default class IPLDReodeder extends PtsCanvas {
         if (originSelection.node) {
             oid = originSelection.node.origin.link
             existingTargets = originSelection.node.targetCids
+
+            //we need origin node cid because we will repalce it
+            let originNodeObj = NodeType.toObj(originSelection.node)
+            let nodeToBeReplaced = null
+            this.getDagCidFromObj(originNodeObj, (nid) => {
+                nodeToBeReplaced = nid
+
+                let targets = existingTargets.concat([tid])
+                let newNode = NodeType.getNewObj(oid, targets)
+                that.props.onReplaceNode(nodeToBeReplaced, newNode)
+            })
+            return
         }
 
         if (targetSelection.node) {

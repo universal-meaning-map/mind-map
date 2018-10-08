@@ -18,11 +18,10 @@ export default class App extends Component {
             ipfs: null
         }
 
+        this.replaceNode = this.replaceNode.bind(this)
         this.addNode = this.addNode.bind(this)
         this.addTextOrigin = this.addTextOrigin.bind(this)
         this.resolveIPNS = this.resolveIPNS.bind(this)
-        
-        let that = this
 
         getIpfs()
             .then((ipfs) => {
@@ -48,22 +47,27 @@ export default class App extends Component {
 
             let cid = result[0].hash
             //this.publishToIPNS(cid)
-            this.addNewCID(cid)
+            this.addCID(cid)
         })
+    }
+
+    replaceNode(cidToRemove, newObj) {
+        this.removeCID(cidToRemove)
+        this.addNode(newObj)
     }
 
     addNode(obj) {
         this.state.ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (error, result) => {
             if (error)
                 throw (error)
-                let cid = result.toBaseEncodedString()
-                console.log('New node added', cid)
+            let cid = result.toBaseEncodedString()
+            console.log('New node added', cid)
             //this.publishToIPNS(cid)
-            this.addNewCID(cid)
+            this.addCID(cid)
         })
     }
 
-    addNewCID(cid) {
+    addCID(cid) {
 
         if (this.state.cids.indexOf(cid) === -1) {
             this.setState({ cids: [...this.state.cids, cid] })
@@ -73,11 +77,16 @@ export default class App extends Component {
         }
     }
 
+    removeCID(cidToRemove) {
+        let cids = this.state.cids.filter(cid => cid !== cidToRemove)
+        this.setState({ cids: cids })
+    }
+
     publishToIPNS(cid) {
         let that = this
         this.state.ipfs.name.publish(cid, function (err, res) {
             console.log(res)
-            if(!res)
+            if (!res)
                 return
             // You now receive a res which contains two fields:
             //   - name: the name under which the content was published.
@@ -95,11 +104,11 @@ export default class App extends Component {
         let that = this
         this.state.ipfs.name.resolve(ipns, function (err, result) {
             console.log('IPNS resolved', result)
-            if(!result || !result.path)
+            if (!result || !result.path)
                 return
-            let cid = result.path.replace('/ipfs/','')
+            let cid = result.path.replace('/ipfs/', '')
             console.log(cid)
-            that.addNewCID(cid)
+            that.addCID(cid)
         })
     }
 
@@ -187,6 +196,7 @@ export default class App extends Component {
                     longPressDelay={500}
                     borningNode={this.state.borningNode}
                     onNewNode={this.addNode}
+                    onReplaceNode={this.replaceNode}
                     zoom={this.state.currentZoom}
                     loop={true} />
                 </div>

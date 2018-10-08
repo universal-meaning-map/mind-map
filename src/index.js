@@ -118,16 +118,16 @@ export default class IPLDReodeder extends PtsCanvas {
 
     setCids(cids) {
         for (let cid of cids) {
-            
+
             if (!this.pts[cid])
                 this.loadCID(cid)
         }
     }
 
     loadCID(cid) {
-        console.log('loading',cid)
+        console.log('loading', cid)
         //Check if is valid cid
-        if(!cid)
+        if (!cid)
             return
         //We display the cid right away
         this.newBurl(cid)
@@ -148,7 +148,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
     isDag(cid) {
         let codec = this.getCodec(cid)
-        
+
         if (codec === 'dag-cbor' || codec === 'dag-pb')
             return true
         return false
@@ -434,17 +434,44 @@ export default class IPLDReodeder extends PtsCanvas {
 
     paintHighlights() {
         if (Now.downSelection) {
-            if (Now.downSelection.node)
+            if (Now.downSelection.node) {
                 this.paint.bubbleOutline(Now.downSelection.burl.pt, Now.nodeRadius(), '#f36')
-            else
+                //this.paintNodeTree(Now.downSelection.node)
+            }
+            else {
                 this.paint.bubbleOutline(Now.downSelection.burl.pt, Now.originRadius(), '#f36')
+
+            }
         }
 
         if (Now.hoverSelection) {
-            if (Now.hoverSelection.node)
-                this.paint.bubbleOutline(Now.hoverSelection.burl.pt, Now.nodeRadius(), '#f365')
-            else
+            if (Now.hoverSelection.node) {
+                this.paintNodeTree(Now.hoverSelection.node)
+                //this.paint.bubbleOutline(Now.hoverSelection.burl.pt, Now.nodeRadius(), '#f365')
+            }
+            else {
                 this.paint.bubbleOutline(Now.hoverSelection.burl.pt, Now.originRadius(), '#f365')
+
+            }
+        }
+    }
+
+    paintNodeTree(n) {
+        console.log('tree')
+        let opt = this.pts[n.origin.link]
+        this.paint.bubbleOutline(opt, Now.nodeRadius(), '#f3f')
+
+        for (let r of n.relations) {
+            let tid = r.target.link
+            let tpt = this.pts[tid]
+            this.paint.arrow(opt, tpt, 0, '#f3f')
+
+            if (this.nodes[tid]) {
+                this.paintNodeTree(this.nodes[tid])
+            }
+            else {
+                this.paint.bubbleOutline(tpt, Now.originRadius(), '#f3f')
+            }
         }
     }
 

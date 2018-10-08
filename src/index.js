@@ -125,16 +125,17 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     loadCID(cid) {
-        console.log('loading', cid)
+
         //Check if is valid cid
         if (!cid)
             return
-        //We display the cid right away
+        //We display the cid right away, will replace it later once its content is loaded
         this.newBurl(cid)
 
         if (this.isDag(cid)) {
             this.loadDag(cid)
         }
+
         else {
             console.log('Loading something else')
             loadFile(cid)
@@ -457,7 +458,6 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     paintNodeTree(n) {
-        console.log('tree')
         let opt = this.pts[n.origin.link]
         this.paint.bubbleOutline(opt, Now.nodeRadius(), '#f3f')
 
@@ -514,16 +514,25 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     createRelation(originSelection, targetSelection) {
-        if (originSelection.node) {
-            //We assume only one relation per target and no type, for now
-            if (originSelection.node.hasTarget(targetSelection.burl.oid)) {
-                consoe.log('target exists')
-            }
-            else {
-                console.log('target doesnt exists')
-            }
+        let oid = originSelection.burl.oid
+        let tid = targetSelection.burl.oid
+        let existingTargets = []
+
+        if (originSelection.node)
+        {
+            oid = orign.node.origin.link
+            existingTargets = originSelection.node.targetCids
         }
-        let newNode = NodeType.getNewObj(originSelection.burl.oid, [targetSelection.burl.oid])
+
+        if(targetSelection.node)
+        {
+            console.log('target is node')
+            tid = targetSelection.burl.oid
+        }
+        
+        let targets = existingTargets.concat([tid])
+        let newNode = NodeType.getNewObj(oid, targets)
+        console.log('newNode', newNode)
         this.props.onNewNode(newNode)
 
     }

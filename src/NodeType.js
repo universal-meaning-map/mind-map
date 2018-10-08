@@ -77,6 +77,7 @@ export default class NodeType extends IpldType {
         return true
     }
 
+    //Brand new object from oid and target
     static getNewObj(oid, targets) {
         const obj = {}
         obj.origin = {}
@@ -87,6 +88,14 @@ export default class NodeType extends IpldType {
             obj.relations.push(r)
         }
         return obj
+    }
+
+    //Object from existing node
+    static toObj(node)
+    {
+        let oid = node.origin.link
+        let targets = node.targetCids
+        return NodeType.getNewObj(oid, targets)
     }
 
 

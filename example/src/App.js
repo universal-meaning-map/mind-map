@@ -47,7 +47,7 @@ export default class App extends Component {
                 throw (error)
 
             let cid = result[0].hash
-            this.publishToIPNS(cid)
+            //this.publishToIPNS(cid)
             this.addNewCID(cid)
         })
     }
@@ -56,9 +56,9 @@ export default class App extends Component {
         this.state.ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (error, result) => {
             if (error)
                 throw (error)
-
-            let cid = result.toBaseEncodedString()
-            this.publishToIPNS(cid)
+                let cid = result.toBaseEncodedString()
+                console.log('New node added', cid)
+            //this.publishToIPNS(cid)
             this.addNewCID(cid)
         })
     }

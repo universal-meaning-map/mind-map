@@ -10,6 +10,7 @@ import Now from './Now'
 import BurlSelection from './BurlSelection'
 import CID from 'cids';
 import DAGCBOR from 'ipld-dag-cbor'
+import OriginParents from './OriginParents';
 
 export default class IPLDReodeder extends PtsCanvas {
 
@@ -22,6 +23,7 @@ export default class IPLDReodeder extends PtsCanvas {
         this.nodes = {}
         this.pts = {}
         this.burls = {}//a global index of burls cid:{pt,nodes[nid1,nid2],contentPreview}
+        this.parents = {}// index to keep track of each oid parents
 
         this.borningNode = new Pt(0, 0)
 
@@ -46,7 +48,6 @@ export default class IPLDReodeder extends PtsCanvas {
 
     componentWillReceiveProps(nextProps) {
 
-
         if (nextProps.zoom)
             this.onZoomChange(nextProps.zoom)
 
@@ -60,7 +61,6 @@ export default class IPLDReodeder extends PtsCanvas {
             return
 
         this.setCids(nextProps.cids)
-
     }
 
     componentDidUpdate(prevProps) {
@@ -221,6 +221,9 @@ export default class IPLDReodeder extends PtsCanvas {
 
         let btn = b.setInteraction(this.onBurlDown, this.onBurlUp, this.onBurlHover, this.onBurlLeave, this.onBurlMove)
 
+        let op = new OriginParents(oid)
+        this.parents[oid] = op
+
         return b
     }
 
@@ -246,6 +249,7 @@ export default class IPLDReodeder extends PtsCanvas {
         let targets = n.targetCids
         for (let tid of targets) {
             this.loadCID(tid)
+            this.parents[tid].addParent(nid)
         }
 
         this.burls[oid].addNode(n)
@@ -543,6 +547,7 @@ export default class IPLDReodeder extends PtsCanvas {
             that.props.onNewNode(newNode)
         }
 
+        //If node exists we make a new one, delte the current one and update all its parents
         if (originSelection.node) {
             oid = originSelection.node.origin.link
             existingTargets = originSelection.node.targetCids
@@ -555,7 +560,8 @@ export default class IPLDReodeder extends PtsCanvas {
 
                 let targets = existingTargets.concat([tid])
                 let newNode = NodeType.getNewObj(oid, targets)
-                that.props.onReplaceNode(nodeToBeReplaced, newNode)
+                this.replaceNode(nodeToBeReplaced, originSelection.node)
+                //this.replaceNode(nodeToBeReplaced, newNode)
             })
             return
         }
@@ -570,6 +576,26 @@ export default class IPLDReodeder extends PtsCanvas {
         }
         else {
             make()
+        }
+    }
+
+    replaceNode(oldNid, newNode) {
+        //this.props.onReplaceNode(oldNid, newNode)
+
+        let no = newNode.newOriginFork("QmRFHWoBNGp51xJzxmXuvxAtqMpiAjaJX27zm8a2zc6p5t")
+        console.log(newNode.origin.link, no.origin.link)
+
+        let nr = newNode.newRelationFork("zdpuAxN9YnjyNiU8QqZUeenaeNXgiR1TUKDSbrFJKnme4ZLNa")
+        console.log(newNode.targetCids, nr.targetCids)
+
+        let rr = newNode.removeRelationFork("QmdX1MxtFdx1dfpKfC78tAHDX8pYoiqoybgyumXwLookD4")
+        console.log(newNode.targetCids, rr.targetCids)
+
+
+        console.log('I-m a cline')
+        return
+        for (let p in this.parents[oldNid]) {
+
         }
     }
 

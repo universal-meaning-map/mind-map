@@ -124,11 +124,13 @@ export default class IPLDReodeder extends PtsCanvas {
         if (!this.state.ipfsIsReady)
             return
 
+
         for (let cid of cids) {
 
             if (!this.pts[cid])
                 this.loadCID(cid)
         }
+        this.bubbleDown(cids)
     }
 
     loadCID(cid) {
@@ -591,26 +593,28 @@ export default class IPLDReodeder extends PtsCanvas {
         //we find all the parents of an id and update them recursively
     }
 
-    replaceNode(oldNid, newNode) {
-
-        /*
-        let no = newNode.newOriginFork("QmRFHWoBNGp51xJzxmXuvxAtqMpiAjaJX27zm8a2zc6p5t")
-        console.log(newNode.origin.link, no.origin.link)
-    
-        let nr = newNode.addRelationFork("zdpuAxN9YnjyNiU8QqZUeenaeNXgiR1TUKDSbrFJKnme4ZLNa")
-        console.log(newNode.targetCids, nr.targetCids)
-    
-        let rr = newNode.removeRelationFork("QmdX1MxtFdx1dfpKfC78tAHDX8pYoiqoybgyumXwLookD4")
-        console.log(newNode.targetCids, rr.targetCids)
-    
-    
-        console.log('I-m a cline')
-        return
-        for (let p in this.parents[oldNid]) {
-    
-        }*/
+    //state changes >> update nodes 
+    //animate >> update 
+    bubbleDown(cids) {
+        let allCids = []
+        for (let cid of cids) {
+            allCids = allCids.concat(this.getAllCids(cid))
+        }
+        console.log('All cids', allCids)
     }
 
+    getAllCids(parentCid) {
+        let cids = [parentCid]
+        if (this.nodes[parentCid]) {
+            let n = this.nodes[parentCid]
+            cids.push(n.origin.link)
+            for (let r of n.relations) {
+                let tid = r.target.link
+                cids = cids.concat(this.getAllCids(tid))
+            }
+        }
+        return cids
+    }
 
     paintBorningNode() {
         if (this.props.borningNode) {

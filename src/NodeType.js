@@ -82,6 +82,10 @@ export default class NodeType extends IpldType {
     getObjCid(callback) {
 
         DAGCBOR.util.cid(this.toObj(), (err, result) => {
+            if (err) {
+                console.error(err)
+                callback(null)
+            }
             let cid = result.toBaseEncodedString()
             callback(cid)
         })
@@ -127,6 +131,12 @@ export default class NodeType extends IpldType {
         return true
     }
 
+    toObj() {
+        let oid = this.origin.link
+        let targets = this.targetCids
+        return NodeType.getNewObj(oid, targets)
+    }
+
     //Brand new object from oid and target
     static getNewObj(oid, targets) {
         const obj = {}
@@ -139,15 +149,8 @@ export default class NodeType extends IpldType {
         return obj
     }
 
-    //Object from existing node
-    static toObj(node) {
-        let oid = node.origin.link
-        let targets = node.targetCids
-        return NodeType.getNewObj(oid, targets)
-    }
-
     static clone(node) {
-        return new NodeType(NodeType.toObj(node))
+        return new NodeType(node.toObj())
     }
 
 }

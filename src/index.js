@@ -550,7 +550,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
     addRelationToNode(node, tid, typeId) {
         let forkNode = node.newRelationFork(tid, typeId)
-        let forkObj = NodeType.toObj(forkNode)
+        let forkObj = forkNode.toObj()
         this.props.onNewNode(forkObj)
         //this.bubbleUpUpdate(forkNode, node)
     }

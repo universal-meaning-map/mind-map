@@ -531,57 +531,55 @@ export default class IPLDReodeder extends PtsCanvas {
         if (Now.downSelection.node && Now.downSelection.node.hasTarget(Now.upSelection.burl.oid))
             return
 
-        this.createRelation(Now.downSelection, Now.upSelection)
+        this.addRelation(Now.downSelection, Now.upSelection)
     }
 
-    createRelation(originSelection, targetSelection) {
-        let oid = originSelection.burl.oid
-        let tid = targetSelection.burl.oid
-        let existingTargets = []
+    addRelation(originSelection, targetSelection) {
 
         let that = this
-        function make() {
 
-            let targets = existingTargets.concat([tid])
-            let newNode = NodeType.getNewObj(oid, targets)
-            that.props.onNewNode(newNode)
-        }
+        this.getBurlSelectionId(targetSelection, (tid) => {
+            if (originSelection.node) {
+                this.addRelationToNode(originSelection.node, tid)
+            }
+            else {
+                this.addRelationToContent(originSelection.burl.oid, tid)
+            }
+        })
+    }
 
-        //If node exists we make a new one, delte the current one and update all its parents
-        if (originSelection.node) {
-            oid = originSelection.node.origin.link
-            existingTargets = originSelection.node.targetCids
+    addRelationToNode(node, tid, typeId) {
+        let forkNode = node.newRelationFork(tid, typeId)
+        let forkObj = NodeType.toObj(forkNode)
+        this.props.onNewNode(forkObj)
+        //this.bubbleUpUpdate(forkNode, node)
+    }
 
-            //we need origin node cid because we will repalce it
-            let originNodeObj = NodeType.toObj(originSelection.node)
-            let nodeToBeReplaced = null
-            this.getDagCidFromObj(originNodeObj, (nid) => {
-                nodeToBeReplaced = nid
+    addRelationToContent(oid, tid, typeId) {
+        let newNode = NodeType.getNewObj(oid, [tid])
+        this.props.onNewNode(newNode)
+    }
 
-                let targets = existingTargets.concat([tid])
-                let newNode = NodeType.getNewObj(oid, targets)
-                this.replaceNode(nodeToBeReplaced, originSelection.node)
-                //this.replaceNode(nodeToBeReplaced, newNode)
-            })
-            return
-        }
+    getBurlSelectionId(burlSelection, callback) {
+        console.log(burlSelection)
+        //If there is no node, returns cid, otherwise gets node hash
+        if (burlSelection.node)
+            burlSelection.node.getObjCid(callback)
+        else
+        callback(burlSelection.burl.oid)
+    }
 
-        if (targetSelection.node) {
 
-            let targetNodeObj = NodeType.toObj(targetSelection.node)
-            this.getDagCidFromObj(targetNodeObj, (nid) => {
-                tid = nid
-                make()
-            })
-        }
-        else {
-            make()
-        }
+
+    bubbleUpUpdate(oldId, newId) {
+        //we find all the parents of an id and update them recursively
+
     }
 
     replaceNode(oldNid, newNode) {
-        //this.props.onReplaceNode(oldNid, newNode)
+        this.props.onReplaceNode(oldNid, newNode)
 
+        /*
         let no = newNode.newOriginFork("QmRFHWoBNGp51xJzxmXuvxAtqMpiAjaJX27zm8a2zc6p5t")
         console.log(newNode.origin.link, no.origin.link)
 
@@ -596,7 +594,7 @@ export default class IPLDReodeder extends PtsCanvas {
         return
         for (let p in this.parents[oldNid]) {
 
-        }
+        }*/
     }
 
 

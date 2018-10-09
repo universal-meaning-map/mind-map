@@ -79,6 +79,15 @@ export default class NodeType extends IpldType {
         return newNode
     }
 
+    getObjCid(callback) {
+
+        DAGCBOR.util.cid(this.toObj(), (err, result) => {
+            let cid = result.toBaseEncodedString()
+            callback(cid)
+        })
+
+    }
+
     static isNode(obj, logError = false) {
         if (!obj) {
             if (logError)

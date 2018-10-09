@@ -1,5 +1,7 @@
-import IpldType from "./IpldType";
-import LinkType from "./LinkType";
+import IpldType from "./IpldType"
+import LinkType from "./LinkType"
+import DAGCBOR from 'ipld-dag-cbor'
+
 
 export default class NodeType extends IpldType {
     constructor(obj) {

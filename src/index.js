@@ -8,9 +8,8 @@ import Paint from './Paint'
 import Burl from './Burl'
 import Now from './Now'
 import BurlSelection from './BurlSelection'
-import CID from 'cids';
-import DAGCBOR from 'ipld-dag-cbor'
-import OriginParents from './OriginParents';
+import OriginParents from './OriginParents'
+import CID from 'cids'
 
 export default class IPLDReodeder extends PtsCanvas {
 
@@ -549,13 +548,18 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     addRelationToNode(node, tid, typeId) {
-        let forkNode = node.newRelationFork(tid, typeId)
-        let forkObj = forkNode.toObj()
-        this.props.onNewNode(forkObj)
-        //this.bubbleUpUpdate(forkNode, node)
+        let newNode = node.addRelationFork(tid, typeId)
+        newNode.getObjCid((newNid) => {
+            node.getObjCid((oldNid) => {
+                this.bubbleUpUpdate(newNid, oldNid)
+            })
+        })
+        //let forkObj = newNode.toObj()
+        //this.props.onNewNode(forkObj)
     }
 
     addRelationToContent(oid, tid, typeId) {
+        let oldId = oid
         let newNode = NodeType.getNewObj(oid, [tid])
         this.props.onNewNode(newNode)
     }
@@ -566,44 +570,47 @@ export default class IPLDReodeder extends PtsCanvas {
         if (burlSelection.node)
             burlSelection.node.getObjCid(callback)
         else
-        callback(burlSelection.burl.oid)
+            callback(burlSelection.burl.oid)
     }
 
-
-
-    bubbleUpUpdate(oldId, newId) {
+    bubbleUpUpdate(newId, oldId) {
+        let originParents = this.parents[oldId]
+        for (let pnid of originParents.parents) {
+            let parentNode = this.nodes[pnid]
+            let removedTargetFork = parentNode.removeRelationFork(oldId)
+            let addedTargetFork = removedTargetFork.addRelationFork(newId)
+            parentNode.getObjCid((oldNid) => {
+                addedTargetFork.getObjCid((newNid) => {
+                    console.log("Bubbled", newNid, oldNid)
+                    this.props.onReplaceNode(oldNid, addedTargetFork.toObj())
+                    this.bubbleUpUpdate(newNid, oldNid)
+                })
+            })
+        }
+        //this.props.onNewNode(newNode)
         //we find all the parents of an id and update them recursively
-
     }
 
     replaceNode(oldNid, newNode) {
-        this.props.onReplaceNode(oldNid, newNode)
 
         /*
         let no = newNode.newOriginFork("QmRFHWoBNGp51xJzxmXuvxAtqMpiAjaJX27zm8a2zc6p5t")
         console.log(newNode.origin.link, no.origin.link)
-
-        let nr = newNode.newRelationFork("zdpuAxN9YnjyNiU8QqZUeenaeNXgiR1TUKDSbrFJKnme4ZLNa")
+    
+        let nr = newNode.addRelationFork("zdpuAxN9YnjyNiU8QqZUeenaeNXgiR1TUKDSbrFJKnme4ZLNa")
         console.log(newNode.targetCids, nr.targetCids)
-
+    
         let rr = newNode.removeRelationFork("QmdX1MxtFdx1dfpKfC78tAHDX8pYoiqoybgyumXwLookD4")
         console.log(newNode.targetCids, rr.targetCids)
-
-
+    
+    
         console.log('I-m a cline')
         return
         for (let p in this.parents[oldNid]) {
-
+    
         }*/
     }
 
-
-    getDagCidFromObj(obj, callback) {
-        DAGCBOR.util.cid(obj, (err, result) => {
-            let cid = result.toBaseEncodedString()
-            callback(cid)
-        })
-    }
 
     paintBorningNode() {
         if (this.props.borningNode) {

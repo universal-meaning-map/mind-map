@@ -50,7 +50,7 @@ export default class NodeType extends IpldType {
         return newNode
     }
 
-    newRelationFork(newTarget, newType) {
+    addRelationFork(newTarget, newType) {
         let newNode = NodeType.clone(this)
         let relationObj = RelationType.getNewObj(newTarget, newType)
         newNode._addRelation(relationObj)

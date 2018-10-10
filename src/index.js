@@ -510,10 +510,11 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     animate(time, ftime) {
+        let onlyActive = true
         this.world.update(ftime)
-        this.toAll(this.nodes, this.addForces.bind(this))
-        this.toAll(this.nodes, this.drawRelations.bind(this))
-        this.toAll(this.burls, this.drawBurl.bind(this))
+        this.toAll(this.nodes, this.addForces.bind(this), onlyActive)
+        this.toAll(this.nodes, this.drawRelations.bind(this), onlyActive)
+        this.toAll(this.burls, this.drawBurl.bind(this), onlyActive)
         this.paintBorningNode()
         this.paintBorningRelation()
         this.paintHighlights()
@@ -525,10 +526,14 @@ export default class IPLDReodeder extends PtsCanvas {
         this._ptsToDraw = []
     }
 
-    toAll(obj, fnc) {
+    toAll(obj, fnc, onlyActive = false) {
         for (let cid in obj) {
             if (!obj.hasOwnProperty(cid))
                 continue
+            if (onlyActive)
+                if (this.state.activeCids[cid] === false)
+                    continue
+
             fnc(obj[cid], cid)
         }
     }

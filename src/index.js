@@ -18,11 +18,13 @@ export default class IPLDReodeder extends PtsCanvas {
 
         this.state.ipfsIsReady = false
         this.start.worldIsReady = false
+        this.state.activeCids = {}
         this.world = null
         this.nodes = {}
         this.pts = {}
         this.burls = {}//a global index of burls cid:{pt,nodes[nid1,nid2],contentPreview}
         this.parents = {}// index to keep track of each oid parents
+
 
         this.borningNode = new Pt(0, 0)
 
@@ -130,7 +132,6 @@ export default class IPLDReodeder extends PtsCanvas {
             if (!this.pts[cid])
                 this.loadCID(cid)
         }
-        this.bubbleDown(cids)
     }
 
     loadCID(cid) {
@@ -139,6 +140,9 @@ export default class IPLDReodeder extends PtsCanvas {
         if (!cid)
             return
         //We display the cid right away, will replace it later once its content is loaded
+
+        if (this.state.activeCids[cid])
+            return
 
         this.newBurl(cid)
 
@@ -150,6 +154,11 @@ export default class IPLDReodeder extends PtsCanvas {
             console.log('Loading something else')
             loadFile(cid)
         }
+    }
+
+    onCidLoaded(cid) {
+        console.log('On cid loaded', cid)
+        this.bubbleDown(this.props.cids)
     }
 
     getCodec(cidStr) {
@@ -175,7 +184,9 @@ export default class IPLDReodeder extends PtsCanvas {
             let data = result.value
 
             if (NodeType.isNode(data)) {
+                console.log('node')
                 this.createNode(data, cid)
+                this.onCidLoaded(cid)
             }
             else {
                 this.createIPLD(data, cid)
@@ -184,7 +195,6 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     createIPLD(data, cid) {
-
         //console.log("Note implemented", cid, data)
         this.loadFile(cid)
     }
@@ -197,6 +207,8 @@ export default class IPLDReodeder extends PtsCanvas {
                 //onFail()
                 return
             }
+            console.log('file')
+            this.onCidLoaded(cid)
             this.burls[cid].file = file
         })
     }
@@ -595,23 +607,31 @@ export default class IPLDReodeder extends PtsCanvas {
 
     //state changes >> update nodes 
     //animate >> update 
-    bubbleDown(cids) {
-        let allCids = []
-        for (let cid of cids) {
-            allCids = allCids.concat(this.getAllCids(cid))
+    bubbleDown(rootCids) {
+        let prevActiveCids = this.state.activeCids
+        this.toAll(prevActiveCids, (obj, cid) => { prevActiveCids[cid] = false })
+        console.log(prevActiveCids)
+
+        let allCids = prevActiveCids
+
+        for (let cid of rootCids) {
+            allCids = Object.assign(allCids, this.getLeaveCids(cid))
         }
+
+        this.setState({ allCids: allCids })
         console.log('All cids', allCids)
     }
 
-    getAllCids(parentCid) {
-        let cids = [parentCid]
-        if (this.nodes[parentCid]) {
-            let n = this.nodes[parentCid]
-            cids.push(n.origin.link)
-            for (let r of n.relations) {
+    getLeaveCids(rootCid) {
+        let cids = {}
+        cids[rootCid] = true
+        if (this.nodes[rootCid]) {
+            let n = this.nodes[rootCid]
+            cids[n.origin.link] = true
+            this.toAll(n.relations, (r) => {
                 let tid = r.target.link
-                cids = cids.concat(this.getAllCids(tid))
-            }
+                cids = Object.assign(cids, this.getLeaveCids(tid))
+            })
         }
         return cids
     }
@@ -648,7 +668,6 @@ export default class IPLDReodeder extends PtsCanvas {
         this.toAll(this.burls, (burl, oid) => {
             UI.track([burl.btn], type, new Pt(px, py));
         })
-
     }
 
     selectNewId(newId) {

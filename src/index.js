@@ -25,7 +25,6 @@ export default class IPLDReodeder extends PtsCanvas {
         this.burls = {}//a global index of burls cid:{pt,nodes[nid1,nid2],contentPreview}
         this.parents = {}// index to keep track of each oid parents
 
-
         this.borningNode = new Pt(0, 0)
 
         this.selectedId = null
@@ -260,6 +259,7 @@ export default class IPLDReodeder extends PtsCanvas {
         let targets = n.targetCids
         for (let tid of targets) {
             this.loadCID(tid)
+            console.log('Adding parent ', nid, ' to ', tid)
             this.parents[tid].addParent(nid)
         }
 
@@ -583,39 +583,38 @@ export default class IPLDReodeder extends PtsCanvas {
             callback(burlSelection.burl.oid)
     }
 
-    updateNode(newNode, oldNode) {
-   
+    updateNode(oldNode, newNode) {
+
         this.addIPLDObj(newNode.toObj(), (newNid) => {
             console.log('ipld', newNid, newNode.toObj())
-            this.addIPLDObj(oldNode.toObj(), (oldNid)=>{
-                this.props.onReplaceCid(oldNid, newNid)
+            this.addIPLDObj(oldNode.toObj(), (oldNid) => {
                 this.bubbleUpUpdate(oldNid, newNid)
             })
 
         })
     }
 
-    bubbleUpUpdate(oldNid, newNid) {
-        console.log('updating', oldNid + '>>' + newNid)
-        let originParents = this.parents[oldNid]
-        if (!originParents) {
-            console.log('no more parents', oldNid, newNid)
-            return
-        }
+    bubbleUpUpdate(sonOldNid, sonNewNid) {
+        console.log('updating', sonOldNid + '>>' + sonNewNid)
+        this.props.onReplaceCid(sonOldNid, sonNewNid)
 
-        for (let pnid of originParents.parents) {
-            let parentNode = this.nodes[pnid]
-            let removedTargetFork = parentNode.removeRelationFork(oldNid)
-            let addedTargetFork = removedTargetFork.addRelationFork(newId)
+        let originParents = this.parents[sonOldNid]
+
+        if (!originParents) 
+            throw(new Error('node with no origin parent object, this should not happen..', sonOldNid))
+
+        for (let parentNid of originParents.parents) {
+            let parentNode = this.nodes[parentNid]
+            let removedTargetFork = parentNode.removeRelationFork(sonOldNid)
+            let addedTargetFork = removedTargetFork.addRelationFork(sonNewNid)
 
             let newNode = addedTargetFork.toObj()
             this.addIPLDObj(newNode, (newNid) => {
-                this.addIPLDObj(parentNode.toObj(), (oldNid)=>{
-                    this.props.onReplaceCid(oldNid, newNid)
+                this.addIPLDObj(parentNode.toObj(), (oldNid) => {
+                    
+                    this.bubbleUpUpdate(oldNid, newNid)
                 })
-
             })
-
         }
     }
 

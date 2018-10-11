@@ -14,11 +14,11 @@ export default class App extends Component {
             currentZoom: 1,
             lastZoom: 1,
             borningNode: null,
-            cids: ["zdpuAxN9YnjyNiU8QqZUeenaeNXgiR1TUKDSbrFJKnme4ZLNa", "QmRdgTtGVofrnT3hFsk9fHX5wc2NGzsZ8XR5Lv1tcsi2mo"],
+            cids: ["zdpuAxN9YnjyNiU8QqZUeenaeNXgiR1TUKDSbrFJKnme4ZLNa"],
             ipfs: null
         }
 
-        this.replaceNode = this.replaceNode.bind(this)
+        this.replaceCid = this.replaceCid.bind(this)
         this.addNode = this.addNode.bind(this)
         this.addTextOrigin = this.addTextOrigin.bind(this)
         this.resolveIPNS = this.resolveIPNS.bind(this)
@@ -51,9 +51,13 @@ export default class App extends Component {
         })
     }
 
-    replaceNode(cidToRemove, newObj) {
-        this.removeCID(cidToRemove)
-        this.addNode(newObj)
+    replaceCid(cidToRemove, cidToAdd) {
+        if(this.cidExists(cidToRemove))
+        {
+            let cids = this.state.cids.filter(cid => cid !== cidToRemove)
+            cids.push(cidToAdd)
+            this.setState({ cids: cids })
+        }
     }
 
     addNode(obj) {
@@ -77,9 +81,10 @@ export default class App extends Component {
         }
     }
 
-    removeCID(cidToRemove) {
-        let cids = this.state.cids.filter(cid => cid !== cidToRemove)
-        this.setState({ cids: cids })
+
+    cidExists(cid)
+    {
+        return this.state.cids.indexOf(cid) ==! -1
     }
 
     publishToIPNS(cid) {
@@ -196,7 +201,7 @@ export default class App extends Component {
                     longPressDelay={500}
                     borningNode={this.state.borningNode}
                     onNewNode={this.addNode}
-                    onReplaceNode={this.replaceNode}
+                    onReplaceCid={this.replaceCid}
                     zoom={this.state.currentZoom}
                     loop={true} />
                 </div>

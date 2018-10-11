@@ -157,7 +157,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     onCidLoaded(cid) {
-        console.log('On cid loaded', cid)
+        //console.log('On cid loaded', cid)
         this.bubbleDown(this.props.cids)
     }
 
@@ -184,7 +184,6 @@ export default class IPLDReodeder extends PtsCanvas {
             let data = result.value
 
             if (NodeType.isNode(data)) {
-                console.log('node')
                 this.createNode(data, cid)
                 this.onCidLoaded(cid)
             }
@@ -207,7 +206,6 @@ export default class IPLDReodeder extends PtsCanvas {
                 //onFail()
                 return
             }
-            console.log('file')
             this.onCidLoaded(cid)
             this.burls[cid].file = file
         })
@@ -568,13 +566,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
     addRelationToNode(node, tid, typeId) {
         let newNode = node.addRelationFork(tid, typeId)
-        newNode.getObjCid((newNid) => {
-            node.getObjCid((oldNid) => {
-                this.bubbleUpUpdate(newNid, oldNid)
-            })
-        })
-        //let forkObj = newNode.toObj()
-        //this.props.onNewNode(forkObj)
+        this.updateNode(node, newNode)
     }
 
     addRelationToContent(oid, tid, typeId) {
@@ -584,7 +576,6 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     getBurlSelectionId(burlSelection, callback) {
-        console.log(burlSelection)
         //If there is no node, returns cid, otherwise gets node hash
         if (burlSelection.node)
             burlSelection.node.getObjCid(callback)
@@ -592,19 +583,48 @@ export default class IPLDReodeder extends PtsCanvas {
             callback(burlSelection.burl.oid)
     }
 
-    bubbleUpUpdate(newId, oldId) {
-        let originParents = this.parents[oldId]
+    updateNode(newNode, oldNode) {
+
+        this.addIPLDObj(newNode, (newNid) => {
+            oldNode.getObjCid((oldNid) => {
+                console.log('update', newNid, oldNid, newNode, oldNode)
+                this.props.onReplaceCid(oldNid, newNid)
+                this.bubbleUpUpdate(oldNid, newNid)
+            })
+
+        })
+
+        /* newNode.getObjCid((newNid) => {
+             oldNode.getObjCid((oldNid) => {
+                 console.log('old node',oldNid, oldNode)
+                 this.props.onNewNode(newNode)
+                 this.bubbleUpUpdate(newNid, oldNid)
+             })
+         })
+         */
+    }
+
+    bubbleUpUpdate(oldNid, newNid) {
+        console.log('updating', oldNid + '>>' + newNid)
+        let originParents = this.parents[oldNid]
+        if (!originParents) {
+            console.log('no more parents', oldNid, newNid)
+            return
+        }
+
         for (let pnid of originParents.parents) {
             let parentNode = this.nodes[pnid]
-            let removedTargetFork = parentNode.removeRelationFork(oldId)
+            let removedTargetFork = parentNode.removeRelationFork(oldNid)
             let addedTargetFork = removedTargetFork.addRelationFork(newId)
-            parentNode.getObjCid((oldNid) => {
-                addedTargetFork.getObjCid((newNid) => {
-                    console.log("Bubbled", newNid, oldNid)
-                    this.props.onReplaceNode(oldNid, addedTargetFork.toObj())
-                    this.bubbleUpUpdate(newNid, oldNid)
+
+            let newNode = addedTargetFork.toObj()
+            this.addIPLDObj(newNode, (newNid) => {
+                parentNode.getObjCid((oldNid) => {
+                    this.props.onReplaceCid(oldNid, newNid)
                 })
+
             })
+
         }
         //this.props.onNewNode(newNode)
         //we find all the parents of an id and update them recursively
@@ -615,7 +635,6 @@ export default class IPLDReodeder extends PtsCanvas {
     bubbleDown(rootCids) {
         let prevActiveCids = this.state.activeCids
         this.toAll(prevActiveCids, (obj, cid) => { prevActiveCids[cid] = false })
-        console.log(prevActiveCids)
 
         let allCids = prevActiveCids
 
@@ -624,7 +643,6 @@ export default class IPLDReodeder extends PtsCanvas {
         }
 
         this.setState({ allCids: allCids })
-        console.log('All cids', allCids)
     }
 
     getLeaveCids(rootCid) {
@@ -712,6 +730,7 @@ export default class IPLDReodeder extends PtsCanvas {
         let nextIndex = (currentIndex + jumps) % currentN.relationships.length
         if (nextIndex < 0)
             nextIndex = currentN.relationships.length + nextIndex
+
         let relationship = currentN.relationships[nextIndex]
         if (relationship)
             this.selectedRelation = relationship.destinationNode
@@ -740,7 +759,15 @@ export default class IPLDReodeder extends PtsCanvas {
         else if (e.keyCode === '39') {// right arrow
             this.selectNextRelation(1)
         }
-
     }
 
+    addIPLDObj(obj, callaback = () => { }) {
+        this.props.ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (error, result) => {
+            if (error)
+                throw (error)
+            let cid = result.toBaseEncodedString()
+            console.log("ipld cid added", cid, obj)
+            callaback(cid)
+        })
+    }
 }

@@ -250,7 +250,7 @@ export default class IPLDReodeder extends PtsCanvas {
             return
 
 
-        let n = new NodeType(data)
+        let n = new NodeType(data, nid)
         this.nodes[nid] = n
 
         let oid = n.origin.link
@@ -566,7 +566,9 @@ export default class IPLDReodeder extends PtsCanvas {
 
     addRelationToNode(node, tid, typeId) {
         let newNode = node.addRelationFork(tid, typeId)
-        this.updateNode(node, newNode)
+        this.updateNode(node, newNode.toObj())
+        //update parent
+        //update current burl
     }
 
     addRelationToContent(oid, tid, typeId) {
@@ -583,7 +585,7 @@ export default class IPLDReodeder extends PtsCanvas {
             callback(burlSelection.burl.oid)
     }
 
-    updateNode(oldNode, newNode) {
+    /*updateNode(oldNode, newNode) {
 
         this.addIPLDObj(newNode.toObj(), (newNid) => {
             console.log('ipld', newNid, newNode.toObj())
@@ -592,16 +594,43 @@ export default class IPLDReodeder extends PtsCanvas {
             })
 
         })
+    }*/
+
+    replaceBurlNode(burl, oldNode, newNode) {
+        burl.removeNode(oldNode)
+        burl.addNode(newNode)
+    }
+
+    updateNode(oldNode, newNodeObj) {
+        //add the newNode
+        this.addIPLDObj(newNodeObj, (newNid) => {
+            let newNode = new NodeType(newNodeObj, newNid)
+            this.props.onReplaceCid(oldNode.nodeCid, newNode.nodeCid)
+
+            //siblings update
+            let burl = this.burls[oldNode.origin.link]
+            this.replaceBurlNode(burl, oldNode, newNode)
+
+            //parents update
+            let oldNodeParents = this.parents[oldNode.nodeCid].parents
+            for (let oldParentNid of oldNodeParents) {
+                let oldParent = this.nodes[oldParentNid]
+                let oldParent2 = oldParent2.removeRelationFork(oldNode.nodeCid)
+                let newParent = oldParent2.addRelationFork(newNid)
+                this.updateNode(oldParent, newParent.toObj())
+            }
+        })
     }
 
     bubbleUpUpdate(sonOldNid, sonNewNid) {
         console.log('updating', sonOldNid + '>>' + sonNewNid)
         this.props.onReplaceCid(sonOldNid, sonNewNid)
 
+
         let originParents = this.parents[sonOldNid]
 
-        if (!originParents) 
-            throw(new Error('node with no origin parent object, this should not happen..', sonOldNid))
+        if (!originParents)
+            throw (new Error('node with no origin parent object, this should not happen..', sonOldNid))
 
         for (let parentNid of originParents.parents) {
             let parentNode = this.nodes[parentNid]
@@ -611,7 +640,8 @@ export default class IPLDReodeder extends PtsCanvas {
             let newNode = addedTargetFork.toObj()
             this.addIPLDObj(newNode, (newNid) => {
                 this.addIPLDObj(parentNode.toObj(), (oldNid) => {
-                    
+                    let burl = this.burls[parentNode.oid]
+                    this.replaceBurlNode(burl, parentNode, newNode)
                     this.bubbleUpUpdate(oldNid, newNid)
                 })
             })

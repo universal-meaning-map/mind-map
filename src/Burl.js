@@ -34,6 +34,10 @@ export default class Burl {
     }
 
     addNode(n) {
+        for (let node of this._nodes) {
+            if (node.nodeCid === n.nodeCid)
+                return
+        }
         this._nodes.push(n)
         //let area = this.getInteractionArea(this.pt)
         //TODO: This breaks... 

@@ -578,30 +578,21 @@ export default class IPLDReodeder extends PtsCanvas {
     getBurlSelectionId(burlSelection, callback) {
         //If there is no node, returns cid, otherwise gets node hash
         if (burlSelection.node)
-            burlSelection.node.getObjCid(callback)
+            this.addIPLDObj(burlSelection.node.toObj(), callback)
         else
             callback(burlSelection.burl.oid)
     }
 
     updateNode(newNode, oldNode) {
-
-        this.addIPLDObj(newNode, (newNid) => {
-            oldNode.getObjCid((oldNid) => {
-                console.log('update', newNid, oldNid, newNode, oldNode)
+   
+        this.addIPLDObj(newNode.toObj(), (newNid) => {
+            console.log('ipld', newNid, newNode.toObj())
+            this.addIPLDObj(oldNode.toObj(), (oldNid)=>{
                 this.props.onReplaceCid(oldNid, newNid)
                 this.bubbleUpUpdate(oldNid, newNid)
             })
 
         })
-
-        /* newNode.getObjCid((newNid) => {
-             oldNode.getObjCid((oldNid) => {
-                 console.log('old node',oldNid, oldNode)
-                 this.props.onNewNode(newNode)
-                 this.bubbleUpUpdate(newNid, oldNid)
-             })
-         })
-         */
     }
 
     bubbleUpUpdate(oldNid, newNid) {
@@ -619,15 +610,13 @@ export default class IPLDReodeder extends PtsCanvas {
 
             let newNode = addedTargetFork.toObj()
             this.addIPLDObj(newNode, (newNid) => {
-                parentNode.getObjCid((oldNid) => {
+                this.addIPLDObj(parentNode.toObj(), (oldNid)=>{
                     this.props.onReplaceCid(oldNid, newNid)
                 })
 
             })
 
         }
-        //this.props.onNewNode(newNode)
-        //we find all the parents of an id and update them recursively
     }
 
     //state changes >> update nodes 
@@ -766,7 +755,7 @@ export default class IPLDReodeder extends PtsCanvas {
             if (error)
                 throw (error)
             let cid = result.toBaseEncodedString()
-            console.log("ipld cid added", cid, obj)
+            //console.log("ipld cid added", cid, obj)
             callaback(cid)
         })
     }

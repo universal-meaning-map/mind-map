@@ -1,7 +1,5 @@
 import IpldType from "./IpldType"
 import LinkType from "./LinkType"
-import DAGCBOR from 'ipld-dag-cbor'
-
 
 export default class NodeType extends IpldType {
     constructor(obj) {
@@ -79,19 +77,6 @@ export default class NodeType extends IpldType {
         }
         console.warn('No match for removeRelationFork', oldTarget, oldType, this)
         return newNode
-    }
-
-    getObjCid(callback) {
-
-        DAGCBOR.util.cid(this.toObj(), (err, result) => {
-            if (err) {
-                console.error(err)
-                callback(null)
-            }
-            let cid = result.toBaseEncodedString()
-            callback(cid)
-        })
-
     }
 
     static isNode(obj, logError = false) {

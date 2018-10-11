@@ -35,7 +35,7 @@ export default class Burl {
 
     addNode(n) {
         this._nodes.push(n)
-        let area = this.getInteractionArea(this.pt)
+        //let area = this.getInteractionArea(this.pt)
         //TODO: This breaks... 
         //this._btn.group = area 
     }
@@ -43,7 +43,7 @@ export default class Burl {
     removeNode(n) {
         for (let i = 0; i <= this._nodes.length; i++) {
             if (this._nodes[i].nodeCid === n.nodeCid) {
-                this._nodes.slice(i, 1)
+                this._nodes.splice(i, 1)
                 return
             }
         }

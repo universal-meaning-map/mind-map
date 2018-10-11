@@ -312,6 +312,7 @@ export default class IPLDReodeder extends PtsCanvas {
     onBurlDown(pt, burl) {
         Now.hoverSelection = this.getBurlSelection(pt, burl)
         Now.downSelection = Now.hoverSelection
+        console.log('DOWN', burl)
     }
 
     onBurlUp(pt, burl) {
@@ -585,23 +586,13 @@ export default class IPLDReodeder extends PtsCanvas {
             callback(burlSelection.burl.oid)
     }
 
-    /*updateNode(oldNode, newNode) {
-
-        this.addIPLDObj(newNode.toObj(), (newNid) => {
-            console.log('ipld', newNid, newNode.toObj())
-            this.addIPLDObj(oldNode.toObj(), (oldNid) => {
-                this.bubbleUpUpdate(oldNid, newNid)
-            })
-
-        })
-    }*/
-
     replaceBurlNode(burl, oldNode, newNode) {
         burl.removeNode(oldNode)
         burl.addNode(newNode)
     }
 
     updateNode(oldNode, newNodeObj) {
+
         //add the newNode
         this.addIPLDObj(newNodeObj, (newNid) => {
             let newNode = new NodeType(newNodeObj, newNid)
@@ -615,7 +606,7 @@ export default class IPLDReodeder extends PtsCanvas {
             let oldNodeParents = this.parents[oldNode.nodeCid].parents
             for (let oldParentNid of oldNodeParents) {
                 let oldParent = this.nodes[oldParentNid]
-                let oldParent2 = oldParent2.removeRelationFork(oldNode.nodeCid)
+                let oldParent2 = oldParent.removeRelationFork(oldNode.nodeCid)
                 let newParent = oldParent2.addRelationFork(newNid)
                 this.updateNode(oldParent, newParent.toObj())
             }

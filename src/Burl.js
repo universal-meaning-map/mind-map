@@ -40,6 +40,15 @@ export default class Burl {
         //this._btn.group = area 
     }
 
+    removeNode(n) {
+        for (let i = 0; i <= this._nodes.length; i++) {
+            if (this._nodes[i].nodeCid === n.nodeCid) {
+                this._nodes.slice(i, 1)
+                return
+            }
+        }
+    }
+
     set file(file) {
         this._file = file
     }

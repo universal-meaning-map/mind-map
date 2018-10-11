@@ -2,7 +2,7 @@ import IpldType from "./IpldType"
 import LinkType from "./LinkType"
 
 export default class NodeType extends IpldType {
-    constructor(obj) {
+    constructor(obj, nodeCid = null) {
         if (!NodeType.isNode(obj))
             throw (new Error('Object is not a valid NodeType'))
 
@@ -11,6 +11,7 @@ export default class NodeType extends IpldType {
         this._origin = new LinkWrapType(obj.origin)
         this._relations = []
         this._targetCids = []
+        this._nodeCid = nodeCid
 
         if (obj.relations) {
             for (let r of obj.relations) {
@@ -18,6 +19,17 @@ export default class NodeType extends IpldType {
             }
         }
     }
+
+    get nodeCid() {
+        //TODO: this should be mandatory or not be here
+        return this._nodeCid
+    }
+
+    /*set nodeCid(nid) {
+        //TODO: this shoul not  exist
+        this._nodeCid = nid
+    }*/
+
 
     _addRelation(r) {
         let relation = new RelationType(r)
@@ -45,6 +57,7 @@ export default class NodeType extends IpldType {
         let newNode = NodeType.clone(this)
 
         newNode._origin = new LinkWrapType(LinkWrapType.getNewObj(newOrigin))
+        
         return newNode
     }
 
@@ -137,7 +150,9 @@ export default class NodeType extends IpldType {
     }
 
     static clone(node) {
-        return new NodeType(node.toObj())
+        let clone = new NodeType(node.toObj())
+        clone._nodeCid = null
+        return clone
     }
 
 }

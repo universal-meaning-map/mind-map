@@ -259,7 +259,6 @@ export default class IPLDReodeder extends PtsCanvas {
         let targets = n.targetCids
         for (let tid of targets) {
             this.loadCID(tid)
-            console.log('Adding parent ', nid, ' to ', tid)
             this.parents[tid].addParent(nid)
         }
 
@@ -312,7 +311,6 @@ export default class IPLDReodeder extends PtsCanvas {
     onBurlDown(pt, burl) {
         Now.hoverSelection = this.getBurlSelection(pt, burl)
         Now.downSelection = Now.hoverSelection
-        console.log('DOWN', burl)
     }
 
     onBurlUp(pt, burl) {
@@ -568,8 +566,6 @@ export default class IPLDReodeder extends PtsCanvas {
     addRelationToNode(node, tid, typeId) {
         let newNode = node.addRelationFork(tid, typeId)
         this.updateNode(node, newNode.toObj())
-        //update parent
-        //update current burl
     }
 
     addRelationToContent(oid, tid, typeId) {
@@ -586,9 +582,17 @@ export default class IPLDReodeder extends PtsCanvas {
             callback(burlSelection.burl.oid)
     }
 
+    //TODO These shouldn't be necessaries if we rely on activeNodes
     replaceBurlNode(burl, oldNode, newNode) {
         burl.removeNode(oldNode)
         burl.addNode(newNode)
+    }
+
+    //TODO These shouldn't be necessaries if we rely on activeNodes    
+    replaceNode(oldNode, newNode)
+    {
+       delete this.nodes[oldNode.nodeCid]
+       this.nodes[newNode.nodeCid] = newNode
     }
 
     updateNode(oldNode, newNodeObj) {
@@ -602,6 +606,8 @@ export default class IPLDReodeder extends PtsCanvas {
             let burl = this.burls[oldNode.origin.link]
             this.replaceBurlNode(burl, oldNode, newNode)
 
+            //this.replaceNode(oldNode, newNode)
+
             //parents update
             let oldNodeParents = this.parents[oldNode.nodeCid].parents
             for (let oldParentNid of oldNodeParents) {
@@ -613,10 +619,10 @@ export default class IPLDReodeder extends PtsCanvas {
         })
     }
 
+
     bubbleUpUpdate(sonOldNid, sonNewNid) {
         console.log('updating', sonOldNid + '>>' + sonNewNid)
         this.props.onReplaceCid(sonOldNid, sonNewNid)
-
 
         let originParents = this.parents[sonOldNid]
 
@@ -651,7 +657,7 @@ export default class IPLDReodeder extends PtsCanvas {
             allCids = Object.assign(allCids, this.getLeaveCids(cid))
         }
 
-        this.setState({ allCids: allCids })
+        this.setState({ activeCids: allCids })
     }
 
     getLeaveCids(rootCid) {

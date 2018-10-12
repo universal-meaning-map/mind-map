@@ -81,7 +81,6 @@ export default class App extends Component {
         }
     }
 
-
     cidExists(cid)
     {
         return this.state.cids.indexOf(cid) ==! -1

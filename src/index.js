@@ -157,7 +157,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
     onCidLoaded(cid) {
         //console.log('On cid loaded', cid)
-        this.bubbleDown(this.props.cids)
+        this.setActiveCids(this.props.cids)
     }
 
     getCodec(cidStr) {
@@ -647,7 +647,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
     //state changes >> update nodes 
     //animate >> update 
-    bubbleDown(rootCids) {
+    setActiveCids(rootCids) {
         let prevActiveCids = this.state.activeCids
         this.toAll(prevActiveCids, (obj, cid) => { prevActiveCids[cid] = false })
 

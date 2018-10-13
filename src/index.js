@@ -510,13 +510,15 @@ export default class IPLDReodeder extends PtsCanvas {
         let onlyActive = true
         this.world.update(ftime)
         this.toAll(this.nodes, this.addForces.bind(this), onlyActive)
-        this.toAll(this.nodes, this.drawRelations.bind(this), onlyActive)
-        this.toAll(this.burls, this.drawBurl.bind(this), onlyActive)
+        //this.toAll(this.nodes, this.drawRelations.bind(this), onlyActive)
+        //this.toAll(this.burls, this.drawBurl.bind(this), onlyActive)
         this.paintBorningNode()
         this.paintBorningRelation()
         this.paintHighlights()
 
-        this.world.drawParticles((p, i) => { this.form.fillOnly('#00f5').point(p, 10, "circle") });
+        this.paintFocusTree(Now.hoverSelection)
+
+        //this.world.drawParticles((p, i) => { this.form.fillOnly('#00f5').point(p, 10, "circle") });
 
         for (let pt of this._ptsToDraw)
             this.paint.bubble(pt, 10, '#f36')
@@ -589,10 +591,9 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     //TODO These shouldn't be necessaries if we rely on activeNodes    
-    replaceNode(oldNode, newNode)
-    {
-       delete this.nodes[oldNode.nodeCid]
-       this.nodes[newNode.nodeCid] = newNode
+    replaceNode(oldNode, newNode) {
+        delete this.nodes[oldNode.nodeCid]
+        this.nodes[newNode.nodeCid] = newNode
     }
 
     updateNode(oldNode, newNodeObj) {
@@ -621,7 +622,6 @@ export default class IPLDReodeder extends PtsCanvas {
 
 
     bubbleUpUpdate(sonOldNid, sonNewNid) {
-        console.log('updating', sonOldNid + '>>' + sonNewNid)
         this.props.onReplaceCid(sonOldNid, sonNewNid)
 
         let originParents = this.parents[sonOldNid]
@@ -781,8 +781,72 @@ export default class IPLDReodeder extends PtsCanvas {
             if (error)
                 throw (error)
             let cid = result.toBaseEncodedString()
-            //console.log("ipld cid added", cid, obj)
             callaback(cid)
         })
+    }
+
+    treeDown(cid, level = 1, onNode = () => { }, onContent = () => { }, onRelation = () => { }) {
+        if (!this.nodes[cid]) {
+            onContent(cid, level)
+            return
+        }
+
+        let n = this.nodes[cid]
+
+        for (let r of n.relations)
+            onRelation(n, r, level)
+
+        onNode(n, level)
+
+        onContent(n.origin.link, level)
+
+        level++
+        for (let r of n.relations) {
+            if (this.nodes[r.target.link])
+                this.treeDown(this.nodes[r.target.link], level, onNode, onContent, onRelation)
+        }
+
+    }
+
+    paintFocusTree(burlSelection) {
+        let that = this
+        function onNode(n, level) {
+            let scaleFactor = 1 / level * 2
+            let pt = that.pts[n.origin.link]
+            that.paint.bubbleOutline(pt, Now.nodeRadius() * scaleFactor, '#f36')
+        }
+
+        function onRelation(n, r, level) {
+            let opt = that.pts[n.origin.link]
+            let tpt = that.getTargetPt(r.target.link)
+
+            that.paint.arrow(opt, tpt, Now.originRadius(), '#0ff')
+        }
+
+        function onContent(cid, level) {
+            let b = that.burls[cid]
+            console.log('onContent', that.burls, cid, b)
+            let scaleFactor = 1 / level * 2
+            if (b.hasPreview) {
+                that.paint.bubble(b.pt, Now.originRadius() * scaleFactor, '#FCBC8055')
+                that.paint.text(b.preview, b.pt, Now.originRadius() * 1.5 * scaleFactor, '#8B4B62')
+            } else {
+                that.paint.bubble(b.pt, Now.originRadius() * scaleFactor, '#F7E29C55')
+                that.paint.text(b.oid, b.pt, Now.originRadius() * 1.5 * scaleFactor, '#BB6F6B88', false)
+            }
+        }
+
+        if (burlSelection) {
+            that.treeDown(burlSelection.id, 1, onNode, onContent, onRelation)
+        }
+    }
+
+    bubbleDownFromCids(cids, onNode, onContent, onRelation) {
+        for (let cid in cids) {
+            if (!cids.hasOwnProperty(cid))
+                continue
+
+            this.downFromTree(cid, 1, onNode, onContent, onRelation)
+        }
     }
 }

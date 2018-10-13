@@ -12,4 +12,13 @@ export default class BurlSelection {
     get node() {
         return this._node
     }
+
+    get id() {
+
+        if (this.node)
+            return this._node.nodeCid
+        else
+            return this._burl.oid
+
+    }
 }

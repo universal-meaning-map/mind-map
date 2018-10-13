@@ -1,4 +1,6 @@
 const events = require('events')
+import CID from 'cids'
+
 
 export default class IpfsController extends events.EventEmitter {
     constructor() {
@@ -89,6 +91,19 @@ export default class IpfsController extends events.EventEmitter {
             let cid = result.toBaseEncodedString()
             callaback(cid)
         })
+    }
+
+    getCodec(cidStr) {
+        let cidObj = new CID(cidStr)
+        return cidObj.codec
+    }
+
+    isDag(cid) {
+        let codec = this.getCodec(cid)
+
+        if (codec === 'dag-cbor' || codec === 'dag-pb')
+            return true
+        return false
     }
 
 

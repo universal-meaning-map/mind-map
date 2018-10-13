@@ -9,7 +9,6 @@ import Burl from './Burl'
 import Now from './Now'
 import BurlSelection from './BurlSelection'
 import OriginParents from './OriginParents'
-import CID from 'cids'
 import IpfsController from './IpfsController'
 
 export default class IPLDReodeder extends PtsCanvas {
@@ -67,17 +66,13 @@ export default class IPLDReodeder extends PtsCanvas {
 
     componentDidUpdate(prevProps) {
         if (!prevProps.ipfs && this.props.ipfs)
-            this.setIpfs(this.props.ipfs)
+            this.ipfsController.init(this.props.ipfs)
 
         this.checkPause()
     }
 
     onCanvasReady() {
         this.paint = new Paint(this.form)
-    }
-
-    setIpfs(ipfs) {
-        this.ipfsController.init(ipfs)
     }
 
     onIpfsReady() {
@@ -101,17 +96,16 @@ export default class IPLDReodeder extends PtsCanvas {
 
     loadCID(cid) {
 
-        //Check if is valid cid
+        //TODO: Check if is valid cid
         if (!cid)
             return
-        //We display the cid right away, will replace it later once its content is loaded
 
-        if (this.state.activeCids[cid])
+        if (cid in this.state.activeCids)
             return
 
         this.newBurl(cid)
 
-        if (this.isDag(cid)) {
+        if (this.ipfsController.isDag(cid)) {
             this.ipfsController.loadDag(cid, (data) => {
 
                 if (NodeType.isNode(data)) {
@@ -138,18 +132,7 @@ export default class IPLDReodeder extends PtsCanvas {
         this.setActiveCids(this.props.cids)
     }
 
-    getCodec(cidStr) {
-        let cidObj = new CID(cidStr)
-        return cidObj.codec
-    }
-
-    isDag(cid) {
-        let codec = this.getCodec(cid)
-
-        if (codec === 'dag-cbor' || codec === 'dag-pb')
-            return true
-        return false
-    }
+    
 
     createIPLD(data, cid) {
         //console.log("Note implemented", cid, data)
@@ -448,6 +431,13 @@ export default class IPLDReodeder extends PtsCanvas {
         }
     }
 
+    action(type, px, py) {
+        Now.updateAction(type)
+        this.toAll(this.burls, (burl, oid) => {
+            UI.track([burl.btn], type, new Pt(px, py));
+        })
+    }
+
     animate(time, ftime) {
         let onlyActive = true
         this.world.update(ftime)
@@ -643,12 +633,7 @@ export default class IPLDReodeder extends PtsCanvas {
         this.paint.arrow(opt, tpt, 0, '#f36')
     }
 
-    action(type, px, py) {
-        Now.updateAction(type)
-        this.toAll(this.burls, (burl, oid) => {
-            UI.track([burl.btn], type, new Pt(px, py));
-        })
-    }
+    
 
     selectNewId(newId) {
         if (!this.burls[newId].pt)

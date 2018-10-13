@@ -21,7 +21,6 @@ export default class IPLDReodeder extends PtsCanvas {
         this.state.activeCids = {}
         this.world = null
         this.nodes = {}
-        this.pts = {}
         this.burls = {}//a global index of burls cid:{pt,nodes[nid1,nid2],contentPreview}
         this.parents = {}// index to keep track of each oid parents
 
@@ -128,7 +127,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
         for (let cid of cids) {
 
-            if (!this.pts[cid])
+            if (!this.burls[cid])
                 this.loadCID(cid)
         }
     }
@@ -219,12 +218,9 @@ export default class IPLDReodeder extends PtsCanvas {
         if (this.burls[oid])
             return
 
-        if (this.pts[oid])
-            return
-
         let pt = this.addNewPtParticle(oid)
 
-        this.pts[oid] = pt
+        //this.pts[oid] = pt
 
         let b = new Burl(oid, pt)
         this.burls[oid] = b
@@ -281,7 +277,6 @@ export default class IPLDReodeder extends PtsCanvas {
 
         delete this.burls[oid]
         this.world.remove('particle', this.getParticleIndex(oid))
-        delete this.pts[oid]
 
         /*
         console.log('Particle Index', this.getParticleIndex(oid))
@@ -291,9 +286,6 @@ export default class IPLDReodeder extends PtsCanvas {
 
         console.log('Burls')
         this.toAll(this.burls, (a, id) => { console.log('   ', id) })
-
-        console.log('Pts')
-        this.toAll(this.pts, (a, id) => { console.log('   ', id) })
 
         console.log("Removed", oid)
         */
@@ -389,7 +381,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
     onZoomChange(zoom) {
         Now.setZoom(zoom)
-        this.toAll(this.pts, (pt) => { pt.radius = Now.nodeArm() })
+        this.toAll(this.burls, (b) => { b.pt.radius = Now.nodeArm() })
     }
 
     checkPause() {
@@ -419,10 +411,10 @@ export default class IPLDReodeder extends PtsCanvas {
             let tpt = this.getTargetPt(r.target.link)
             //the attraction force will be proporcional to its distance
             let oid = n.origin.link
-            if (!this.pts[oid])
+            if (!this.burls[oid])
                 return
 
-            let opt = this.pts[oid]
+            let opt = this.burls[oid].pt
 
             let forceAmount = 2
             let distance = opt.$subtract(tpt)
@@ -435,8 +427,8 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     getTargetPt(id) {
-        if (this.pts[id])
-            return this.pts[id]
+        if (this.burls[id])
+            return this.burls[id].pt
         if (this.nodes[id])
             return this.getTargetPt(this.nodes[id].origin.link)
     }
@@ -492,7 +484,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     paintNodeTree(n) {
-        let opt = this.pts[n.origin.link]
+        let opt = this.burls[n.origin.link].pt
         this.paint.bubbleOutline(opt, Now.nodeRadius(), '#f3f')
 
         for (let r of n.relations) {
@@ -712,7 +704,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     selectNewId(newId) {
-        if (!this.pts[newId])
+        if (!this.burls[newId].pt)
             return
 
         if (this.selectedIdHistory[this.selectedIdHistory.length - 1] !== newId) {
@@ -792,7 +784,6 @@ export default class IPLDReodeder extends PtsCanvas {
         if (!cid) {
             console.warn("No cid")
             return
-
         }
 
         if (!this.nodes[cid]) {
@@ -802,10 +793,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
         let n = this.nodes[cid]
 
-        let i = 0
-
         for (let r of n.relations) {
-            i++
             onRelation(n, r, level)
         }
 
@@ -821,17 +809,17 @@ export default class IPLDReodeder extends PtsCanvas {
 
     }
 
-    /*paintFocusTree(burlSelection) {
+    paintFocusTree(burlSelection) {
         let that = this
         function onNode(n, level) {
             let scaleFactor = 1 / level * 2
-            let pt = that.pts[n.origin.link]
+            let pt = that.burls[n.origin.link].pt
             that.paint.bubbleOutline(pt, Now.nodeRadius() * scaleFactor, '#f36')
         }
 
         function onRelation(n, r, level) {
             console.log("relation",r.target.link)
-            let opt = that.pts[n.origin.link]
+            let opt = that.burls[n.origin.link].pt
             let tpt = that.getTargetPt(r.target.link)
 
             that.paint.arrow(opt, tpt, Now.originRadius(), '#0ff')
@@ -852,17 +840,17 @@ export default class IPLDReodeder extends PtsCanvas {
         if (burlSelection) {
             that.treeDown(burlSelection.id, 1, onNode, onContent, onRelation)
         }
-    }*/
+    }
 
     paintAll() {
         let that = this
         function onNode(n, level) {
-            let pt = that.pts[n.origin.link]
+            let pt = that.burls[n.origin.link].pt
             that.paint.bubbleOutline(pt, Now.nodeRadius(), '#f36')
         }
 
         function onRelation(n, r, level) {
-            let opt = that.pts[n.origin.link]
+            let opt = that.burls[n.origin.link].pt
             let tpt = that.getTargetPt(r.target.link)
 
             that.paint.arrow(opt, tpt, Now.originRadius(), '#0ff')

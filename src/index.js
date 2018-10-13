@@ -128,14 +128,11 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     onCidLoaded(cid) {
-        //console.log('On cid loaded', cid)
         this.setActiveCids(this.props.cids)
     }
 
-    
-
     createIPLD(data, cid) {
-        //console.log("Note implemented", cid, data)
+
         this.ipfsController.loadFile(cid, (file) => {
             this.onCidLoaded(cid)
             this.burls[cid].file = file
@@ -314,14 +311,7 @@ export default class IPLDReodeder extends PtsCanvas {
         this.toAll(this.burls, (b) => { b.pt.radius = Now.nodeArm() })
     }
 
-    checkPause() {
-        if (this.props.pause) {
-            this.space.pause();
-
-        } else {
-            this.space.resume();
-        }
-    }
+    
 
     start(space, bound) {
         this.world = new World(this.space.innerBound, 0.7, new Pt(0, 0));
@@ -428,6 +418,15 @@ export default class IPLDReodeder extends PtsCanvas {
             else {
                 this.paint.bubbleOutline(tpt, Now.originRadius(), '#f3f')
             }
+        }
+    }
+
+    checkPause() {
+        if (this.props.pause) {
+            this.space.pause();
+
+        } else {
+            this.space.resume();
         }
     }
 

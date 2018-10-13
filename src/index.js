@@ -10,16 +10,18 @@ import Now from './Now'
 import BurlSelection from './BurlSelection'
 import OriginParents from './OriginParents'
 import CID from 'cids'
+import IpfsController from './IpfsController'
 
 export default class IPLDReodeder extends PtsCanvas {
 
     constructor(props) {
         super(props);
 
-        this.state.ipfsIsReady = false
+        //this.state.ipfsIsReady = false
         this.start.worldIsReady = false
         this.state.activeCids = {}
         this.world = null
+
         this.nodes = {}
         this.burls = {}//a global index of burls cid:{pt,nodes[nid1,nid2],contentPreview}
         this.parents = {}// index to keep track of each oid parents
@@ -40,7 +42,10 @@ export default class IPLDReodeder extends PtsCanvas {
         this.onBurlLeave = this.onBurlLeave.bind(this)
         this.onBurlMove = this.onBurlMove.bind(this)
 
-        this.setIpfs()
+        this.ipfsController = new IpfsController()
+        this.onIpfsReady = this.onIpfsReady.bind(this)
+        this.ipfsController.on('ready', this.onIpfsReady)
+
 
         this._ptsToDraw = []
     }
@@ -56,7 +61,7 @@ export default class IPLDReodeder extends PtsCanvas {
         if (!this.state.worldIsReady)
             return
 
-        if (!this.state.ipfsIsReady)
+        if (!this.ipfsController.isReady)
             return
 
         this.setCids(nextProps.cids)
@@ -64,7 +69,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
     componentDidUpdate(prevProps) {
         if (!prevProps.ipfs && this.props.ipfs)
-            this.setIpfs()
+            this.setIpfs(this.props.ipfs)
 
         this.checkPause()
     }
@@ -73,47 +78,48 @@ export default class IPLDReodeder extends PtsCanvas {
         this.paint = new Paint(this.form)
     }
 
-    isJsIpfs(ipfsId) {
+    /*isJsIpfs(ipfsId) {
         if (ipfsId.agentVersion.indexOf('js') !== -1)
             return true
         return false
-    }
+    }*/
 
-    setIpfs() {
-        console.log('Setting Ipfs')
-
-        if (!this.props.ipfs) {
-            console.warn('No ipfs yet...')
-            return
-        }
-
-        let that = this
-        this.props.ipfs.id().then((id) => {
-            console.log('Peer id', id)
-
-            if (this.isJsIpfs(id)) {
-                console.log("isJS")
-
-                if (this.props.ipfs.isOnline()) {
-                    this.onIpfsReady()
-                }
-                else {
-                    console.log('isOffline')
-                    this.props.ipfs.on('start', () => {
-                        console.log('Was offline')
-                        this.onIpfsReady()
-                    })
-                }
-            }
-            else {
-                console.log("isGo")
-                this.onIpfsReady()
-            }
-        })
+    setIpfs(ipfs) {
+        this.ipfsController.init(ipfs)
+        /* console.log('Setting Ipfs')
+ 
+         if (!this.props.ipfs) {
+             console.warn('No ipfs yet...')
+             return
+         }
+ 
+         let that = this
+         this.props.ipfs.id().then((id) => {
+             console.log('Peer id', id)
+ 
+             if (this.isJsIpfs(id)) {
+                 console.log("isJS")
+ 
+                 if (this.props.ipfs.isOnline()) {
+                     this.onIpfsReady()
+                 }
+                 else {
+                     console.log('isOffline')
+                     this.props.ipfs.on('start', () => {
+                         console.log('Was offline')
+                         this.onIpfsReady()
+                     })
+                 }
+             }
+             else {
+                 console.log("isGo")
+                 this.onIpfsReady()
+             }
+         })*/
     }
 
     onIpfsReady() {
-        this.setState({ ipfsIsReady: true })
+        //this.setState({ ipfsIsReady: true })
         this.setCids(this.props.cids)
     }
 
@@ -121,7 +127,7 @@ export default class IPLDReodeder extends PtsCanvas {
         if (!this.state.worldIsReady)
             return
 
-        if (!this.state.ipfsIsReady)
+        if (!this.ipfsController.isReady)
             return
 
 
@@ -145,12 +151,25 @@ export default class IPLDReodeder extends PtsCanvas {
         this.newBurl(cid)
 
         if (this.isDag(cid)) {
-            this.loadDag(cid)
+            this.ipfsController.loadDag(cid, (data) => {
+
+                if (NodeType.isNode(data)) {
+                    this.createNode(data, cid)
+                    this.onCidLoaded(cid)
+                }
+                else {
+                    this.createIPLD(data, cid)
+                }
+            })
+            //this.ipfsController.loadDag(cid)
         }
 
         else {
             console.log('Loading something else')
-            loadFile(cid)
+            loadFile(cid, (file) => {
+                this.onCidLoaded(cid)
+                this.burls[cid].file = file
+            })
         }
     }
 
@@ -172,7 +191,7 @@ export default class IPLDReodeder extends PtsCanvas {
         return false
     }
 
-    loadDag(cid) {
+    /*loadDag(cid) {
         this.props.ipfs.dag.get(cid, (error, result) => {
             if (error) {
                 console.warn("props.ipfs.dag.get", cid, error)
@@ -189,14 +208,17 @@ export default class IPLDReodeder extends PtsCanvas {
                 this.createIPLD(data, cid)
             }
         })
-    }
+    }*/
 
     createIPLD(data, cid) {
         //console.log("Note implemented", cid, data)
-        this.loadFile(cid)
+        this.ipfsController.loadFile(cid, (file) => {
+            this.onCidLoaded(cid)
+            this.burls[cid].file = file
+        })
     }
 
-    loadFile(cid, onFail) {
+    /*loadFile(cid, onFail) {
         this.props.ipfs.files.cat(cid, (error, file) => {
 
             if (error) {
@@ -207,7 +229,7 @@ export default class IPLDReodeder extends PtsCanvas {
             this.onCidLoaded(cid)
             this.burls[cid].file = file
         })
-    }
+    }*/
 
     newBurl(oid) {
         //Remove node burls will try to be created again
@@ -574,7 +596,7 @@ export default class IPLDReodeder extends PtsCanvas {
     getBurlSelectionId(burlSelection, callback) {
         //If there is no node, returns cid, otherwise gets node hash
         if (burlSelection.node)
-            this.addIPLDObj(burlSelection.node.toObj(), callback)
+            this.ipfsController.addIPLDObj(burlSelection.node.toObj(), callback)
         else
             callback(burlSelection.burl.oid)
     }
@@ -594,7 +616,7 @@ export default class IPLDReodeder extends PtsCanvas {
     updateNode(oldNode, newNodeObj) {
 
         //add the newNode
-        this.addIPLDObj(newNodeObj, (newNid) => {
+        this.ipfsController.addIPLDObj(newNodeObj, (newNid) => {
             let newNode = new NodeType(newNodeObj, newNid)
             this.props.onReplaceCid(oldNode.nodeCid, newNode.nodeCid)
 
@@ -630,8 +652,8 @@ export default class IPLDReodeder extends PtsCanvas {
             let addedTargetFork = removedTargetFork.addRelationFork(sonNewNid)
 
             let newNode = addedTargetFork.toObj()
-            this.addIPLDObj(newNode, (newNid) => {
-                this.addIPLDObj(parentNode.toObj(), (oldNid) => {
+            this.ipfsController.addIPLDObj(newNode, (newNid) => {
+                this.ipfsController.addIPLDObj(parentNode.toObj(), (oldNid) => {
                     let burl = this.burls[parentNode.oid]
                     this.replaceBurlNode(burl, parentNode, newNode)
                     this.bubbleUpUpdate(oldNid, newNid)
@@ -771,14 +793,14 @@ export default class IPLDReodeder extends PtsCanvas {
         }
     }
 
-    addIPLDObj(obj, callaback = () => { }) {
+    /*this.addIPLDObj(obj, callaback = () => { }) {
         this.props.ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (error, result) => {
             if (error)
                 throw (error)
             let cid = result.toBaseEncodedString()
             callaback(cid)
         })
-    }
+    }*/
 
     treeDown(cid, level = 1, onNode = () => { }, onContent = () => { }, onRelation = () => { }) {
         if (!cid) {
@@ -818,7 +840,7 @@ export default class IPLDReodeder extends PtsCanvas {
         }
 
         function onRelation(n, r, level) {
-            console.log("relation",r.target.link)
+            console.log("relation", r.target.link)
             let opt = that.burls[n.origin.link].pt
             let tpt = that.getTargetPt(r.target.link)
 
@@ -892,7 +914,7 @@ export default class IPLDReodeder extends PtsCanvas {
         function onNode(n, level) {
             console.log(space(level), "n", that.sc(n.nodeCid))
         }
-        
+
         function onRelation(n, r, level) {
             console.log('------')
             console.log(space(level), "r", that.sc(r.target.link))

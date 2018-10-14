@@ -201,7 +201,8 @@ export default class App extends Component {
                     onNewNode={this.addNode}
                     onReplaceCid={this.replaceCid}
                     zoom={this.state.currentZoom}
-                    loop={true} />
+                    loop={true}
+                    autoLayout={true}/>
                 </div>
             </div>
         );

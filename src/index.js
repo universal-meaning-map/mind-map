@@ -400,8 +400,10 @@ export default class IPLDReodeder extends PtsCanvas {
 
         let onlyActive = true
         this.moveDragBurl()
-        this.world.update(ftime)
-        this.toAll(this.nodes, this.addForces.bind(this), onlyActive)
+        if (this.props.autoLayout) {
+            this.toAll(this.nodes, this.addForces.bind(this), onlyActive)
+            this.world.update(ftime)
+        }
 
         this.paintBorningNode()
 

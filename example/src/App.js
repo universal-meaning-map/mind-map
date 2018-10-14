@@ -79,6 +79,22 @@ export default class App extends Component {
         })
     }
 
+    save() {
+        let obj = {}
+        obj.cids = this.state.cids.map((cid) => {
+            let link = {}
+            link['/']=cid
+            return link
+        })
+        this.addIpldObj(obj, (cid)=>{
+            console.log(cid)
+        })
+    }
+
+    load(){
+
+    }
+
     addCID(cid) {
 
         if (this.state.cids.indexOf(cid) === -1) {
@@ -87,6 +103,8 @@ export default class App extends Component {
         else {
             console.log('cid exists already', cid)
         }
+
+        this.save()
     }
 
     publishToIPNS(cid) {

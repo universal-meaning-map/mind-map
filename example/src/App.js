@@ -157,8 +157,8 @@ export default class App extends Component {
     onInputReturn(text) {
         if (text) {
             this.addTextOrigin(text, (cid) => {
-                this.addCID(cid)
                 this.setState({ borningNodeCid: cid })
+                this.addCID(cid)
             })
         }
         this.setState({ hasFocus: false, borningNodeText: null })

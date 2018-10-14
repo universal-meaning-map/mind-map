@@ -145,8 +145,13 @@ export default class IPLDReodeder extends PtsCanvas {
 
         if (this.burls[oid])
             return
+        
+        let initPt = null
 
-        let pt = this.addNewPtParticle(oid)
+        if(this.props.borningNodeCid === oid)
+            initPt = this.props.borningNodePt
+
+        let pt = this.addNewPtParticle(oid, initPt)
 
         let b = new Burl(oid, pt)
         this.burls[oid] = b
@@ -159,8 +164,10 @@ export default class IPLDReodeder extends PtsCanvas {
         return b
     }
 
-    addNewPtParticle(oid) {
+    addNewPtParticle(oid, pt = null) {
         let initPt = Shape.randomPt(this.space.center)
+        if(pt)
+            initPt = pt
         let particle = new Particle(initPt).size(Now.originRadius() + Now.nodeArm());
         particle.id = oid // this is so we can retreive it later on
         this.world.add(particle, oid)

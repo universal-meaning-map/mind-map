@@ -29,29 +29,37 @@ export default class Now {
         return Now._isPressing
     }
 
-    static set downSelection(burlSelection) {
-        Now._clickDownBurlSelection = burlSelection
-    }
-
     static get downSelection() {
         return Now._clickDownBurlSelection
     }
 
-    static set upSelection(burlSelection) {
-        Now._clickUpBurlSelection = burlSelection
+    static set downSelection(burlSelection) {
+        Now._clickDownBurlSelection = burlSelection
     }
 
     static get upSelection() {
         return Now._clickUpBurlSelection
+    }
+    static set upSelection(burlSelection) {
+        Now._clickUpBurlSelection = burlSelection
+    }
+
+    static get hoverSelection() {
+        return Now._currentBurlSelection
     }
 
     static set hoverSelection(burlSelection) {
         Now._currentBurlSelection = burlSelection
     }
 
-    static get hoverSelection() {
-        return Now._currentBurlSelection
+    static get dragSelection() {
+        return Now._currentDragBurlSelection
     }
+
+    static set dragSelection(burlSelection) {
+        Now._currentDragBurlSelection = burlSelection
+    }
+
 
 }
 
@@ -65,4 +73,5 @@ Now._isPressing = false
 Now._clickDownBurlSelection = null
 Now._clickUpBurlSelection = null
 Now._currentBurlSelection = null
+Now._currentDragBurlSelection = null
 

@@ -233,16 +233,23 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
 
-    onBurlDown(pt, burl) {
-        Now.hoverSelection = this.getBurlSelection(pt, burl)
-        Now.downSelection = Now.hoverSelection
-        console.log('down', this.burls, this.nodes, this.getActiveCids(), this.props.cids)
+    onBurlDown(pt, burl, times) {
+        let burlSelection = this.getBurlSelection(pt, burl)
+        if (times === 2) {
+            Now.dragSelection = burlSelection
+        }
+        Now.hoverSelection = burlSelection
+        Now.downSelection = burlSelection
+
+        // console.log('down', this.burls, this.nodes, this.getActiveCids(), this.props.cids)
         //console.log('Active cids', this.getActiveCids())
     }
 
     onBurlUp(pt, burl) {
-        Now.hoverSelection = this.getBurlSelection(pt, burl)
-        Now.upSelection = Now.hoverSelection
+        let burlSelection = this.getBurlSelection(pt, burl)
+        Now.hoverSelection = burlSelection
+        Now.upSelection = burlSelection
+        Now.dragSelection = null
         this.checkBorningRelation()
     }
 
@@ -315,8 +322,6 @@ export default class IPLDReodeder extends PtsCanvas {
         Now.setZoom(zoom)
         this.toAll(this.burls, (b) => { b.pt.radius = Now.nodeArm() })
     }
-
-
 
     start(space, bound) {
         this.world = new World(this.space.innerBound, 0.7, new Pt(0, 0));
@@ -394,6 +399,7 @@ export default class IPLDReodeder extends PtsCanvas {
     animate(time, ftime) {
 
         let onlyActive = true
+        this.moveDragBurl()
         this.world.update(ftime)
         this.toAll(this.nodes, this.addForces.bind(this), onlyActive)
 
@@ -407,6 +413,11 @@ export default class IPLDReodeder extends PtsCanvas {
         /*for (let pt of this._ptsToDraw)
             this.paint.bubble(pt, 10, '#f36')
         this._ptsToDraw = []*/
+    }
+
+    moveDragBurl() {
+        if (Now.dragSelection)
+            Now.dragSelection.burl.pt.to(this.space.pointer)
     }
 
     toAll(obj, fnc, onlyActive = false) {

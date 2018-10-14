@@ -402,8 +402,7 @@ export default class IPLDReodeder extends PtsCanvas {
         this.paintAll()
         this.paintFocusTree(Now.hoverSelection)
         this.paintBorningRelation()
-        this.world.drawParticles((p, i) => { console.log(i)
-            this.form.strokeOnly('#9993').point(p, p.radius, "circle") });
+        this.world.drawParticles((p, i) => { this.form.strokeOnly('#9993').point(p, p.radius, "circle") });
 
         /*for (let pt of this._ptsToDraw)
             this.paint.bubble(pt, 10, '#f36')

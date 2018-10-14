@@ -355,7 +355,7 @@ export default class IPLDReodeder extends PtsCanvas {
             for (let r of n.relations) {
                 let opt = this.pts[n.origin.link]
                 let tpt = this.getTargetPt(r.target.link)
-                this.paint.arrow(opt, tpt, Now.originRadius(), lineColor)
+                this.paint.arrow(opt, tpt, Now.originRadius(), Now.originRadius(), lineColor)
             }
         }
     
@@ -407,7 +407,7 @@ export default class IPLDReodeder extends PtsCanvas {
         for (let r of n.relations) {
             let tid = r.target.link
             let tpt = this.getTargetPt(tid)
-            this.paint.arrow(opt, tpt, 0, '#f3f')
+            this.paint.arrow(opt, tpt, 0, 0, '#f3f')
 
             if (this.nodes[tid]) {
                 this.paintNodeTree(this.nodes[tid])
@@ -428,6 +428,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     animate(time, ftime) {
+
         let onlyActive = true
         this.world.update(ftime)
         this.toAll(this.nodes, this.addForces.bind(this), onlyActive)
@@ -619,10 +620,8 @@ export default class IPLDReodeder extends PtsCanvas {
         if (Now.hoverSelection)
             tpt = Now.hoverSelection.burl.pt
 
-        this.paint.arrow(opt, tpt, 0, '#f36')
+        this.paint.arrow(opt, tpt, 0, 0, '#f36')
     }
-
-
 
     selectNewId(newId) {
         if (!this.burls[newId].pt)
@@ -695,7 +694,7 @@ export default class IPLDReodeder extends PtsCanvas {
     treeDown(cid, level = 1, onNode = () => { }, onContent = () => { }, onRelation = () => { }) {
 
         if (!cid)
-            throw(new Error("No cid on tree down"))
+            throw (new Error("No cid on tree down"))
 
         if (!this.nodes[cid]) {
             onContent(cid, level)
@@ -713,7 +712,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
         level++
         for (let r of n.relations) {
-  
+
             this.treeDown(r.target.link, level, onNode, onContent, onRelation)
 
         }
@@ -756,14 +755,15 @@ export default class IPLDReodeder extends PtsCanvas {
         let that = this
         function onNode(n, level) {
             let pt = that.burls[n.origin.link].pt
-            that.paint.bubbleOutline(pt, Now.nodeRadius(), '#f36')
+            that.paint.bubbleOutline(pt, Now.nodeRadius(), '#999')
         }
 
         function onRelation(n, r, level) {
             let opt = that.burls[n.origin.link].pt
             let tpt = that.getTargetPt(r.target.link)
-
-            that.paint.arrow(opt, tpt, Now.originRadius(), '#0ff')
+            let targetIsNode = r.target.link in that.nodes
+            let targetRadius = targetIsNode ? Now.nodeRadius() : Now.originRadius()
+            that.paint.arrow(opt, tpt, Now.nodeRadius(), targetRadius, '#999')
         }
 
         function onContent(cid, level) {
@@ -775,11 +775,13 @@ export default class IPLDReodeder extends PtsCanvas {
                 //throw(new Error("no burl for content", cid))
             }
             if (b.hasPreview) {
-                that.paint.bubble(b.pt, Now.originRadius(), '#FCBC8055')
-                that.paint.text(b.preview, b.pt, Now.originRadius() * 1.5, '#8B4B62')
+                that.paint.bubble(b.pt, Now.originRadius(), '#fff8')
+                that.paint.bubbleOutline(b.pt, Now.originRadius(), '#999')
+                that.paint.text(b.preview, b.pt, Now.originRadius() * 1.5, '#999')
             } else {
-                that.paint.bubble(b.pt, Now.originRadius(), '#F7E29C55')
-                that.paint.text(b.oid, b.pt, Now.originRadius() * 1.5, '#BB6F6B88', false)
+                that.paint.bubble(b.pt, Now.originRadius(), '#fff8')
+                that.paint.bubbleOutline(b.pt, Now.originRadius(), '#999')
+                that.paint.text(b.oid, b.pt, Now.originRadius() * 1.5, '#9999', false)
             }
         }
 

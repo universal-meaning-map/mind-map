@@ -404,10 +404,10 @@ export default class IPLDReodeder extends PtsCanvas {
         this.toAll(this.nodes, this.addForces.bind(this), onlyActive)
 
         this.paintBorningNode()
-        this.paintBorningRelation()
 
         this.paintAll()
         this.paintFocusTree(Now.hoverSelection)
+        this.paintBorningRelation()
         //this.world.drawParticles((p, i) => { this.form.fillOnly('#00f5').point(p, 10, "circle") });
 
         /*for (let pt of this._ptsToDraw)
@@ -579,16 +579,26 @@ export default class IPLDReodeder extends PtsCanvas {
     paintBorningRelation() {
         if (!Now.isPressing)
             return
+
         if (!Now.downSelection)
             return
 
         let opt = Now.downSelection.burl.pt
         let tpt = this.space.pointer
 
-        if (Now.hoverSelection)
-            tpt = Now.hoverSelection.burl.pt
+        let targetRadius = 0
 
-        this.paint.arrow(opt, tpt, 0, 0, '#f36')
+        if (Now.hoverSelection) {
+            tpt = Now.hoverSelection.burl.pt
+            targetRadius = Now.hoverSelection.id in this.nodes ? Now.nodeRadius() : Now.originRadius()
+            //this.paint.bubbleOutline(opt, targetRadius, '#f36')
+        }
+
+        let originRadius = Now.downSelection.id in this.nodes ? Now.nodeRadius() : Now.originRadius()
+
+
+        this.paint.bubbleOutline(opt, originRadius, '#f36')
+        this.paint.arrow(opt, tpt, originRadius, targetRadius, '#f36')
     }
 
     selectNewId(newId) {

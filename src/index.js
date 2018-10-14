@@ -126,7 +126,17 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     onCidLoaded(cid) {
+        this.addBurlToWorld(cid)
         this.setActiveCids(this.props.cids)
+    }
+
+    addBurlToWorld(cid) {
+        let oid = cid
+        if (cid in this.nodes)
+            oid = this.nodes[cid].origin.link
+
+        let particle = this.burls[oid].pt
+        this.world.add(particle, oid)
     }
 
     createIPLD(data, cid) {
@@ -145,13 +155,13 @@ export default class IPLDReodeder extends PtsCanvas {
 
         if (this.burls[oid])
             return
-        
-        let initPt = null
 
-        if(this.props.borningNodeCid === oid)
+        let initPt = Shape.randomPt(this.space.center)
+
+        if (this.props.borningNodeCid === oid)
             initPt = this.props.borningNodePt
 
-        let pt = this.addNewPtParticle(oid, initPt)
+        let pt = this.makeParticle(oid, initPt)
 
         let b = new Burl(oid, pt)
         this.burls[oid] = b
@@ -164,13 +174,9 @@ export default class IPLDReodeder extends PtsCanvas {
         return b
     }
 
-    addNewPtParticle(oid, pt = null) {
-        let initPt = Shape.randomPt(this.space.center)
-        if(pt)
-            initPt = pt
-        let particle = new Particle(initPt).size(Now.originRadius() + Now.nodeArm());
-        particle.id = oid // this is so we can retreive it later on
-        this.world.add(particle, oid)
+    makeParticle(oid, pt) {
+        let particle = new Particle(pt).size(Now.originRadius() + Now.nodeArm());
+        particle.id = oid
         return particle
     }
 
@@ -331,14 +337,16 @@ export default class IPLDReodeder extends PtsCanvas {
     addForces(n) {
 
         for (let r of n.relations) {
-            //targetPt
-            let tpt = this.getTargetPt(r.target.link)
             //the attraction force will be proporcional to its distance
             let oid = n.origin.link
+
             if (!this.burls[oid])
                 return
 
+            let tid = this.getTargetFinalOrigin(r.target.link)
             let opt = this.burls[oid].pt
+            let tpt = this.burls[tid].pt
+            //let tpt = this.getTargetPt(r.target.link)
 
             let forceAmount = 2
             let distance = opt.$subtract(tpt)
@@ -355,6 +363,13 @@ export default class IPLDReodeder extends PtsCanvas {
             return this.burls[id].pt
         if (this.nodes[id])
             return this.getTargetPt(this.nodes[id].origin.link)
+    }
+
+    getTargetFinalOrigin(id) {
+        if (this.burls[id])
+            return id
+        if (this.nodes[id])
+            return this.getTargetFinalOrigin(this.nodes[id].origin.link)
     }
 
     paintNodeTree(n) {
@@ -387,7 +402,7 @@ export default class IPLDReodeder extends PtsCanvas {
         let onlyActive = true
         this.world.update(ftime)
         this.toAll(this.nodes, this.addForces.bind(this), onlyActive)
- 
+
         this.paintBorningNode()
         this.paintBorningRelation()
 
@@ -550,7 +565,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     paintBorningNode() {
-        if (this.props.borningNodeText!= null) {
+        if (this.props.borningNodeText != null) {
             this.paint.bubble(this.props.borningNodePt, Now.originRadius(), '#ecd8')
             if (this.props.borningNodeText) {
                 this.paint.text(this.props.borningNodeText, this.props.borningNodePt, Now.originRadius() * 2)
@@ -675,13 +690,13 @@ export default class IPLDReodeder extends PtsCanvas {
     paintFocusTree(burlSelection) {
         let that = this
         function onNode(n, level) {
-            let scaleFactor = 1 
+            let scaleFactor = 1
             let pt = that.burls[n.origin.link].pt
             that.paint.bubbleOutline(pt, Now.nodeRadius() * scaleFactor, '#f36')
         }
 
         function onRelation(n, r, level) {
-            let scaleFactor = 1 
+            let scaleFactor = 1
             let opt = that.burls[n.origin.link].pt
             let tpt = that.getTargetPt(r.target.link)
             let targetIsNode = r.target.link in that.nodes
@@ -691,7 +706,7 @@ export default class IPLDReodeder extends PtsCanvas {
 
         function onContent(cid, level) {
             let b = that.burls[cid]
-            let scaleFactor = 1 
+            let scaleFactor = 1
             if (b.hasPreview) {
                 that.paint.bubbleOutline(b.pt, Now.originRadius() * scaleFactor, '#f36')
                 that.paint.text(b.preview, b.pt, Now.originRadius() * 1.5 * scaleFactor, '#8B4B62')

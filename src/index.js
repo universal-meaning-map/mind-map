@@ -175,7 +175,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     makeParticle(oid, pt) {
-        let particle = new Particle(pt).size(Now.originRadius() + Now.nodeArm());
+        let particle = new Particle(pt).size(Now.nodeArm());
         particle.id = oid
         return particle
     }
@@ -333,7 +333,6 @@ export default class IPLDReodeder extends PtsCanvas {
         //this.create();
     }
 
-
     addForces(n) {
 
         for (let r of n.relations) {
@@ -408,7 +407,7 @@ export default class IPLDReodeder extends PtsCanvas {
         this.paintAll()
         this.paintFocusTree(Now.hoverSelection)
         this.paintBorningRelation()
-        //this.world.drawParticles((p, i) => { this.form.fillOnly('#00f5').point(p, 10, "circle") });
+        this.world.drawParticles((p, i) => { this.form.strokeOnly('#9993').point(p, p.radius, "circle") });
 
         /*for (let pt of this._ptsToDraw)
             this.paint.bubble(pt, 10, '#f36')
@@ -595,7 +594,6 @@ export default class IPLDReodeder extends PtsCanvas {
         }
 
         let originRadius = Now.downSelection.id in this.nodes ? Now.nodeRadius() : Now.originRadius()
-
 
         this.paint.bubbleOutline(opt, originRadius, '#f36')
         this.paint.arrow(opt, tpt, originRadius, targetRadius, '#f36')

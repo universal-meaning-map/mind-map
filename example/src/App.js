@@ -14,7 +14,7 @@ export default class App extends Component {
             currentZoom: 1,
             lastZoom: 1,
             borningNode: null,
-            cids: ["zdpuAxN9YnjyNiU8QqZUeenaeNXgiR1TUKDSbrFJKnme4ZLNa"],
+            cids: ["zdpuAsefBh3w36xm5ZENAmhwfbcAoBn3xPUHMGwCj2X9pwWdg"],
             ipfs: null
         }
 
@@ -52,12 +52,18 @@ export default class App extends Component {
     }
 
     replaceCid(cidToRemove, cidToAdd) {
-        if(this.cidExists(cidToRemove))
-        {
-            let cids = this.state.cids.filter(cid => cid !== cidToRemove)
-            cids.push(cidToAdd)
-            this.setState({ cids: cids })
-        }
+
+        console.log(cidToRemove, cidToAdd)
+        let index = this.state.cids.indexOf(cidToRemove)
+        console.log(index)
+        if (index == -1)
+            return
+
+        let cids = [...this.state.cids]
+        cids.splice(index, 1, cidToAdd)
+        //cids.push(cidToAdd)
+        this.setState({ cids: cids })
+
     }
 
     addNode(obj) {
@@ -79,11 +85,6 @@ export default class App extends Component {
         else {
             console.log('cid exists already', cid)
         }
-    }
-
-    cidExists(cid)
-    {
-        return this.state.cids.indexOf(cid) ==! -1
     }
 
     publishToIPNS(cid) {

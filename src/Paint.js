@@ -1,4 +1,4 @@
-import { Group, Rectangle } from 'pts';
+import { Group, Rectangle, Line, Pt } from 'pts';
 import Shape from './Shape'
 
 export default class Paint {
@@ -11,17 +11,21 @@ export default class Paint {
         this.form.point(pt, radius, 'circle')
     }
 
-    bubbleOutline(pt, radius = 30, color = "#f36") {
-        this.form.strokeOnly(color, 5)
+    bubbleOutline(pt, radius = 30, color = "#f36", thickness = 2) {
+        this.form.strokeOnly(color, thickness)
         this.form.point(pt, radius, 'circle')
     }
 
-    arrow(opt, tpt, arrowOffset, color) {
+    arrow(opt, tpt, originOffset, targetOffset, color = '#000', thickness = 2) {
         let line = new Group(opt, tpt)
-        this.form.strokeOnly(color, 1)
-        this.form.line(line)
+        let originOffsetPt = Line.crop(line, new Pt(originOffset, originOffset), 0)
+        let targetOffsetPt = Line.crop(line, new Pt(targetOffset, targetOffset), 1)
 
-        let arrowPointer = Shape.arrowPointer(opt, tpt, - arrowOffset)
+        let arrowLine = new Group(originOffsetPt, targetOffsetPt)
+        this.form.strokeOnly(color, thickness)
+        this.form.line(arrowLine)
+
+        let arrowPointer = Shape.arrowPointer(opt, tpt, - originOffset)
         this.form.fillOnly(color, 1)
         this.form.polygon(arrowPointer)
     }

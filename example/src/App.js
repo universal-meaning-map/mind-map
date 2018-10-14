@@ -53,17 +53,13 @@ export default class App extends Component {
 
     replaceCid(cidToRemove, cidToAdd) {
 
-        console.log(cidToRemove, cidToAdd)
         let index = this.state.cids.indexOf(cidToRemove)
-        console.log(index)
         if (index == -1)
             return
 
         let cids = [...this.state.cids]
         cids.splice(index, 1, cidToAdd)
-        //cids.push(cidToAdd)
         this.setState({ cids: cids })
-
     }
 
     addNode(obj) {

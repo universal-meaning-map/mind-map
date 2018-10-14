@@ -349,56 +349,6 @@ export default class IPLDReodeder extends PtsCanvas {
         if (this.nodes[id])
             return this.getTargetPt(this.nodes[id].origin.link)
     }
-    /*
-        drawRelations(n) {
-            let lineColor = "#999"
-            for (let r of n.relations) {
-                let opt = this.pts[n.origin.link]
-                let tpt = this.getTargetPt(r.target.link)
-                this.paint.arrow(opt, tpt, Now.originRadius(), Now.originRadius(), lineColor)
-            }
-        }
-    
-        drawBurl(b) {
-            //node bubble
-            if (b.nodes.length) {
-                this.paint.bubble(b.pt, Now.nodeRadius(), '#EA967455')
-            }
-            //preview bubble
-            if (b.hasPreview) {
-                this.paint.bubble(b.pt, Now.originRadius(), '#FCBC8055')
-                this.paint.text(b.preview, b.pt, Now.originRadius() * 1.5, '#8B4B62')
-            }
-            //cid bubble
-            else {
-                this.paint.bubble(b.pt, Now.originRadius(), '#F7E29C55')
-                this.paint.text(b.oid, b.pt, Now.originRadius() * 1.5, '#BB6F6B88', false)
-            }
-        }
-    */
-    paintHighlights() {
-        if (Now.downSelection) {
-            if (Now.downSelection.node) {
-                this.paint.bubbleOutline(Now.downSelection.burl.pt, Now.nodeRadius(), '#f36')
-                //this.paintNodeTree(Now.downSelection.node)
-            }
-            else {
-                this.paint.bubbleOutline(Now.downSelection.burl.pt, Now.originRadius(), '#f36')
-
-            }
-        }
-
-        if (Now.hoverSelection) {
-            if (Now.hoverSelection.node) {
-                this.paintNodeTree(Now.hoverSelection.node)
-                //this.paint.bubbleOutline(Now.hoverSelection.burl.pt, Now.nodeRadius(), '#f365')
-            }
-            else {
-                this.paint.bubbleOutline(Now.hoverSelection.burl.pt, Now.originRadius(), '#f365')
-
-            }
-        }
-    }
 
     paintNodeTree(n) {
         let opt = this.burls[n.origin.link].pt
@@ -418,8 +368,6 @@ export default class IPLDReodeder extends PtsCanvas {
         }
     }
 
-
-
     action(type, px, py) {
         Now.updateAction(type)
         this.toAll(this.burls, (burl, oid) => {
@@ -432,11 +380,9 @@ export default class IPLDReodeder extends PtsCanvas {
         let onlyActive = true
         this.world.update(ftime)
         this.toAll(this.nodes, this.addForces.bind(this), onlyActive)
-        //this.toAll(this.nodes, this.drawRelations.bind(this), onlyActive)
-        //this.toAll(this.burls, this.drawBurl.bind(this), onlyActive)
+ 
         this.paintBorningNode()
         this.paintBorningRelation()
-        this.paintHighlights()
 
         this.paintAll()
         this.paintFocusTree(Now.hoverSelection)
@@ -597,13 +543,13 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     paintBorningNode() {
-        if (this.props.borningNode) {
-            this.paint.bubble(this.props.borningNode.pt, Now.originRadius(), '#ecd8')
-            if (this.props.borningNode.text) {
-                this.paint.text(this.props.borningNode.text, this.props.borningNode.pt, Now.originRadius() * 2)
+        if (this.props.borningNodeText!= null) {
+            this.paint.bubble(this.props.borningNodePt, Now.originRadius(), '#ecd8')
+            if (this.props.borningNodeText) {
+                this.paint.text(this.props.borningNodeText, this.props.borningNodePt, Now.originRadius() * 2)
             }
             else {
-                this.paint.text("what's in your mind?", this.props.borningNode.pt, Now.originRadius() * 2, '#666')
+                this.paint.text("what's in your mind?", this.props.borningNodePt, Now.originRadius() * 2, '#666')
             }
         }
     }

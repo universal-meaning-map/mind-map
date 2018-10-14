@@ -13,7 +13,8 @@ export default class App extends Component {
             pauseAnimation: false,
             currentZoom: 1,
             lastZoom: 1,
-            borningNode: null,
+            borningNodeText: null,
+            borningNodePt: null,
             cids: ["zdpuAsefBh3w36xm5ZENAmhwfbcAoBn3xPUHMGwCj2X9pwWdg"],
             ipfs: null
         }
@@ -34,7 +35,7 @@ export default class App extends Component {
             .catch((error) => console.error)
     }
 
-    addTextOrigin(text) {
+    addTextOrigin(text, onAdded = () => { }) {
 
         let file = {
             path: 'origin.txt',
@@ -47,7 +48,8 @@ export default class App extends Component {
 
             let cid = result[0].hash
             //this.publishToIPNS(cid)
-            this.addCID(cid)
+
+            onAdded(cid)
         })
     }
 
@@ -136,12 +138,10 @@ export default class App extends Component {
     }
 
     onLongPressStart(mousePosition) {
-        let borningNode = {
-            text: '',
-            pt: mousePosition
-        }
         this.setState({
-            borningNode: borningNode,
+            borningNodeText: '',
+            borningNodePt: mousePosition,
+            cid: null
         })
     }
 
@@ -150,25 +150,25 @@ export default class App extends Component {
     }
 
     onInputChange(value) {
-        let borningNode = {
-            text: value,
-            pt: this.state.borningNode.pt
-        }
 
-        this.setState({ borningNode: borningNode })
+        this.setState({ borningNodeText: value })
     }
 
     onInputReturn(text) {
-        if (text)
-            this.addTextOrigin(text)
-        this.setState({ hasFocus: false, borningNode: null })
+        if (text) {
+            this.addTextOrigin(text, (cid) => {
+                this.addCID(cid)
+                this.setState({ borningNodeCid: cid })
+            })
+        }
+        this.setState({ hasFocus: false, borningNodeText: null })
     }
 
     getInvisibleInput() {
         return <InvisibleInput
             onChange={this.onInputChange.bind(this)}
             onReturn={this.onInputReturn.bind(this)}
-            text={this.state.borningNode.text}
+            text={this.state.borningNodeText}
             hide={false} />
     }
 
@@ -195,7 +195,9 @@ export default class App extends Component {
                     onLongPressEnd={this.onLongPressEnd.bind(this)}
                     onPressStart={this.onPressStart.bind(this)}
                     longPressDelay={500}
-                    borningNode={this.state.borningNode}
+                    borningNodeText={this.state.borningNodeText}
+                    borningNodePt={this.state.borningNodePt}
+                    borningNodeCid={this.state.borningNodeCid}
                     onNewNode={this.addNode}
                     onReplaceCid={this.replaceCid}
                     zoom={this.state.currentZoom}

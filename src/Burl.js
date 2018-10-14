@@ -18,6 +18,7 @@ export default class Burl {
         this._btn = null
         this._isHover = false
         this._size = new Pt(Now.originRadius(), Now.originRadius())
+        this._downTimestamps = []
     }
 
     get oid() {
@@ -77,9 +78,24 @@ export default class Burl {
     }
 
     setInteraction(onDown, onUp, onHover, onLeave, onMove) {
+
         this._btn = UIButton.fromCircle(new Group(this._pt, this._size))
-        this._btn.on('down', (ui, pt) => { onDown(pt, this) })
-        this._btn.on('up', (ui, pt) => { onUp(pt, this) })
+        this._btn.on('down', (ui, pt) => {
+            let now = Date.now()
+            if (now - this._downTimestamps[this._downTimestamps.length - 1] > 400)
+
+                this._downTimestamps = [now]
+            else
+                this._downTimestamps.push(now)
+
+            let times = this._downTimestamps.length
+
+            onDown(pt, this, times)
+
+        })
+        this._btn.on('up', (ui, pt) => {
+            onUp(pt, this)
+        })
         this._btn.onHover(
             (ui, pt) => {
                 this._isHover = true

@@ -1,4 +1,4 @@
-import { UIButton, UIDragger, Group } from 'pts'
+import { UIButton, UIDragger, Group, Pt } from 'pts'
 import Now from './Now'
 
 const OTYPE = {
@@ -17,8 +17,7 @@ export default class Burl {
         this._file = null
         this._btn = null
         this._isHover = false
-
-        //this.setInteraction()
+        this._size = new Pt(Now.originRadius(), Now.originRadius())
     }
 
     get oid() {
@@ -39,9 +38,7 @@ export default class Burl {
                 return
         }
         this._nodes.push(n)
-        //let area = this.getInteractionArea(this.pt)
-        //TODO: This breaks... 
-        //this._btn.group = area 
+        this._size.to(Now.nodeRadius())
     }
 
     removeNode(n) {
@@ -80,7 +77,7 @@ export default class Burl {
     }
 
     setInteraction(onDown, onUp, onHover, onLeave, onMove) {
-        this._btn = UIButton.fromCircle(this.getInteractionArea(this.pt))
+        this._btn = UIButton.fromCircle(new Group(this._pt, this._size))
         this._btn.on('down', (ui, pt) => { onDown(pt, this) })
         this._btn.on('up', (ui, pt) => { onUp(pt, this) })
         this._btn.onHover(
@@ -101,14 +98,6 @@ export default class Burl {
             })
 
         return this._btn
-    }
-
-    getInteractionArea(pt) {
-        let area = [Now.originRadius(), Now.originRadius()]
-        if (this._nodes.length > 0)
-            area = [Now.nodeRadius(), Now.nodeRadius()]
-
-        return [pt, area]
     }
 
 }

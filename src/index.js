@@ -438,8 +438,8 @@ export default class IPLDReodeder extends PtsCanvas {
         this.paintBorningRelation()
         this.paintHighlights()
 
-        //this.paintFocusTree(Now.hoverSelection)
         this.paintAll()
+        this.paintFocusTree(Now.hoverSelection)
         //this.world.drawParticles((p, i) => { this.form.fillOnly('#00f5').point(p, 10, "circle") });
 
         /*for (let pt of this._ptsToDraw)
@@ -722,26 +722,28 @@ export default class IPLDReodeder extends PtsCanvas {
     paintFocusTree(burlSelection) {
         let that = this
         function onNode(n, level) {
-            let scaleFactor = 1 / level * 2
+            let scaleFactor = 1 
             let pt = that.burls[n.origin.link].pt
             that.paint.bubbleOutline(pt, Now.nodeRadius() * scaleFactor, '#f36')
         }
 
         function onRelation(n, r, level) {
+            let scaleFactor = 1 
             let opt = that.burls[n.origin.link].pt
             let tpt = that.getTargetPt(r.target.link)
-
-            that.paint.arrow(opt, tpt, Now.originRadius(), '#0ff')
+            let targetIsNode = r.target.link in that.nodes
+            let targetRadius = targetIsNode ? Now.nodeRadius() : Now.originRadius()
+            that.paint.arrow(opt, tpt, Now.nodeRadius() * scaleFactor, targetRadius, '#f36')
         }
 
         function onContent(cid, level) {
             let b = that.burls[cid]
-            let scaleFactor = 1 / level * 2
+            let scaleFactor = 1 
             if (b.hasPreview) {
-                that.paint.bubble(b.pt, Now.originRadius() * scaleFactor, '#FCBC8055')
+                that.paint.bubbleOutline(b.pt, Now.originRadius() * scaleFactor, '#f36')
                 that.paint.text(b.preview, b.pt, Now.originRadius() * 1.5 * scaleFactor, '#8B4B62')
             } else {
-                that.paint.bubble(b.pt, Now.originRadius() * scaleFactor, '#F7E29C55')
+                that.paint.bubbleOutline(b.pt, Now.originRadius() * scaleFactor, '#f36')
                 that.paint.text(b.oid, b.pt, Now.originRadius() * 1.5 * scaleFactor, '#BB6F6B88', false)
             }
         }
@@ -793,32 +795,6 @@ export default class IPLDReodeder extends PtsCanvas {
             this.treeDown(cid, 1, onNode, onContent, onRelation)
     }
 
-    logCids() {
-
-        let that = this
-        function space(l) {
-            let s = ""
-            for (let i = 0; i <= l; i++)
-                s = s + " "
-            return s
-        }
-
-        function onNode(n, level) {
-            console.log(space(level), "n", that.sc(n.nodeCid))
-        }
-
-        function onRelation(n, r, level) {
-            console.log('------')
-            console.log(space(level), "r", that.sc(r.target.link))
-        }
-
-        function onContent(cid, level) {
-            console.log(space(level), "c", that.sc(cid))
-        }
-
-        this.bubbleDownFromCids(this.props.cids, onNode, onContent, onRelation)
-    }
-
     getActiveCids() {
         let activeCids = []
         for (let cid in this.state.activeCids) {
@@ -829,11 +805,6 @@ export default class IPLDReodeder extends PtsCanvas {
 
         }
         return activeCids
-    }
-
-    sc(cid) {
-        let str = cid.slice(-4)
-        return str
     }
 
 }

@@ -65,13 +65,17 @@ export default class App extends Component {
     }
 
     addNode(obj) {
+        this.addIpldObj(obj, (cid) => {
+            this.addCID(cid)
+        })
+    }
+
+    addIpldObj(obj, callback) {
         this.state.ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' }, (error, result) => {
             if (error)
                 throw (error)
             let cid = result.toBaseEncodedString()
-            console.log('New node added', cid)
-            //this.publishToIPNS(cid)
-            this.addCID(cid)
+            callback(cid)
         })
     }
 
@@ -172,6 +176,10 @@ export default class App extends Component {
             hide={false} />
     }
 
+    onAddNode() {
+
+    }
+
     render() {
         let invisibleInput = (<div />)
         if (this.state.hasFocus)
@@ -202,7 +210,7 @@ export default class App extends Component {
                     onReplaceCid={this.replaceCid}
                     zoom={this.state.currentZoom}
                     loop={true}
-                    autoLayout={true}/>
+                    autoLayout={true} />
                 </div>
             </div>
         );

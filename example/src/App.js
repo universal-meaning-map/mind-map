@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import IPLDRender from 'ipld-mindmap-ptsjs-render'
 import InvisibleInput from 'ipld-mindmap-ptsjs-render/example/src/InvisibleInput'
 import getIpfs from 'window.ipfs-fallback'
+import QueryString from 'query-string'
 
 var Buffer = require('buffer/').Buffer
 
@@ -31,8 +32,34 @@ export default class App extends Component {
                     this.resolveIPNS(peer.id)
                 })
                 this.setState({ ipfs: ipfs })
+                this.checkHash()
             })
             .catch((error) => console.error)
+
+        window.addEventListener('hashchange', this.onHashChanged, false);
+        this.onHashChanged()
+    }
+
+    onHashChanged() {
+        this.checkHash()
+    }
+    checkHash() {
+        let parsedHash = QueryString.parse(window.location.hash)
+        this.loadProperties(parsedHash)
+    }
+
+    loadProperties(p) {
+        if ('src' in p)
+            this.loadSrc(p.src)
+    }
+
+    loadSrc(cid) {
+        if (this.state.ipfs) {
+            this.loadDag(cid, (data) => {
+            
+                this.setState({cids:data.cids})
+            })
+        }
     }
 
     addTextOrigin(text, onAdded = () => { }) {
@@ -81,18 +108,10 @@ export default class App extends Component {
 
     save() {
         let obj = {}
-        obj.cids = this.state.cids.map((cid) => {
-            let link = {}
-            link['/']=cid
-            return link
-        })
-        this.addIpldObj(obj, (cid)=>{
+        obj.cids = [...this.state.cids]
+        this.addIpldObj(obj, (cid) => {
             console.log(cid)
         })
-    }
-
-    load(){
-
     }
 
     addCID(cid) {
@@ -194,8 +213,18 @@ export default class App extends Component {
             hide={false} />
     }
 
-    onAddNode() {
 
+    loadDag(cid, callback) {
+        this.state.ipfs.dag.get(cid, (error, result) => {
+            if (error) {
+                console.warn("ipfs.dag.get", cid, error)
+                callback(null, cid)
+                return
+            }
+
+            let data = result.value
+            callback(data, cid)
+        })
     }
 
     render() {

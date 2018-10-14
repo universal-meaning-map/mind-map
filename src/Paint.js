@@ -25,7 +25,7 @@ export default class Paint {
         this.form.strokeOnly(color, thickness)
         this.form.line(arrowLine)
 
-        let arrowPointer = Shape.arrowPointer(opt, tpt, - originOffset)
+        let arrowPointer = Shape.arrowPointer(originOffsetPt, targetOffsetPt)
         this.form.fillOnly(color, 1)
         this.form.polygon(arrowPointer)
     }

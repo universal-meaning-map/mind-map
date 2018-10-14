@@ -63,6 +63,7 @@
     "cids": "^0.5.5",
     "create-react-class": "^15.6.3",
     "pts": "^0.6.4",
+    "query-string": "^6.2.0",
     "react-tappable": "^1.0.4"
   }
 }

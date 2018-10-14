@@ -176,7 +176,6 @@ export default class IPLDReodeder extends PtsCanvas {
 
     makeParticle(oid, pt) {
         let particle = new Particle(pt).size(Now.nodeArm());
-        particle.id = oid
         return particle
     }
 
@@ -211,10 +210,14 @@ export default class IPLDReodeder extends PtsCanvas {
         if (Now.downSelection && Now.downSelection.burl.oid === oid)
             Now.downSelection = null
 
-        this.getParticleIndex()
+        try {
+            this.world.removeParticle(oid)
+        }
+        catch (err) {
+            console.error("Couldn't remove particle", oid)
+        }
 
         delete this.burls[oid]
-        this.world.remove('particle', this.getParticleIndex(oid))
 
         /*
         console.log('Particle Index', this.getParticleIndex(oid))
@@ -229,14 +232,6 @@ export default class IPLDReodeder extends PtsCanvas {
         */
     }
 
-    getParticleIndex(pid) {
-        for (let i = 0; i < this.world.particleCount; i++) {
-            if (this.world.particle(i).id === pid) {
-                return i
-            }
-        }
-        return -1
-    }
 
     onBurlDown(pt, burl) {
         Now.hoverSelection = this.getBurlSelection(pt, burl)

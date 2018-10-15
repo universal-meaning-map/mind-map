@@ -322,7 +322,7 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     start(space, bound) {
-        this.world = new World(this.space.innerBound, 0.7, new Pt(0, 0));
+        this.world = new World(this.space.innerBound, 0.01, new Pt(0, 0));
         this.setState({ worldIsReady: true })
         this.setCids(this.props.cids)
     }
@@ -345,7 +345,7 @@ export default class IPLDReodeder extends PtsCanvas {
             let tpt = this.burls[tid].pt
             //let tpt = this.getTargetPt(r.target.link)
 
-            let forceAmount = 2
+            let forceAmount = 1
             let distance = opt.$subtract(tpt)
             //negative so it attracts
             let force = distance.$multiply(-1 * forceAmount)

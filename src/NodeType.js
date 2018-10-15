@@ -1,5 +1,4 @@
 import IpldType from "./IpldType"
-import LinkType from "./LinkType"
 import LinkWrapType from "./LinkWrapType"
 
 export default class NodeType extends IpldType {
@@ -73,10 +72,10 @@ export default class NodeType extends IpldType {
         let newNode = NodeType.clone(this)
         for (let i = 0; i <= newNode._relations.length; i++) {
             let r = newNode._relations[i]
-            if (r.target.link == oldTarget) {
+            if (r.target.link === oldTarget) {
                 if (r.type) {
 
-                    if (r.type.link == oldTarget) {
+                    if (r.type.link === oldTarget) {
                         newNode._relations.splice(i, 1)
                         newNode._targetCids.splice(i, 1)
                         return newNode

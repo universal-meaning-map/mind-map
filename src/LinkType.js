@@ -23,7 +23,7 @@ export default class LinkType {
             return false
 
         try {
-            let cid = new CID(obj['/'])
+            new CID(obj['/'])
         }
         catch (err) {
             return false

@@ -1,7 +1,5 @@
-import { Pt, Group, Circle, Rectangle, Util, World, Particle, UIButton, UI } from 'pts';
+import { Pt, Group, Circle, World, Particle, UI } from 'pts';
 import PtsCanvas from "./PtsCanvas.jsx"
-import Converter from "./Converter.js"
-import React, { Component } from 'react'
 import NodeType from './NodeType'
 import Shape from './Shape'
 import Paint from './Paint'
@@ -166,7 +164,7 @@ export default class IPLDReodeder extends PtsCanvas {
         let b = new Burl(oid, pt)
         this.burls[oid] = b
 
-        let btn = b.setInteraction(this.onBurlDown, this.onBurlUp, this.onBurlHover, this.onBurlLeave, this.onBurlMove)
+        b.setInteraction(this.onBurlDown, this.onBurlUp, this.onBurlHover, this.onBurlLeave, this.onBurlMove)
 
         let op = new OriginParents(oid)
         this.parents[oid] = op
@@ -397,9 +395,11 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     animate(time, ftime) {
+        console.log(this.props.isDebug, this.props.autoLayout)
         let onlyActive = true
         this.moveDragBurl()
-        if (this.props.autoLayout == true) {
+
+        if (this.props.autoLayout) {
             console.log(this.props.autoLayout)
             this.toAll(this.nodes, this.addForces.bind(this), onlyActive)
             this.world.update(ftime)
@@ -410,9 +410,7 @@ export default class IPLDReodeder extends PtsCanvas {
         this.paintAll()
         this.paintFocusTree(Now.hoverSelection)
         this.paintBorningRelation()
-        if (this.props.isDebug)
-        {
-
+        if (this.props.isDebug) {
             this.world.drawParticles((p, i) => { this.form.strokeOnly('#9993').point(p, p.radius, "circle") });
         }
 
@@ -454,8 +452,6 @@ export default class IPLDReodeder extends PtsCanvas {
 
     addRelation(originSelection, targetSelection) {
 
-        let that = this
-
         this.getBurlSelectionId(targetSelection, (tid) => {
             if (originSelection.node) {
                 this.addRelationToNode(originSelection.node, tid)
@@ -472,7 +468,6 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     addRelationToContent(oid, tid, typeId) {
-        let oldId = oid
         let newNode = NodeType.getNewObj(oid, [tid])
         this.props.onNewNode(newNode)
     }

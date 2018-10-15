@@ -1,4 +1,4 @@
-import { UIButton, UIDragger, Group, Pt } from 'pts'
+import { UIButton, Group, Pt } from 'pts'
 import Now from './Now'
 
 const OTYPE = {

@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import IPLDRender from 'ipld-mindmap-ptsjs-render'
-import InvisibleInput from 'ipld-mindmap-ptsjs-render/example/src/InvisibleInput'
+import IPLDRender from './PtsRender'
+import InvisibleInput from './InvisibleInput'
 import getIpfs from 'window.ipfs-fallback'
+
 import QueryString from 'query-string'
 
 var Buffer = require('buffer/').Buffer
@@ -16,7 +17,7 @@ export default class App extends Component {
             lastZoom: 1,
             borningNodeText: null,
             borningNodePt: null,
-            cids: ["zdpuAsefBh3w36xm5ZENAmhwfbcAoBn3xPUHMGwCj2X9pwWdg"],
+            cids: [],
             ipfs: null
         }
 
@@ -24,6 +25,7 @@ export default class App extends Component {
         this.addNode = this.addNode.bind(this)
         this.addTextOrigin = this.addTextOrigin.bind(this)
         this.resolveIPNS = this.resolveIPNS.bind(this)
+        this.onHashChanged = this.onHashChanged.bind(this)
 
         getIpfs()
             .then((ipfs) => {
@@ -43,6 +45,7 @@ export default class App extends Component {
     onHashChanged() {
         this.checkHash()
     }
+
     checkHash() {
         let parsedHash = QueryString.parse(window.location.hash)
         this.loadProperties(parsedHash)
@@ -83,7 +86,7 @@ export default class App extends Component {
     replaceCid(cidToRemove, cidToAdd) {
 
         let index = this.state.cids.indexOf(cidToRemove)
-        if (index == -1)
+        if (index === -1)
             return
 
         let cids = [...this.state.cids]
@@ -110,7 +113,8 @@ export default class App extends Component {
         let obj = {}
         obj.cids = [...this.state.cids]
         this.addIpldObj(obj, (cid) => {
-            console.log(cid)
+           let newHash = QueryString.stringify({src:cid})
+           window.location.hash = newHash
         })
     }
 

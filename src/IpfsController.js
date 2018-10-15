@@ -1,5 +1,5 @@
-const events = require('events')
 import CID from 'cids'
+const events = require('events')
 
 
 export default class IpfsController extends events.EventEmitter {

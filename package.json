@@ -5,7 +5,7 @@
   "author": "xavivives",
   "license": "MIT",
   "repository": "arxiu/ipld-mindmap-pts-render",
-  "homepage" : "http://arxiu.github.io/ipld-mindmap-pts-render",
+  "homepage": "http://arxiu.github.io/ipld-mindmap-pts-render",
   "dependencies": {
     "ipfs": "^0.32.3",
     "pts": "^0.6.6",
@@ -20,7 +20,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -32,6 +34,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "create-react-class": "^15.6.3"
+    "create-react-class": "^15.6.3",
+    "gh-pages": "^2.0.1"
   }
 }

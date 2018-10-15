@@ -19,9 +19,11 @@ export default class App extends Component {
             borningNodePt: null,
             cids: [],
             ipfs: null,
+
             autoLayout: false,
-            isDebug:false,
-            src: ''
+            isDebug: false,
+            src: '',
+            canReferenceNodes: true
         }
 
         this.replaceCid = this.replaceCid.bind(this)
@@ -57,14 +59,18 @@ export default class App extends Component {
     loadProperties(p) {
         let autoLayout = true
         let isDebug = false
+        let canReferenceNodes = true
+
         if ('src' in p)
             this.loadSrc(p.src)
         if ('autoLayout' in p)
-            autoLayout = (p.autoLayout==='true') //we want true and not "true"
+            autoLayout = (p.autoLayout === 'true') //we want true and not "true"
         if ('isDebug' in p)
-            isDebug = (p.isDebug==='true')
+            isDebug = (p.isDebug === 'true')
+        if ('canReferenceNodes' in p)
+            canReferenceNodes = (p.canReferenceNodes === 'true')
 
-        this.setState({ autoLayout: autoLayout, isDebug: isDebug })
+        this.setState({ autoLayout: autoLayout, isDebug: isDebug, canReferenceNodes:canReferenceNodes })
     }
 
     loadSrc(cid) {
@@ -131,8 +137,9 @@ export default class App extends Component {
 
     makeHash() {
         let hashObj = {}
-        hashObj.autoLayout = this.state.autoLayout
         hashObj.src = this.state.src
+        hashObj.autoLayout = this.state.autoLayout
+        hashObj.canReferenceNodes = this.state.canReferenceNodes
         hashObj.isDebug = this.state.isDebug
         let newHash = QueryString.stringify(hashObj)
         window.location.hash = newHash
@@ -256,7 +263,7 @@ export default class App extends Component {
         if (this.state.hasFocus)
             invisibleInput = this.getInvisibleInput()
 
-            
+
         return (
             <div
                 className="App"
@@ -283,7 +290,8 @@ export default class App extends Component {
                     zoom={this.state.currentZoom}
                     loop={true}
                     autoLayout={this.state.autoLayout}
-                    isDebug={this.state.isDebug} />
+                    isDebug={this.state.isDebug}
+                    canReferenceNodes={this.state.canReferenceNodes}/>
                 </div>
             </div>
         );

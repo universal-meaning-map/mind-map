@@ -1,7 +1,9 @@
 export default class Now {
 
-
     static nodeRadius() {
+        if(!Now._canReferenceNodes)
+            return Now.originRadius()
+
         return Now._nodeRadius * Now._zoom
     }
 
@@ -60,6 +62,16 @@ export default class Now {
         Now._currentDragBurlSelection = burlSelection
     }
 
+    static set canReferenceNodes(can)
+    {
+        Now._canReferenceNodes = can
+    }
+
+    static get canReferenceNodes()
+    {
+        return  Now._canReferenceNodes
+    }
+
 
 }
 
@@ -74,4 +86,5 @@ Now._clickDownBurlSelection = null
 Now._clickUpBurlSelection = null
 Now._currentBurlSelection = null
 Now._currentDragBurlSelection = null
+Now._canReferenceNodes = null
 

@@ -49,6 +49,12 @@ export default class IPLDReodeder extends PtsCanvas {
 
         if (nextProps.zoom)
             this.onZoomChange(nextProps.zoom)
+        
+        if(nextProps.canReferenceNodes)
+        {
+            Now.canReferenceNodes = nextProps.canReferenceNodes
+            console.log(nextProps.canReferenceNodes, Now.canReferenceNodes)
+        }
 
         if (JSON.stringify(nextProps.cids) === JSON.stringify(this.props.cids))
             return
@@ -264,6 +270,11 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     getBurlSelection(pointer, burl) {
+
+        if(!this.props.canReferenceNodes)
+        {
+            return new BurlSelection(burl, null) 
+        }
 
         let closest = this.getClosestNodeRelationToPointer(pointer, burl)
         let nearbyNode = closest.node
@@ -737,6 +748,10 @@ export default class IPLDReodeder extends PtsCanvas {
     paintAll() {
         let that = this
         function onNode(n, level) {
+
+            if(!that.props.canReferenceNodes)
+                return
+
             let pt = that.burls[n.origin.link].pt
             that.paint.bubbleOutline(pt, Now.nodeRadius(), '#999')
         }

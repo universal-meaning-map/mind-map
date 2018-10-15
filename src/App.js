@@ -19,7 +19,8 @@ export default class App extends Component {
             borningNodePt: null,
             cids: [],
             ipfs: null,
-            autoLayout: true,
+            autoLayout: false,
+            isDebug:false,
             src: ''
         }
 
@@ -59,9 +60,9 @@ export default class App extends Component {
         if ('src' in p)
             this.loadSrc(p.src)
         if ('autoLayout' in p)
-            autoLayout = p.autoLayout
+            autoLayout = (p.autoLayout==='true') //we want true and not "true"
         if ('isDebug' in p)
-            isDebug = p.isDebug
+            isDebug = (p.isDebug==='true')
 
         this.setState({ autoLayout: autoLayout, isDebug: isDebug })
     }
@@ -233,7 +234,7 @@ export default class App extends Component {
             onChange={this.onInputChange.bind(this)}
             onReturn={this.onInputReturn.bind(this)}
             text={this.state.borningNodeText}
-            hide={this.state.isDebug} />
+            hide={!this.state.isDebug} />
     }
 
 

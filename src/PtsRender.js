@@ -395,12 +395,10 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     animate(time, ftime) {
-        console.log(this.props.isDebug, this.props.autoLayout)
         let onlyActive = true
         this.moveDragBurl()
-
+   
         if (this.props.autoLayout) {
-            console.log(this.props.autoLayout)
             this.toAll(this.nodes, this.addForces.bind(this), onlyActive)
             this.world.update(ftime)
         }
@@ -410,7 +408,7 @@ export default class IPLDReodeder extends PtsCanvas {
         this.paintAll()
         this.paintFocusTree(Now.hoverSelection)
         this.paintBorningRelation()
-        if (this.props.isDebug) {
+        if (this.props.isDebug===true) {
             this.world.drawParticles((p, i) => { this.form.strokeOnly('#9993').point(p, p.radius, "circle") });
         }
 

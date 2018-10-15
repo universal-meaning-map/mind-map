@@ -18,7 +18,9 @@ export default class App extends Component {
             borningNodeText: null,
             borningNodePt: null,
             cids: [],
-            ipfs: null
+            ipfs: null,
+            autoLayout: true,
+            src: ''
         }
 
         this.replaceCid = this.replaceCid.bind(this)
@@ -52,15 +54,23 @@ export default class App extends Component {
     }
 
     loadProperties(p) {
+        let autoLayout = true
+        let isDebug = false
         if ('src' in p)
             this.loadSrc(p.src)
+        if ('autoLayout' in p)
+            autoLayout = p.autoLayout
+        if ('isDebug' in p)
+            isDebug = p.isDebug
+
+        this.setState({ autoLayout: autoLayout, isDebug: isDebug })
     }
 
     loadSrc(cid) {
         if (this.state.ipfs) {
             this.loadDag(cid, (data) => {
-            
-                this.setState({cids:data.cids})
+
+                this.setState({ cids: data.cids })
             })
         }
     }
@@ -113,9 +123,18 @@ export default class App extends Component {
         let obj = {}
         obj.cids = [...this.state.cids]
         this.addIpldObj(obj, (cid) => {
-           let newHash = QueryString.stringify({src:cid})
-           window.location.hash = newHash
+            this.setState({ src: cid })
+            this.makeHash()
         })
+    }
+
+    makeHash() {
+        let hashObj = {}
+        hashObj.autoLayout = this.state.autoLayout
+        hashObj.src = this.state.src
+        hashObj.isDebug = this.state.isDebug
+        let newHash = QueryString.stringify(hashObj)
+        window.location.hash = newHash
     }
 
     addCID(cid) {
@@ -214,7 +233,7 @@ export default class App extends Component {
             onChange={this.onInputChange.bind(this)}
             onReturn={this.onInputReturn.bind(this)}
             text={this.state.borningNodeText}
-            hide={false} />
+            hide={this.state.isDebug} />
     }
 
 
@@ -236,6 +255,7 @@ export default class App extends Component {
         if (this.state.hasFocus)
             invisibleInput = this.getInvisibleInput()
 
+            
         return (
             <div
                 className="App"
@@ -261,7 +281,8 @@ export default class App extends Component {
                     onReplaceCid={this.replaceCid}
                     zoom={this.state.currentZoom}
                     loop={true}
-                    autoLayout={true} />
+                    autoLayout={this.state.autoLayout}
+                    isDebug={this.state.isDebug} />
                 </div>
             </div>
         );

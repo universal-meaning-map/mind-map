@@ -47,10 +47,10 @@ export default class IPLDReodeder extends PtsCanvas {
 
     componentWillReceiveProps(nextProps) {
 
-        if (nextProps.zoom)
+        if ('zoom' in nextProps)
             this.onZoomChange(nextProps.zoom)
         
-        if(nextProps.canReferenceNodes)
+        if('canReferenceNodes' in nextProps)
         {
             Now.canReferenceNodes = nextProps.canReferenceNodes
             console.log(nextProps.canReferenceNodes, Now.canReferenceNodes)

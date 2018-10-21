@@ -1,11 +1,11 @@
 {
-  "name": "ipld-mindmap-pts-render",
+  "name": "mind-map",
   "version": "0.1.0",
   "private": true,
   "author": "xavivives",
   "license": "MIT",
-  "repository": "arxiu/ipld-mindmap-pts-render",
-  "homepage": "http://arxiu.github.io/ipld-mindmap-pts-render",
+  "repository": "interplanetarymindmap/mind-map",
+  "homepage": "http://interplanetarymindmap.github.io/mind-map",
   "dependencies": {
     "ipfs": "^0.32.3",
     "pts": "^0.6.6",

@@ -9,7 +9,7 @@ import BurlSelection from './BurlSelection'
 import OriginParents from './OriginParents'
 import IpfsController from './IpfsController'
 
-export default class IPLDReodeder extends PtsCanvas {
+export default class PtsRender extends PtsCanvas {
 
     constructor(props) {
         super(props);
@@ -331,12 +331,14 @@ export default class IPLDReodeder extends PtsCanvas {
     }
 
     start(space, bound) {
+        console.log('start')
         this.world = new World(this.space.innerBound, 0.01, new Pt(0, 0));
         this.setState({ worldIsReady: true })
         this.setCids(this.props.cids)
     }
 
     resize() {
+        console.log('create')
         //this.create();
     }
 

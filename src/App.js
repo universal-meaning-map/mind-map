@@ -35,15 +35,18 @@ export default class App extends Component {
         getIpfs()
             .then((ipfs) => {
                 console.warn('Got IPFS')
-                ipfs.id().then((peer) => {
+                /*ipfs.id().then((peer) => {
                     this.resolveIPNS(peer.id)
-                })
+                })*/
                 this.setState({ ipfs: ipfs })
                 this.checkHash()
             })
             .catch((error) => console.error)
 
         window.addEventListener('hashchange', this.onHashChanged, false);
+    }
+
+    componentDidMount(){
         this.onHashChanged()
     }
 
@@ -89,6 +92,12 @@ export default class App extends Component {
             content: Buffer.from(text, 'utf8')
         }
 
+        if(!this.state.ipfs)
+        {
+            console.warn('Loading IPFS')
+            return
+        }
+        
         this.state.ipfs.files.add(file, (error, result) => {
             if (error)
                 throw (error)

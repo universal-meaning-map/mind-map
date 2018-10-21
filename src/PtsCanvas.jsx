@@ -20,6 +20,8 @@ export default class PtsCanvas extends React.Component {
       pressStartPointer: null,
     }
 
+    document.addEventListener('visibilitychange', this.onVisibilityChange.bind(this));
+
   }
 
   componentDidMount() {
@@ -29,6 +31,13 @@ export default class PtsCanvas extends React.Component {
 
   componentDidUpdate() {
     this._loop();
+  }
+
+  onVisibilityChange(e, a) {
+    if (document.visibilityState == 'visible')
+      this.space.resume()
+    else
+      this.space.pause()
   }
 
   _loop() {
@@ -102,7 +111,7 @@ export default class PtsCanvas extends React.Component {
     if (!this.state.isPressing)
       return
     let distanceMoved = Math.abs(this.space.pointer.$subtract(this.state.pressStartPointer).magnitude())
-    
+
     if (distanceMoved < 5)
       this.onLongPressStart()
   }

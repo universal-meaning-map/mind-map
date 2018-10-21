@@ -10,7 +10,6 @@ export default class IpfsController extends events.EventEmitter {
     }
 
     init(ipfs) {
-        console.log('Setting Ipfs')
 
         if (!ipfs) {
             console.warn('No ipfs yet...')
@@ -23,21 +22,17 @@ export default class IpfsController extends events.EventEmitter {
             console.log('Peer id', id)
 
             if (this.isJsIpfs(id)) {
-                console.log("isJS")
 
                 if (this._ipfs.isOnline()) {
                     this.onIpfsReady()
                 }
                 else {
-                    console.log('isOffline')
                     this.props.ipfs.on('start', () => {
-                        console.log('Was offline')
                         this.onIpfsReady()
                     })
                 }
             }
             else {
-                console.log("isGo")
                 this.onIpfsReady()
             }
         })

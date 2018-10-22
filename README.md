@@ -1,22 +1,21 @@
-# Interplanetary Mind Map
+# Mind Map
 _[Live version](http://interplanetarymindmap.github.io/mind-map)_
 
 _[Usage instructions](https://github.com/interplanetarymindmap/mind-map/blob/master/instructions.md)_
 
 ## Context
-We're in a personal contest to understand and try to change how do we organize our own information, and how it relates to everything else. The full explanation of why and how is something we're working on.
+We're in a personal contest to understand and try to change how do we organize our own information, and how it relates to everything else. The full explanation of why and how is something we're still [working on](https://github.com/interplanetarymindmap/docs).
 
 Since the scope of the project is immense, we're going to tackle small projects to get insight, while creating new tools to allow new ways to relate to information.
 
-The limitations around organizing information in a way that is meaningful for the individual has been one of the driving frustrations that have triggered us to dig deep into these issues. At the same time, we believe that defining how information is organized and structured is a necessary building block before exploring more advanced systems.
+The limitations around organizing information in a way that is meaningful for the individual(understand "mind") has been one of the driving frustrations that have triggered us to dig deep into these issues. At the same time, we believe that defining how information is organized and structured is a necessary building block before exploring more advanced systems.
 
 ## Documentation
 This is the first "project" we try to tackle. While creating a tool is the main goal, is likely that we will also be exploring working frameworks and different documentation praxis.
 
 Documentation is important to us because we are looking to solve transversal problems in the best way possible, so if the logic behind is not good enough, we want to know. And if you're reading this, probably you can help. We invite you to open an issue so we can discuss any question further :)
 
-
-## Mindmap
+## Mind map
 We like the idea of "mind map", a tool that allows organizing information in the way that your brain works and not in a simplified way restricted by a user interface or a data structure.
 
 [The Wikipedia entry](https://en.wikipedia.org/wiki/Mind_map) says that mindmaps are hierarchical and around a single concept. We're not making a reference to this exact concept, although it shares a lot of points in common.
@@ -179,8 +178,6 @@ _TODO: The links are `CIDs` and should be `merkle-paths`._
 }
 ```
 
-
-
 ### Render vs structure
 
 If we take a classic mindmap, the connections and nodes may have different shapes, sizes, colours... This is what the render should do. It needs to understand the relations and the nodes so they can be drawn.
@@ -188,8 +185,6 @@ If we take a classic mindmap, the connections and nodes may have different shape
 It would be easy to add properties such as "colour", so the render can pick it up. But unless this is something intrinsic of the node or relation, should be left out of the equation.
 
 This is because the final goal is to be able to capture and organize concepts, and not to visualize them in a specific way. We need to keep the data render agnostic. It just happens that we choose a mindmap like render to start exploring how to organize and render this type of data.
-
-
 
 ## Dimensions and recursivity
 _This is an attempt to understand the data structure from a different perspective, While developing it I found already a lot of references around graph theory and geometry and I'm pretty sure that there a lot more. I would highly appreciate references and insights to polish my naive aporach_
@@ -283,5 +278,6 @@ We call this convergence a `node cluster`. In other words is the set of nodes th
 - `17/10/2018`: We're travelling (by car) from Girona to Berlin, to be around the Web3 Summit.
 - `19/10/2018`: We still travelling, but we've been using the free time to consolidate the documentation so it can be shared soon.
 - `21/10/2018`: We've renamed the github organization and some repos. We made a demo video.
+- `21/10/2018`: Added the project at the [ipfs/notes repository issues](https://github.com/ipfs/notes/issues/299).
 
 __This document was copied into this repo on 21/10/2108. You can still get the historic at [its original repository](https://github.com/interplanetarymindmap/ipld-mindmap-old-readme/blob/master/README.md)__

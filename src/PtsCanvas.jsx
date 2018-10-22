@@ -34,7 +34,7 @@ export default class PtsCanvas extends React.Component {
   }
 
   onVisibilityChange(e, a) {
-    if (document.visibilityState == 'visible')
+    if (document.visibilityState === 'visible')
       this.space.resume()
     else
       this.space.pause()

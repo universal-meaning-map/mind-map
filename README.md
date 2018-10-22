@@ -1,7 +1,7 @@
 # Interplanetary Mind Map
-_[Live version](http://interplanetarymindmap.github.io/mindmap)_
+_[Live version](http://interplanetarymindmap.github.io/mind-map)_
 
-_[Basic instructions](https://github.com/interplanetarymindmap/mindmap)_
+_[Basic instructions](https://github.com/interplanetarymindmap/mind-map)_
 
 ## Context
 We're in a personal contest to understand and try to change how do we organize our own information, and how it relates to everything else. The full explanation of why and how is something we're working on.
@@ -269,16 +269,16 @@ We call this convergence a `node cluster`. In other words is the set of nodes th
 
 ## Log (just to give a vague idea of the progress)
 - `13/09/2018`: We've figured out a basic data structure to start. Defined in the section above
-- `18/09/2018`: We started exploring the first render: [ipld-mindmap-pts-render](https://github.com/interplanetarymindmap/mindmap)
+- `18/09/2018`: We started exploring the first render: [ipld-mindmap-pts-render](https://github.com/interplanetarymindmap/mind-map)
 - `21/09/2018`: Documenting node identification. Documenting render format.
 - `26/09/2018`: Render shows basic nodes with mock data, nodes are selectable and can be navigated with arrow keys
-- `27/09/2018`: Converting this repo into a React-Create-App and the [ipld-mindmap-pts-render](https://github.com/interplanetarymindmap/mindmap) into a standalone component.
+- `27/09/2018`: Converting this repo into a React-Create-App and the [ipld-mindmap-pts-render](https://github.com/interplanetarymindmap/mind-map) into a standalone component.
 - `30/09/2018`: _Initital deadline reached_ (it's ok)
 - `01/09/2018`: A lot of discussions regarding the way nodes are organized
 - . Hierarchical vs lists...
 - `05/10/2018`: Render has been refactored to fit all the new find-outs. Data structures are pretty solid. A lot of UI work is required.
 - `13/10/2018`: The previous week has mostly been dedicated to adding mutability to the nodes in the render. Because of it, the render codebase got a little more complex than I would like.
-- `14/10/2018`: There is now a [first version](http://interplanetarymindmap.github.io/mindmap) you can play around!
+- `14/10/2018`: There is now a [first version](http://interplanetarymindmap.github.io/mind-map) you can play around!
 - `15/10/2018`: We met with Victor and discussed deeply this project. We also made a choppy demo at the IPFS hands-on call. 
 - `17/10/2018`: We're travelling (by car) from Girona to Berlin, to be around the Web3 Summit.
 - `19/10/2018`: We still travelling, but we've been using the free time to consolidate the documentation so it can be shared soon.

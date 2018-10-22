@@ -1,7 +1,7 @@
 # Interplanetary Mind Map
 _[Live version](http://interplanetarymindmap.github.io/mind-map)_
 
-_[Basic instructions](https://github.com/interplanetarymindmap/mind-map)_
+_[Usage instructions](https://github.com/interplanetarymindmap/mind-map/blob/master/instructions.md)_
 
 ## Context
 We're in a personal contest to understand and try to change how do we organize our own information, and how it relates to everything else. The full explanation of why and how is something we're working on.
@@ -269,10 +269,10 @@ We call this convergence a `node cluster`. In other words is the set of nodes th
 
 ## Log (just to give a vague idea of the progress)
 - `13/09/2018`: We've figured out a basic data structure to start. Defined in the section above
-- `18/09/2018`: We started exploring the first render: [ipld-mindmap-pts-render](https://github.com/interplanetarymindmap/mind-map)
+- `18/09/2018`: We started exploring the first render _(22/10/2018 edit: We merged two repositories, the render is this repo now)_
 - `21/09/2018`: Documenting node identification. Documenting render format.
 - `26/09/2018`: Render shows basic nodes with mock data, nodes are selectable and can be navigated with arrow keys
-- `27/09/2018`: Converting this repo into a React-Create-App and the [ipld-mindmap-pts-render](https://github.com/interplanetarymindmap/mind-map) into a standalone component.
+- `27/09/2018`: Converting this repo into a React-Create-App and the render into a standalone component. _(22/10/2018 edit: We merged two repositories, the render is this repo now)_
 - `30/09/2018`: _Initital deadline reached_ (it's ok)
 - `01/09/2018`: A lot of discussions regarding the way nodes are organized
 - . Hierarchical vs lists...

@@ -279,7 +279,7 @@ We call this convergence a `node cluster`. In other words is the set of nodes th
 - `05/10/2018`: Render has been refactored to fit all the new find-outs. Data structures are pretty solid. A lot of UI work is required.
 - `13/10/2018`: The previous week has mostly been dedicated to adding mutability to the nodes in the render. Because of it, the render codebase got a little more complex than I would like.
 - `14/10/2018`: There is now a [first version](http://interplanetarymindmap.github.io/mind-map) you can play around!
-- `15/10/2018`: We met with Victor and discussed deeply this project. We also made a choppy demo at the IPFS hands-on call. 
+- `15/10/2018`: We met with [Victor](https://github.com/VictorBjelkholm) and discussed deeply this project. By chance we end up doing an choppy demo at the [IPFS hands-on call](https://www.youtube.com/watch?v=xzYEjHER6x4). 
 - `17/10/2018`: We're travelling (by car) from Girona to Berlin, to be around the Web3 Summit.
 - `19/10/2018`: We still travelling, but we've been using the free time to consolidate the documentation so it can be shared soon.
 - `21/10/2018`: We've renamed the github organization and some repos. We made a demo video.

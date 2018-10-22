@@ -283,3 +283,5 @@ We call this convergence a `node cluster`. In other words is the set of nodes th
 - `17/10/2018`: We're travelling (by car) from Girona to Berlin, to be around the Web3 Summit.
 - `19/10/2018`: We still travelling, but we've been using the free time to consolidate the documentation so it can be shared soon.
 - `21/10/2018`: We've renamed the github organization and some repos. We made a demo video.
+
+__This document was copied into this repo on 21/10/2108. You can still get the historic at [its original repository](https://github.com/interplanetarymindmap/ipld-mindmap-old-readme/blob/master/README.md)__

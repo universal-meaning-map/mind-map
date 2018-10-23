@@ -8,7 +8,7 @@ We're in a personal contest to understand and try to change how do we organize o
 
 Since the scope of the project is immense, we're going to tackle small projects to get insight, while creating new tools to allow new ways to relate to information.
 
-The limitations around organizing information in a way that is meaningful for the individual(understand "mind") has been one of the driving frustrations that have triggered us to dig deep into these issues. At the same time, we believe that defining how information is organized and structured is a necessary building block before exploring more advanced systems.
+The limitations around organizing information in a way that is meaningful for the individual (understand "mind") has been one of the driving frustrations that have triggered us to dig deep into these issues. At the same time, we believe that defining how information is organized and structured is a necessary building block before exploring more advanced systems.
 
 ## Documentation
 This is the first "project" we try to tackle. While creating a tool is the main goal, is likely that we will also be exploring working frameworks and different documentation praxis.
@@ -18,13 +18,13 @@ Documentation is important to us because we are looking to solve transversal pro
 ## Mind map
 We like the idea of "mind map", a tool that allows organizing information in the way that your brain works and not in a simplified way restricted by a user interface or a data structure.
 
-[The Wikipedia entry](https://en.wikipedia.org/wiki/Mind_map) says that mindmaps are hierarchical and around a single concept. We're not making a reference to this exact concept, although it shares a lot of points in common.
+[The Wikipedia entry](https://en.wikipedia.org/wiki/Mind_map) says that mind maps are hierarchical and around a single concept. We're not making a reference to this exact concept, although it shares a lot of points in common.
 
 ## Original specs
 
--  Create a tool that would allow representing what you could do in an analogue mindmap but in a digital format.
+-  Create a tool that would allow representing what you could do in an analogue mind map but in a digital format.
 -  The main goal is to design and justify the correct data structure.
-    - It needs to work on a global domain. This means that two different mindmaps pointing to the same concept should converge if put together
+    - It needs to work on a global domain. This means that two different mind maps pointing to the same concept should converge if put together
     -  It extends [IPLD](https://ipld.io/)
     -  As simple as possible
     -  As generic as possible (can cover as many use-cases as possible)
@@ -42,9 +42,9 @@ We like the idea of "mind map", a tool that allows organizing information in the
 Deadline: end of September 2018
 
 ### Nodes in the global domain
-For _Global domain_ we understand that there is only one single giant mindmap.
+For _Global domain_ we understand that there is only one single giant mind map.
 
-Which means that we need to be able to break in down into smaller subsets/pieces. The atomic piece of a mindmap is what until now we've called a `node` (which is a very conflicting name that we would like to change)
+Which means that we need to be able to break in down into smaller subsets/pieces. The atomic piece of a mind map is what until now we've called a `node` (which is a very conflicting name that we would like to change)
 
 A `node` is nothing but a set of `relations` around a concept/content/idea. We call this "concept" `origin`.
 So the `origin` is the data that represents where the `relations` are coming from.
@@ -57,7 +57,7 @@ In other words, `relations` come out of the `origin`, **never** in (at least fro
 
 It makes a `node` behave selfishly, which is the logical behaviour in a distributed system.
 
-Since we're in a global domain we will need to represent a subset of the global mindmap. Which will be just a list of nodes.
+Since we're in a global domain we will need to represent a subset of the global mind map. Which will be just a list of nodes.
 
 
 ### Relationships and nodes
@@ -180,23 +180,23 @@ _TODO: The links are `CIDs` and should be `merkle-paths`._
 
 ### Render vs structure
 
-If we take a classic mindmap, the connections and nodes may have different shapes, sizes, colours... This is what the render should do. It needs to understand the relations and the nodes so they can be drawn.
+If we take a classic mind map, the connections and nodes may have different shapes, sizes, colours... This is what the render should do. It needs to understand the relations and the nodes so they can be drawn.
 
 It would be easy to add properties such as "colour", so the render can pick it up. But unless this is something intrinsic of the node or relation, should be left out of the equation.
 
-This is because the final goal is to be able to capture and organize concepts, and not to visualize them in a specific way. We need to keep the data render agnostic. It just happens that we choose a mindmap like render to start exploring how to organize and render this type of data.
+This is because the final goal is to be able to capture and organize concepts, and not to visualize them in a specific way. We need to keep the data render agnostic. It just happens that we choose a mind map like render to start exploring how to organize and render this type of data.
 
 ## Dimensions and recursivity
 _This is an attempt to understand the data structure from a different perspective, While developing it I found already a lot of references around graph theory and geometry and I'm pretty sure that there a lot more. I would highly appreciate references and insights to polish my naive aporach_
 
 ### 1D
-It is a requirement for our mindmap design to be able to represent relations that our mind can naturally conceive such as a bi-directional link ( `A` ⇄ `B` ) or a [`direct graph`](https://en.wikipedia.org/wiki/Directed_graph) like connections ( `A` → `B` → `C` → `A` )
+It is a requirement for our mind map design to be able to represent relations that our mind can naturally conceive such as a bi-directional link ( `A` ⇄ `B` ) or a [`direct graph`](https://en.wikipedia.org/wiki/Directed_graph) like connections ( `A` → `B` → `C` → `A` )
 
 The `IPFS` domain is a single dimensional space. The points of this space are the `CID`s (assuming no collisions), which are just numbers on a line. This is a property we inherit from its [`DAG`](https://en.wikipedia.org/wiki/Directed_graph) structure.
 
 This means that we can't make cyclic references within this domain. If you add information to a content (`origin`), like a `relation`, now you have modified the hash of this content, therefore the `target` content that was pointing back to the `origin` is now pointing to the older version of it (the one without a relation)
 
-`IPLD` and therefore a `mindmap node` is part of the `IPFS` domain, so they live on this 1D world.
+`IPLD` and therefore a `mind map node` is part of the `IPFS` domain, so they live on this 1D world.
 
 ### 2D
 We can express a relation between two pieces of content as coordinate. Where the abscissa is the `origin` `CID` and the ordinate is the `target` `CID`:
@@ -258,7 +258,7 @@ We are working towards eliminating this word from our dictionary because it keep
 
 ### Node cluster [OUTDATED]
 One of the [original specs](##-original-specs) was:
-> It needs to work on a global domain. This means that two different mindmaps pointing to the same concept should converge if put together
+> It needs to work on a global domain. This means that two different mind maps pointing to the same concept should converge if put together
 
 We call this convergence a `node cluster`. In other words is the set of nodes that are pointing to the same `CID`.
 

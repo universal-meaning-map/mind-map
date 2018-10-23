@@ -24,32 +24,30 @@ We like the idea of "mind map", a tool that allows organizing information in the
 
 -  Create a tool that would allow representing what you could do in an analogue mind map but in a digital format.
 -  The main goal is to design and justify the correct data structure.
-    - It needs to work on a global domain. This means that two different mind maps pointing to the same concept should converge if put together
-    -  It extends [IPLD](https://ipld.io/)
-    -  As simple as possible
-    -  As generic as possible (can cover as many use-cases as possible)
-    -  Any type of data should be able to be referenced
+    - It needs to work on a global domain. This means that two different mind maps pointing to the same concept should converge if put together.
+    -  It extends [IPLD](https://ipld.io/).
+    -  As simple as possible.
+    -  As generic as possible (can cover as many use-cases as possible).
+    -  Any type of data should be able to be referenced.
 -  Eventually, we'll explore authorship, accessibility, networking... but not yet.
--  It should have some basic visualization
--  The tool is "render" agnostic. Different renders can be eventually used."
--  We should document the process and the reasoning behind as close as possible
+-  It should have some basic visualization.
+-  The tool is "render" agnostic. Different renders can be eventually used.
+-  We should document the process and the reasoning behind as close as possible.
 -  It should work on the web. Because of ease of use and development.
 -  MVP approach. Keep things lean.
--  Nice to have
-    -  Load content and render via IPFS
-    -  Compatible with any IPFS/IPLD object
-
-Deadline: end of September 2018
+-  Nice to have:
+    -  Load content and render via IPFS.
+    -  Compatible with any IPFS/IPLD object.
 
 ### Nodes in the global domain
 For _Global domain_ we understand that there is only one single giant mind map.
 
-Which means that we need to be able to break in down into smaller subsets/pieces. The atomic piece of a mind map is what until now we've called a `node` (which is a very conflicting name that we would like to change)
+Which means that we need to be able to break in down into smaller subsets/pieces. The atomic piece of a mind map is what until now we've called a `node` (which is a very conflicting name that we would like to change).
 
 A `node` is nothing but a set of `relations` around a concept/content/idea. We call this "concept" `origin`.
 So the `origin` is the data that represents where the `relations` are coming from.
 
-These relations are towards another piece of data. From the `node` perspective, we call these data `targets`
+These relations are towards another piece of data. From the `node` perspective, we call these data `targets`.
 
 **This implies that each `node` needs to contain and describe the `relations` with all the other `targets` it is interested in because if broken apart, it will lose information it cares about.**
 
@@ -137,7 +135,7 @@ This was just used for explanation purposes. It does not make sense in a global 
 
 We first thought about using the [CID](https://github.com/ipld/cid) of the content. This is basically its hash, but then we realized that a  [`merkle-path`](https://github.com/ipld/specs/blob/master/IPLD.md#what-is-a-merkle-path) was a better choice.
 
-Both the `CIDs` and the `merkle-paths` are unique global identifiers. But the `merkle-path` allows pointing to mutable content (if referencing to an [IPNS](http://127.0.0.1:8080/ipns/docs.ipfs.io/guides/concepts/ipns/) link)
+Both the `CIDs` and the `merkle-paths` are unique global identifiers. But the `merkle-path` allows pointing to mutable content (if referencing to an [IPNS](http://127.0.0.1:8080/ipns/docs.ipfs.io/guides/concepts/ipns/) link).
 Plus a `CID` can be represented as `merkle-path` as well.
 
 This also allows us to not have to dereference the `merkle-path` in order to obtain the `CID`.
@@ -187,12 +185,12 @@ It would be easy to add properties such as "colour", so the render can pick it u
 This is because the final goal is to be able to capture and organize concepts, and not to visualize them in a specific way. We need to keep the data render agnostic. It just happens that we choose a mind map like render to start exploring how to organize and render this type of data.
 
 ## Dimensions and recursivity
-_This is an attempt to understand the data structure from a different perspective, While developing it I found already a lot of references around graph theory and geometry and I'm pretty sure that there a lot more. I would highly appreciate references and insights to polish my naive aporach_
+_This is an attempt to understand the data structure from a different perspective. While developing it I found already a lot of references around graph theory and geometry and I'm pretty sure that there a lot more. I would highly appreciate references and insights to polish my naive approach._
 
 ### 1D
-It is a requirement for our mind map design to be able to represent relations that our mind can naturally conceive such as a bi-directional link ( `A` ⇄ `B` ) or a [`direct graph`](https://en.wikipedia.org/wiki/Directed_graph) like connections ( `A` → `B` → `C` → `A` )
+It is a requirement for our mind map design to be able to represent relations that our mind can naturally conceive such as a bi-directional link ( `A` ⇄ `B` ) or a [`direct graph`](https://en.wikipedia.org/wiki/Directed_graph) like connections ( `A` → `B` → `C` → `A` ).
 
-The `IPFS` domain is a single dimensional space. The points of this space are the `CID`s (assuming no collisions), which are just numbers on a line. This is a property we inherit from its [`DAG`](https://en.wikipedia.org/wiki/Directed_graph) structure.
+The `IPFS` domain is a single dimensional space. The points of this space are the `CIDs` (assuming no collisions), which are just numbers on a line. This is a property we inherit from its [`DAG`](https://en.wikipedia.org/wiki/Directed_graph) structure.
 
 This means that we can't make cyclic references within this domain. If you add information to a content (`origin`), like a `relation`, now you have modified the hash of this content, therefore the `target` content that was pointing back to the `origin` is now pointing to the older version of it (the one without a relation)
 
@@ -277,7 +275,7 @@ We call this convergence a `node cluster`. In other words is the set of nodes th
 - `15/10/2018`: We met with [Victor](https://github.com/VictorBjelkholm) and discussed deeply this project. By chance we end up doing an choppy demo at the [IPFS hands-on call](https://www.youtube.com/watch?v=xzYEjHER6x4). 
 - `17/10/2018`: We're travelling (by car) from Girona to Berlin, to be around the Web3 Summit.
 - `19/10/2018`: We still travelling, but we've been using the free time to consolidate the documentation so it can be shared soon.
-- `21/10/2018`: We've renamed the github organization and some repos. We made a demo video.
+- `21/10/2018`: We've renamed the github organization and some repos. We made a [demo video](https://www.youtube.com/watch?v=R4D8xT_KNP8).
 - `21/10/2018`: Added the project at the [ipfs/notes repository issues](https://github.com/ipfs/notes/issues/299).
 
 __This document was copied into this repo on 21/10/2108. You can still get the historic at [its original repository](https://github.com/interplanetarymindmap/ipld-mindmap-old-readme/blob/master/README.md)__

@@ -3,6 +3,8 @@ _[Live version](http://interplanetarymindmap.github.io/mind-map)_
 
 _[Usage instructions](https://github.com/interplanetarymindmap/mind-map/blob/master/instructions.md)_
 
+[![Interplanetary Mind Map demo](https://img.youtube.com/vi/R4D8xT_KNP8/0.jpg)](http://www.youtube.com/watch?v=R4D8xT_KNP8)
+
 ## Context
 We're in a personal contest to understand and try to change how do we organize our own information, and how it relates to everything else. The full explanation of why and how is something we're still [working on](https://github.com/interplanetarymindmap/docs).
 
@@ -71,7 +73,6 @@ We understand `relation` as of how a piece of data (`origin`) relates to another
             {"target": "content3"}
         ]
     }
-
 ```
 
 ### Relationship types

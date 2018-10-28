@@ -187,69 +187,6 @@ It would be easy to add properties such as "colour", so the render can pick it u
 
 This is because the final goal is to be able to capture and organize concepts, and not to visualize them in a specific way. We need to keep the data render agnostic. It just happens that we choose a mindmap like render to start exploring how to organize and render this type of data.
 
-## Dimensions and recursivity
-_This is an attempt to understand the data structure from a different perspective, While developing it I found already a lot of references around graph theory and geometry and I'm pretty sure that there a lot more. I would highly appreciate references and insights to polish my naive aporach_
-
-### 1D
-It is a requirement for our mindmap design to be able to represent relations that our mind can naturally conceive such as a bi-directional link ( `A` ⇄ `B` ) or a [`direct graph`](https://en.wikipedia.org/wiki/Directed_graph) like connections ( `A` → `B` → `C` → `A` )
-
-The `IPFS` domain is a single dimensional space. The points of this space are the `CID`s (assuming no collisions), which are just numbers on a line. This is a property we inherit from its [`DAG`](https://en.wikipedia.org/wiki/Directed_graph) structure.
-
-This means that we can't make cyclic references within this domain. If you add information to a content (`origin`), like a `relation`, now you have modified the hash of this content, therefore the `target` content that was pointing back to the `origin` is now pointing to the older version of it (the one without a relation)
-
-`IPLD` and therefore a `mindmap node` is part of the `IPFS` domain, so they live on this 1D world.
-
-### 2D
-We can express a relation between two pieces of content as coordinate. Where the abscissa is the `origin` `CID` and the ordinate is the `target` `CID`:
-
-(`originCID`, `targetCID`)
-
-Therefore you could express...
-A bi-directional link: (`A`, `B`), (`B`, `A`)  
-And a direct graph: (`A`, `B`), (`B`, `C`), (`C`, `A`)
-
-By expressing them in that way we are adding a second dimension, the one where the coordinates `CID` lives.
-
-Now we have two 1D spaces. Both domains are made out `CID`s of a [multi-hash](https://github.com/multiformats/multihash) tuple.
-
-The `coordinates domain` only contains the hashes of the `coordinates` set. And the `content domain` contains all the content `CID`s excluding the `coordinates`.  
-
-Here `i` is to express the `coordinates domain` and `k` is to express the `content domain`:
-
-`iX` = (`kA`,`kB`)    
-`iY` = (`kB`,`kC`)  
-`iZ` = (`kC`,`kA`)  
-
-This is all to express how a piece of content can have bi-directional or cyclic relations.
-
-### Pointing to relations
-
-Based on the above, there is another possible construction that for me is incredibly powerful and one of the main reasons I want to build this.
-
-`iX` = (`kA`,`iY`)
-
-In the expression above I have a coordinate `iX`, where the abscissa is a piece of content (`A`) of the coordinates domain (`k`), and the ordinates is not a content `CID` but a coordinate `CID`.
-
-It is basically saying that we can reference realations to a relation.
-Because the reasoning above it is not possible to have cyclic references between coordinates (unless you add a third dimention).
-
-We can also point to a group of relations:
-`iY` = ((`kA`,`kB`), (`kC`,`kD`),(`kE`,`kF`))
-
-### Pointing to your own truth. Definitions beyond semantics
-
-Instead of being an arbitrary group of relations, these relations can be around a single `origin` (notice `kA` being in all relations).
-`iZ` = ((`kA`,`kB`), (`kA`,`kC`),(`kA`,`kD`))
-
-This is now a definition. `iZ` is the result of all the relations around `kA`.
-
-This is not semantics anymore...  We're litteraly saying that `iZ` is exactly all this set of relations. `iZ` is the merkle-root of a tree of definitions.
-
-You can talk about a "car", and make a direct reference to the exact definition of what you mean by "car". It extends writting language. You can encapsulate complexity into a single link transcending the limitations of having to have concensus about what something means (dictionary).
-
-### Relationship dimensions
-...
-
 ## Terminology
 
 Terminology is becoming a problem. We need more precise vocabulary in order to just discuss all this. At the same time, this is forcing us to re-define concepts that had a little too broad definition.

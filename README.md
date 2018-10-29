@@ -6,7 +6,7 @@ _[Usage instructions](https://github.com/interplanetarymindmap/mind-map/blob/mas
 [![Interplanetary Mind Map demo](https://img.youtube.com/vi/R4D8xT_KNP8/0.jpg)](http://www.youtube.com/watch?v=R4D8xT_KNP8)
 
 ## Context
-We're in a personal contest to understand and try to change how do we organize our own information, and how it relates to everything else. The full explanation of why and how is something we're still [working on](https://github.com/interplanetarymindmap/docs).
+We're in a personal contest to understand and try to change how do we organize our own information, and how it relates to everything else. The full explanation of why and how is something we're still [working on](https://github.com/interplanetarymindmap/index).
 
 Since the scope of the project is immense, we're going to tackle small projects to get insight, while creating new tools to allow new ways to relate to information.
 
@@ -18,9 +18,7 @@ This is the first "project" we try to tackle. While creating a tool is the main 
 Documentation is important to us because we are looking to solve transversal problems in the best way possible, so if the logic behind is not good enough, we want to know. And if you're reading this, probably you can help. We invite you to open an issue so we can discuss any question further :)
 
 ## Mind map
-We like the idea of "mind map", a tool that allows organizing information in the way that your brain works and not in a simplified way restricted by a user interface or a data structure.
-
-[The Wikipedia entry](https://en.wikipedia.org/wiki/Mind_map) says that mindmaps are hierarchical and around a single concept. We're not making a reference to this exact concept, although it shares a lot of points in common.
+The idea of a [mind-map](https://en.wikipedia.org/wiki/Mind_map), a tool that allows organizing information in the way that your brain works and not in a simplified way restricted by a user interface or a data structure.
 
 ## Original specs
 
@@ -189,16 +187,10 @@ This is because the final goal is to be able to capture and organize concepts, a
 
 ## Terminology
 
-Terminology is becoming a problem. We need more precise vocabulary in order to just discuss all this. At the same time, this is forcing us to re-define concepts that had a little too broad definition.
+Terminology is problem. We need more precise vocabulary in order to just discuss all this. At the same time, this is forcing us to re-define concepts that had a little too broad definition.
 
-### Node
-We are working towards eliminating this word from our dictionary because it keeps generating confusion. There are a lot of types of nodes, they almost represent the same thing, but they don't.
+Is likley you will see constant changes in the terminology we use, we will try to keep things well referenced and explained.
 
-### Node cluster [OUTDATED]
-One of the [original specs](##-original-specs) was:
-> It needs to work on a global domain. This means that two different mindmaps pointing to the same concept should converge if put together
-
-We call this convergence a `node cluster`. In other words is the set of nodes that are pointing to the same `CID`.
 
 ## Log (just to give a vague idea of the progress)
 - `13/09/2018`: We've figured out a basic data structure to start. Defined in the section above

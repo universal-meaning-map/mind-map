@@ -176,14 +176,12 @@ _TODO: The links are `CIDs` and should be `merkle-paths`._
     ]
 }
 ```
-
-### Render vs structure
-
-If we take a classic mindmap, the connections and nodes may have different shapes, sizes, colours... This is what the render should do. It needs to understand the relations and the nodes so they can be drawn.
-
-It would be easy to add properties such as "colour", so the render can pick it up. But unless this is something intrinsic of the node or relation, should be left out of the equation.
-
-This is because the final goal is to be able to capture and organize concepts, and not to visualize them in a specific way. We need to keep the data render agnostic. It just happens that we choose a mindmap like render to start exploring how to organize and render this type of data.
+We've been abstracting out parts of this readme into issues in order to make them more discussable. We invite you to join the conversation :)
+- [Atomic data structure](https://github.com/interplanetarymindmap/mind-map/issues/4)
+- [Beyond semantics. Literal definition trees](https://github.com/interplanetarymindmap/mind-map/issues/2)
+- [Dimensions and recursivity](https://github.com/interplanetarymindmap/mind-map/issues/3)
+- [Requirements to make it usable](https://github.com/interplanetarymindmap/mind-map/issues/1)
+- [Render vs structure data](https://github.com/interplanetarymindmap/mind-map/issues/5)
 
 ## Terminology
 
@@ -209,5 +207,7 @@ Is likley you will see constant changes in the terminology we use, we will try t
 - `19/10/2018`: We still travelling, but we've been using the free time to consolidate the documentation so it can be shared soon.
 - `21/10/2018`: We've renamed the github organization and some repos. We made a demo video.
 - `21/10/2018`: Added the project at the [ipfs/notes repository issues](https://github.com/ipfs/notes/issues/299).
+- `28/10/2018`: In Prague for Devcon4.
+- `29/10/2018`: We've been abastracting some topics and discussions [into issues](https://github.com/interplanetarymindmap/mind-map/issues), to make them more discussable.
 
 __This document was copied into this repo on 21/10/2108. You can still get the historic at [its original repository](https://github.com/interplanetarymindmap/ipld-mindmap-old-readme/blob/master/README.md)__

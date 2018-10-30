@@ -40,6 +40,8 @@ The idea of a [mind-map](https://en.wikipedia.org/wiki/Mind_map), a tool that al
     -  Compatible with any IPFS/IPLD object.
 
 ### Nodes in the global domain
+_Since writting this, we've have iterated over how to represent this information. A more updated vision is reflected here: [Atomic data structure](https://github.com/interplanetarymindmap/mind-map/issues/4)_
+
 For _Global domain_ we understand that there is only one single giant mind map.
 
 Which means that we need to be able to break in down into smaller subsets/pieces. The atomic piece of a mind map is what until now we've called a `node` (which is a very conflicting name that we would like to change).
@@ -72,7 +74,6 @@ We understand `relation` as of how a piece of data (`origin`) relates to another
 ```
 
 ### Relationship types
-
 One of our frustrations and things we are exploring in detail is how can we extend how do we relate to information beyond what a user interface or the underlying system allows.
 
 In this case, it translates on allowing the user to define how a piece of information relates to another. So a `relation` can have a `type`, which is nothing but a reference to an expression of the `type` of relation.
@@ -207,5 +208,6 @@ Is likley you will see constant changes in the terminology we use, we will try t
 - `21/10/2018`: Added the project at the [ipfs/notes repository issues](https://github.com/ipfs/notes/issues/299).
 - `28/10/2018`: In Prague for Devcon4.
 - `29/10/2018`: We've been abastracting some topics and discussions [into issues](https://github.com/interplanetarymindmap/mind-map/issues), to make them more discussable.
+- `30/10/2018`: [Created a topic](https://discuss.ipfs.io/t/help-us-build-the-interplanetary-mind-map/4197) in the discuss.ipfs to invite people to the conversation. 
 
-__This document was copied into this repo on 21/10/2108. You can still get the historic at [its original repository](https://github.com/interplanetarymindmap/ipld-mindmap-old-readme/blob/master/README.md)__
+_This document was copied into this repo on 21/10/2108. You can still get the historic at [its original repository](https://github.com/interplanetarymindmap/ipld-mindmap-old-readme/blob/master/README.md)_

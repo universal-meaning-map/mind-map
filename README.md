@@ -1,6 +1,6 @@
+_At Devcon in Prague? [Let me know!](https://twitter.com/xavivives)_
 # Mind Map
-_[Live version](http://interplanetarymindmap.github.io/mind-map)_
-
+_[Live version](http://interplanetarymindmap.github.io/mind-map)_  
 _[Usage instructions](https://github.com/interplanetarymindmap/mind-map/blob/master/instructions.md)_
 
 [![Interplanetary Mind Map demo](https://img.youtube.com/vi/R4D8xT_KNP8/0.jpg)](http://www.youtube.com/watch?v=R4D8xT_KNP8)

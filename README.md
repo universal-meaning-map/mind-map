@@ -1,8 +1,7 @@
-_At Devcon in Prague? [Let me know!](https://twitter.com/xavivives)_
 # Mind Map
 _[Live version](http://interplanetarymindmap.github.io/mind-map)_  
-_[Usage instructions](https://github.com/interplanetarymindmap/mind-map/blob/master/instructions.md)_
-
+_[Usage instructions](https://github.com/interplanetarymindmap/mind-map/blob/master/instructions.md)_  
+_[Small video demo](http://www.youtube.com/watch?v=R4D8xT_KNP8)_
 [![Interplanetary Mind Map demo](https://img.youtube.com/vi/R4D8xT_KNP8/0.jpg)](http://www.youtube.com/watch?v=R4D8xT_KNP8)
 
 ## Context
@@ -39,154 +38,23 @@ The idea of a [mind-map](https://en.wikipedia.org/wiki/Mind_map), a tool that al
     -  Load content and render via IPFS.
     -  Compatible with any IPFS/IPLD object.
 
-### Nodes in the global domain
-_Since writting this, we've have iterated over how to represent this information. A more updated vision is reflected here: [Atomic data structure](https://github.com/interplanetarymindmap/mind-map/issues/4)_
+### Mind-maps in a global domain
 
 For _Global domain_ we understand that there is only one single giant mind map.
 
-Which means that we need to be able to break in down into smaller subsets/pieces. The atomic piece of a mind map is what until now we've called a `node` (which is a very conflicting name that we would like to change).
+Which means that we need to be able to break in down into smaller subsets/pieces. These pieces need to keep its integrity, so having the right data structure is key.
 
-A `node` is nothing but a set of `relations` around a concept/content/idea. We call this "concept" `origin`.
-So the `origin` is the data that represents where the `relations` are coming from.
+Most of the work in this repository is around justifiying those data structures. We've been abstracting them into their own issue, in order to keep them discussable.
+I suggest you to read the following:  
 
-These relations are towards another piece of data. From the `node` perspective, we call these data `targets`.
-
-**This implies that each `node` needs to contain and describe the `relations` with all the other `targets` it is interested in because if broken apart, it will lose information it cares about.**
-
-In other words, `relations` come out of the `origin`, **never** in (at least from the `origin` perspective). If that was the case we will have a duplicated source of truth (the `relation` from the incoming `origin` and the `relation` from the current `origin`). This does not mean that the relation can't represent an incoming direction.
-
-It makes a `node` behave selfishly, which is the logical behaviour in a distributed system.
-
-Since we're in a global domain we will need to represent a subset of the global mind map. Which will be just a list of nodes.
-
-
-### Relationships and nodes
-We understand `relation` as of how a piece of data (`origin`) relates to another piece of data (`target`). A node can have an arbitrary number of `relations`.
-
-```json
-    {
-        "origin":"content1",
-        "relations": [
-            {"target": "content2"}
-            {"target": "content3"}
-        ]
-    }
-```
-
-### Relationship types
-One of our frustrations and things we are exploring in detail is how can we extend how do we relate to information beyond what a user interface or the underlying system allows.
-
-In this case, it translates on allowing the user to define how a piece of information relates to another. So a `relation` can have a `type`, which is nothing but a reference to an expression of the `type` of relation.
-
-A `type` of a `relation` could be "depends on", "is my dad", "contains"... or anything (text or not). It is the job of the `render` to understand what this `type` means and how to represent it.
-
-Because the selfish behaviour of a node described above, a relationship is always described from the perspective of the `origin` towards the `target`
-
-```json
-[
-    {
-        "origin":"Son",
-        "relations": [
-            {
-                "target": "Dad",
-                "type": "Is my dad"
-            }
-        ]
-    },
-    {
-        "origin":"Dad",
-        "relations": [
-            {
-                "target": "Son",
-                "type": "Is my son"
-            }
-        ]
-    }
-]
-```
-The selfish behaviour implies that there is no way to guarantee the integrity of the information since the nodes could express conflicting information. And that's ok because **each node have its own truth**.
-
-```json
-[
-    {
-        "origin":"Son",
-        "relations": [
-            {
-                "target": "Dad",
-                "type": "Is NOT my dad"
-            }
-        ]
-    },
-    {
-        "origin":"Dad",
-        "relations": [
-            {
-                "target": "Son",
-                "type": "Is my son"
-            }
-        ]
-    },
-]
-```
-
-### Merkle paths as identifiers
-In the previous examples, we've used sample text in the `origin` field, to uniquely identify a piece of data.
-This was just used for explanation purposes. It does not make sense in a global domain. And identifier needs to be global.
-
-We first thought about using the [CID](https://github.com/ipld/cid) of the content. This is basically its hash, but then we realized that a  [`merkle-path`](https://github.com/ipld/specs/blob/master/IPLD.md#what-is-a-merkle-path) was a better choice.
-
-Both the `CIDs` and the `merkle-paths` are unique global identifiers. But the `merkle-path` allows pointing to mutable content (if referencing to an [IPNS](http://127.0.0.1:8080/ipns/docs.ipfs.io/guides/concepts/ipns/) link).
-Plus a `CID` can be represented as `merkle-path` as well.
-
-This also allows us to not have to dereference the `merkle-path` in order to obtain the `CID`.
-
-### The data structure
-Considering all the above, a representation of a `node` as an `IPLD` object looks like this:
-
-_TODO: The links are `CIDs` and should be `merkle-paths`._
-
-```json
-{
-    "origin": {
-        "link": {
-            "/": "QmUmg7BZC1YP1ca66rRtWKxpXp77WgVHrnv263JtDuvs2k"
-        }
-    },
-    "relations": [
-        {
-            "target": {
-                "link": {
-                    "/": "zdpuAvYJaZxBjTV4WH3irwThm5t2a7yTccoN9cWpDmtV4CiNz"
-                }
-            },
-            "type": {
-                "link": {
-                    "/": "zdpuAvYJaZxBjTV4WH3irwThm5t2a7yTccoN9cWpDmtV4CiNz"
-                }
-            }
-        },
-        {
-            "target": {
-                "link": {
-                    "/": "zdpuAyvmoJWTiVrCv1aCHV5xUZ1fxUf4XLkrprKPMMFCNKfj3"
-                }
-            }
-        }
-    ]
-}
-```
-We've been abstracting out parts of this readme into issues in order to make them more discussable. We invite you to join the conversation :)
-- [Atomic data structure](https://github.com/interplanetarymindmap/mind-map/issues/4)
-- [Beyond semantics. Literal definition trees](https://github.com/interplanetarymindmap/mind-map/issues/2)
-- [Dimensions and recursivity](https://github.com/interplanetarymindmap/mind-map/issues/3)
-- [Requirements to make it usable](https://github.com/interplanetarymindmap/mind-map/issues/1)
-- [Render vs structure data](https://github.com/interplanetarymindmap/mind-map/issues/5)
-
-## Terminology
-
-Terminology is problem. We need more precise vocabulary in order to just discuss all this. At the same time, this is forcing us to re-define concepts that had a little too broad definition.
-
-Is likley you will see constant changes in the terminology we use, we will try to keep things well referenced and explained.
+[Original data structure](https://github.com/interplanetarymindmap/mind-map/issues/7)  
+[Atomic data structure](https://github.com/interplanetarymindmap/mind-map/issues/4)  
+[Beyond semantics. Literal definition trees](https://github.com/interplanetarymindmap/mind-map/issues/2)  
+[Mind-maps for mappers and packers](https://github.com/interplanetarymindmap/mind-map/issues/6)  
+  
+And if you want to get deeper, those are also relevant:
+[Dimensions and recursivity](https://github.com/interplanetarymindmap/mind-map/issues/3)  
+[Render vs structure data](https://github.com/interplanetarymindmap/mind-map/issues/5)
 
 
 ## Log (just to give a vague idea of the progress)
@@ -209,5 +77,6 @@ Is likley you will see constant changes in the terminology we use, we will try t
 - `28/10/2018`: In Prague for Devcon4.
 - `29/10/2018`: We've been abastracting some topics and discussions [into issues](https://github.com/interplanetarymindmap/mind-map/issues), to make them more discussable.
 - `30/10/2018`: [Created a topic](https://discuss.ipfs.io/t/help-us-build-the-interplanetary-mind-map/4197) in the discuss.ipfs to invite people to the conversation. 
+- `15/11/2018`: A lot of travelling and other projects on our way. We keep updating and adding insights in the issues. 
 
 _This document was copied into this repo on 21/10/2108. You can still get the historic at [its original repository](https://github.com/interplanetarymindmap/ipld-mindmap-old-readme/blob/master/README.md)_

@@ -1,7 +1,7 @@
 # Mind Map
 _[Live version](http://interplanetarymindmap.github.io/mind-map)_  
 _[Usage instructions](https://github.com/interplanetarymindmap/mind-map/blob/master/instructions.md)_  
-_[Small video demo](http://www.youtube.com/watch?v=R4D8xT_KNP8)_
+_[Small video demo](http://www.youtube.com/watch?v=R4D8xT_KNP8)_  
 [![Interplanetary Mind Map demo](https://img.youtube.com/vi/R4D8xT_KNP8/0.jpg)](http://www.youtube.com/watch?v=R4D8xT_KNP8)
 
 ## Context
@@ -52,12 +52,11 @@ I suggest you to read the following:
 [Beyond semantics. Literal definition trees](https://github.com/interplanetarymindmap/mind-map/issues/2)  
 [Mind-maps for mappers and packers](https://github.com/interplanetarymindmap/mind-map/issues/6)  
   
-And if you want to get deeper, those are also relevant:
-[Dimensions and recursivity](https://github.com/interplanetarymindmap/mind-map/issues/3)  
-[Render vs structure data](https://github.com/interplanetarymindmap/mind-map/issues/5)
+And if you want to get deeper, those are also relevant:  
+[Dimensions and recursivity](https://github.com/interplanetarymindmap/mind-map/issues/3)    
+[Render vs structure data](https://github.com/interplanetarymindmap/mind-map/issues/5)  
 
-
-## Log (just to give a vague idea of the progress)
+## Log (just to give a vague idea of how we spend the time)
 - `13/09/2018`: We've figured out a basic data structure to start. Defined in the section above
 - `18/09/2018`: We started exploring the first render _(22/10/2018 edit: We merged two repositories, the render is this repo now)_
 - `21/09/2018`: Documenting node identification. Documenting render format.
